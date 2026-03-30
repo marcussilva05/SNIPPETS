@@ -1,7 +1,7 @@
 # ===== INSTRUÇÕES =====
 # no PS digite e excute o comando: 
 # notepad $PROFILE  
-# copie e cole todo tudo o que está aqui
+# copie e cole todos os códigos deste arquivo
 # ao salvar o arquivo, selecione 'salvar como', no 'tipo' selecione 'Todo tipo de arquivo' e nome do arquivo 'Microsoft.PowerShell_profile.ps1'
 # no PS digite . $PROFILE 
 # teste digitando z+space+tab
@@ -212,8 +212,3 @@ Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
 function code {
     & "C:\Users\vinic\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" @args
 }
-
-
-
-
-
