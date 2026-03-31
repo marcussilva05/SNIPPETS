@@ -1,6 +1,6 @@
 # ===== INSTRUÇÕES =====
 # no PS digite e excute o comando: 
-# notepad $PROFILE  
+# code $PROFILE  
 # copie e cole todos os códigos deste arquivo
 # ao salvar o arquivo, selecione 'salvar como', no 'tipo' selecione 'Todo tipo de arquivo' e nome do arquivo 'Microsoft.PowerShell_profile.ps1'
 # no PS digite . $PROFILE 
