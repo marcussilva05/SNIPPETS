@@ -791,6 +791,52 @@
 	  "WHERE A.CPF = B.CPF)"
     ],
     "description": "CALCULO_DE_DATA"
+  },
+
+	// UNION_SEM_DUPLICATAS
+  "UNION_SEM_DUPLICATAS": {
+    "scope": "sql",
+    "prefix": "ZUNION",
+    "body": [
+	  "${7:DROP TABLE IF EXISTS ${1:#BASE__UNIDA}}",
+      "SELECT",
+	  "${2:COLUNA1}",
+	  "${3:COLUNA2}",
+	  "${4:COLUNA2}",
+	  "INTO ${1:#BASE__UNIDA}",
+	  "FROM ${5#BASE1}",
+	  "UNION",
+	  "SELECT",
+	  "${2:COLUNA1}",
+	  "${3:COLUNA2}",
+	  "${4:COLUNA2}",
+	  "INTO ${1:#BASE__UNIDA}",
+	  "FROM ${6#BASE2} -- SE QUISER, COPIE MAIS UM UNION SEGUIDO DE SELECT E ETC... PARA MAIS UNIONS" 
+    ],
+    "description": "UNION_SEM_DUPLICATAS"
+  },
+
+	// UNION_COM_DUPLICATAS
+  "UNION_COM_DUPLICATAS": {
+    "scope": "sql",
+    "prefix": "ZUNIOND",
+    "body": [
+	  "${7:DROP TABLE IF EXISTS ${1:#BASE__UNIDA_ALL}}",
+      "SELECT",
+	  "${2:COLUNA1}",
+	  "${3:COLUNA2}",
+	  "${4:COLUNA2}",
+	  "INTO ${1:#BASE__UNIDA_ALL}",
+	  "FROM ${5#BASE1}",
+	  "UNION ALL",
+	  "SELECT",
+	  "${2:COLUNA1}",
+	  "${3:COLUNA2}",
+	  "${4:COLUNA2}",
+	  "INTO ${1:#BASE__UNIDA}",
+	  "FROM ${6#BASE2} -- SE QUISER, COPIE MAIS UM UNION ALL SEGUIDO DE SELECT E ETC... PARA MAIS UNIONS" 
+    ],
+    "description": "UNION_SEM_DUPLICATAS"
   }
 
 }
