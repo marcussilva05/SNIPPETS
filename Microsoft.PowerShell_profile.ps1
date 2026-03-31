@@ -303,7 +303,7 @@ Register-ArgumentCompleter -CommandName z -ParameterName comando -ScriptBlock {
     "sys_inst_exten_inic_vscode","sys_inst_exten_py_sql","sys_verificar_python","sys_instalar_python"
 )
 
-    $comandos | Where-Object { $_ -like "$wordToComplete*" } |
+    $comandos | Where-Object { $_ -like "$wordToComplete*" } 
     ForEach-Object {
         [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
     }
