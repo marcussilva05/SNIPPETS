@@ -99,7 +99,7 @@
       "${4:SELECT                                    }",    
       "COLUMN_NAME AS COLUNA",
       "FROM INFORMATION_SCHEMA.COLUMNS",
-      "WHERE TABLE_SCHEMA = '${1:dbo}'      ${3:-- schema separado sem colchetes [dbo] = dbo",
+      "WHERE TABLE_SCHEMA = '${1:dbo}'      ${3:-- schema separado sem colchetes [dbo] = dbo}",
       "  AND TABLE_NAME = 'CTG${2:02}26'  ${3:-- nome da tabela sem colchetes}",
       "ORDER BY ORDINAL_POSITION"
       ],
@@ -114,7 +114,7 @@
       "${4:SELECT                                    }",    
       "COLUMN_NAME AS COLUNA",
       "FROM INFORMATION_SCHEMA.COLUMNS",
-      "WHERE TABLE_SCHEMA = '${1:02}2026'      ${3:-- schema separado sem colchetes [022026] = 022026",
+      "WHERE TABLE_SCHEMA = '${1:02}2026'      ${3:-- schema separado sem colchetes [022026] = 022026}",
       "  AND TABLE_NAME = '${2:pap_ua}'  ${3:-- nome da tabela sem colchetes}",
       "ORDER BY ORDINAL_POSITION"
       ],
