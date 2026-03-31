@@ -1,6 +1,11 @@
 # ===== INSTRUÇÕES =====
-# no PS digite e excute o comando: 
+# no PS ADMNISTRADOR digite e excute os comandos: 
+# Get-ExecutionPolicy 
+# Verifique a política atual se NÃO for restricted, ok, se for restrita então
+# Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+# Mudará a política para: 'RemoteSigned:' permite scripts locais e scripts da internet apenas se assinados por um editor confiável e '-Scope CurrentUser:' aplica apenas ao seu usuário, sem precisar de permissão de administrador para todo o sistema
 # code $PROFILE  
+# mude o usuário da função código 'function code {' conforme instruções da última função ao final do código
 # copie e cole todos os códigos deste arquivo
 # ao salvar o arquivo, selecione 'salvar como', no 'tipo' selecione 'Todo tipo de arquivo' e nome do arquivo 'Microsoft.PowerShell_profile.ps1'
 # no PS digite . $PROFILE 
@@ -210,5 +215,7 @@ Register-ArgumentCompleter -CommandName z -ParameterName comando -ScriptBlock {
 Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
 
 function code {
-    & "C:\Users\vinic\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" @args
+    & "C:\Users\XXX\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" @args #mudar o caminho do usuário onde está com XXX C:\Users\XXX\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd
+          #MUDE XXX ACIMA usando notepad $PROFILE
+			   		️
 }
