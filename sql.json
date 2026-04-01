@@ -799,8 +799,9 @@
     "body": [
 	  "DROP TABLE IF EXISTS #${1:BASE_TEMP}",
     "CREATE TABLE #${1:BASE_TEMP} (",
-	  "    #${2:COLUNA} ${3:VARCHAR}(${4:100})",
-	  "INSERT INTO #${1:BASE_TEMP} (#${2:COLUNA}) VALUES",
+	  "    ${2:COLUNA} ${3:VARCHAR}(${4:100})",
+	  "INSERT INTO #${1:BASE_TEMP} (${2:COLUNA}) VALUES",
+    ")",
 	  "${5:('DADO1'),}",
     "${5:('DADO2'),}",
 	  "${5:('ETC...'),}"
