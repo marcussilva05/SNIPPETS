@@ -809,23 +809,6 @@
     "description": "INSERIR_DADOS_EM_TEMPORARIA"
   },
 
-  // CALCULO_DE_DATA
-  "CALCULO_DE_DATA": {
-    "scope": "sql",
-    "prefix": "ZDDCOMPTABLE",
-    "body": [
-	  "SELECT",
-      "     CPF",
-	  "FROM #BASE1 A",
-	  "WHERE EXISTS (  -- ou NOT EXISTS",
-	  "SELECT",
-      "     CPF",
-	  "FROM #BASE2 B",
-	  "WHERE A.CPF = B.CPF)"
-    ],
-    "description": "CALCULO_DE_DATA"
-  },
-
 	// UNION_SEM_DUPLICATAS
   "UNION_SEM_DUPLICATAS": {
     "scope": "sql",
