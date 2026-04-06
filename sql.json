@@ -214,9 +214,9 @@
     "scope": "sql",
     "prefix": "ZMAP",
     "body": [
-      "${2:SELECT *                                          }",
-      "FROM [dbo].[00_MAPEAMENTO_BD]",
-      "WHERE END_COMPLETO LIKE '%${1:DADO}%'",
+      "${3:SELECT *                                          }",
+      "FROM [dbo].[00_MAPEAMENTO_BD${1:03}26]",
+      "WHERE END_COMPLETO LIKE '%${2:DADO}%'",
       "ORDER BY ANO_TABELA DESC, BD, TABELA, COLUNA"
     ],
     "description": "00_SQL"
