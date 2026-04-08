@@ -1594,7 +1594,7 @@
 // CEPEA_CTG
 "CEPEA_CTG": {
     "scope": "sql",
-    "prefix": "ZCPEACTG",
+    "prefix": "ZCEPEACTG",
     "body": [
         "USE CEPEA_SAS",
         "",
@@ -1687,7 +1687,7 @@
 // CEPEA_ARQDEUA
 "CEPEA_ARQDEUA": {
     "scope": "sql",
-    "prefix": "ZCPEAARQDEUA",
+    "prefix": "ZCEPEAARQDEUA",
     "body": [
         "USE CEPEA_SAS",
         "",
@@ -1711,7 +1711,7 @@
 // CEPEA_BFE
 "CEPEA_BFE": {
     "scope": "sql",
-    "prefix": "ZCPEABFE",
+    "prefix": "ZCEPEABFE",
     "body": [
         "USE CEPEA_SAS",
         "",
@@ -1838,7 +1838,7 @@
 // CEPEA_ESCOLAS
 "CEPEA_ESCOLAS": {
     "scope": "sql",
-    "prefix": "ZCPEAESCOLAS",
+    "prefix": "ZCEPEAESCOLAS",
     "body": [
         "USE CEPEA_SAS",
         "",
@@ -1944,7 +1944,7 @@
 // CEPEA_NIVEL_FORMACAO
 "CEPEA_NIVEL_FORMACAO": {
     "scope": "sql",
-    "prefix": "ZCPEANIVELFORM",
+    "prefix": "ZCEPEANIVELFORM",
     "body": [
         "USE CEPEA_SAS",
         "",
@@ -2013,7 +2013,7 @@
 // CEPEA_QUALIF
 "CEPEA_QUALIF": {
     "scope": "sql",
-    "prefix": "ZCPEAQUALIF",
+    "prefix": "ZCEPEAQUALIF",
     "body": [
         "USE CEPEA_SAS",
         "",
@@ -2041,7 +2041,7 @@
 // CEPEA_TAB_CARGO
 "CEPEA_TAB_CARGO": {
     "scope": "sql",
-    "prefix": "ZCPEATABCARGO",
+    "prefix": "ZCEPEATABCARGO",
     "body": [
         "USE CEPEA_SAS",
         "",
@@ -2059,7 +2059,7 @@
 // CEPEA_TAB_CODBFE
 "CEPEA_TAB_CODBFE": {
     "scope": "sql",
-    "prefix": "ZCPEABFE",
+    "prefix": "ZCEPEABFE",
     "body": [
         "USE CEPEA_SAS",
         "",
@@ -2075,7 +2075,7 @@
 // CEPEA_TAB_GRUPO_NIVEL_CURSO
 "CEPEA_TAB_GRUPO_NIVEL_CURSO": {
     "scope": "sql",
-    "prefix": "ZCPEANIVELCURSO",
+    "prefix": "ZCEPEANIVELCURSO",
     "body": [
         "USE CEPEA_SAS",
         "",
@@ -2093,7 +2093,7 @@
 // CEPEA_TB_ID_INTERNO_SERV
 "CEPEA_TB_ID_INTERNO_SERV": {
     "scope": "sql",
-    "prefix": "ZCPEAID",
+    "prefix": "ZCEPEAID",
     "body": [
         "USE CEPEA_SAS",
         "",
