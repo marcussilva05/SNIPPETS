@@ -521,7 +521,7 @@
 		"scope": "sql",
 		"prefix": "ZCONC",
 		"body": [
-			"CONCAT('${1:col1}', '${2:col2}')"
+			"CONCAT('${1:col1}', '${2:col2}') AS ${3:NOME}"
 		],
 		"description": "CONCATENAR"
 	},
