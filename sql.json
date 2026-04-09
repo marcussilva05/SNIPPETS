@@ -537,6 +537,31 @@
     "description": "CONTAR E AGRUPAR"
   },	
 
+  // COLA_GROUP_BY
+  "COLA_GROUP_BY": {
+      "scope": "sql",
+      "prefix": "ZCOLAGROUP",
+      "body": [
+          "/*",
+          "Função                           O que faz                                 Tipo de dado",
+          "-------------------------------- ---------------------------------------- -------------",
+          "COUNT(*)                         Conta todas as linhas                     INT/BIGINT",
+          "COUNT(coluna)                    Conta valores não NULL                    INT/BIGINT",
+          "COUNT(DISTINCT coluna)           Conta valores únicos não NULL             INT/BIGINT",
+          "SUM(coluna)                      Soma dos valores                          NUMÉRICO",
+          "AVG(coluna)                      Média dos valores                         NUMÉRICO",
+          "MAX(coluna)                      Maior valor                               QUALQUER",
+          "MIN(coluna)                      Menor valor                               QUALQUER",
+          "STDEV(coluna)                    Desvio padrão (amostra)                   FLOAT",
+          "STDEVP(coluna)                   Desvio padrão (população)                 FLOAT",
+          "VAR(coluna)                      Variância (amostra)                       FLOAT",
+          "VARP(coluna)                     Variância (população)                     FLOAT",
+          "STRING_AGG(coluna, separador)    Concatena textos                          STRING",
+          "*/"
+      ],
+      "description": "COLA DE COMANDOS GROUP BY"
+  },
+
 	//QUANTIDADE_DE_CARACTERES
 	"QUANTIDADE_DE_CARACTERES": {
 		"scope": "sql",
