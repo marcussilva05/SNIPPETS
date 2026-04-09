@@ -244,7 +244,27 @@
       "${4:AND BD = 'CEPEA_SAS'}",
       "ORDER BY ANO_TABELA DESC, BD, TABELA, COLUNA"
     ],
-    "description": "00_SQL"
+    "description": "00_MAPEAMENTO_BD"
+  },
+
+  // 00_MAPEAMENTO_MUDANCA_DE_COLUNAS
+  "00_MAPEAMENTO_MUDANCA_DE_COLUNAS": {
+    "scope": "sql",
+    "prefix": "ZMAPMUDCOL",
+    "body": [
+      "${3:SELECT                                          }",
+      "   ANO_TABELA,",
+      "   BD,",
+      "   TABELA,",
+      "   --COLUNA,",
+      "   --END_COMPLETO",
+      "FROM [dbo].[00_MAPEAMENTO_BD${1:03}26]",
+      "WHERE TABELA LIKE '%${2:NOME}%'",
+      "AND BD = 'CEPEA_SAS'",
+      "GROUP BY ANO_TABELA,    BD,     TABELA --COLUNA,  END_COMPLETO",
+      "ORDER BY ANO_TABELA, TOTAL ASC"
+    ],
+    "description": "00_MAPEAMENTO_MUDANCA_DE_COLUNAS"
   },
 
     // CRIAR E-MAIL DE ESCOLA
