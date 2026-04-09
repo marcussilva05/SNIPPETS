@@ -538,13 +538,31 @@
       "prefix": "ZGROUP",
       "body": [
       "${1:SELECT}",
-      "     ${1:COLUNA1,}",
+      "     ${2:COLUNA1,}",
       "     COUNT(*) AS TOTAL -- SUM(* OU COLUNA), AVG(* OU COLUNA), MAX(* OU COLUNA), MIN(* OU COLUNA)",  
-      "${1:FROM BASE}", 
-      "${1:GROUP BY COLUNA1}",
-      "${1:ORDER BY TOTAL DESC}"
+      "${3:FROM BASE}", 
+      "${4:GROUP BY COLUNA1}",
+      "${5:ORDER BY TOTAL DESC}"
       ],
       "description": "GROUP_BY"
+  },
+
+    // HAVING
+  "HAVING": {
+      "scope": "sql",
+      "prefix": "ZHAVING",
+      "body": [
+      "${1:SELECT}",
+      "     ${1:COLUNA1,}",
+      "     ${1:COUNT(*) AS TOTAL, -- SUM(* OU COLUNA), AVG(* OU COLUNA), MAX(* OU COLUNA), MIN(* OU COLUNA)}", 
+      "     ${1:AVG(PRECO) AS PRECO}",
+      "${1:FROM BASE}", 
+      "${1:GROUP BY COLUNA1}",
+      "${1:HAVING COUNT(*) > 10 }",
+      "   ${1:AND AVG(preco) > 50}",
+      "${1:ORDER BY TOTAL DESC}"
+      ],
+      "description": "HAVING"
   },
 
 	//QUANTIDADE_DE_CARACTERES
