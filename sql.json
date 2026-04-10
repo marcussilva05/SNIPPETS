@@ -322,10 +322,10 @@
     "body": [
       "WHERE ${1:coluna1} ${2:SITUACAO1}", 
       "${3:AND} ${4:coluna2} ${5:SITUACAO2}", 
-      "${6:${7:AND ${8:coluna3} ${9:SITUACAO3}}",  
+      "${7:AND ${8:coluna3} ${9:SITUACAO3}}",  
       "AND (",
-      "   ${10:coluna4} ${11:SITUACAO4}}",
-      "   OR ${12:coluna5} ${13:SITUACAO5}}",
+      "   ${10:coluna4} ${11:SITUACAO4}",
+      "   OR ${12:coluna5} ${13:SITUACAO5}",
       "   ${14:OR ${15:coluna6} ${16:SITUACAO6}}",
       ")"
       ],
