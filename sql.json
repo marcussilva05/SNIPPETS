@@ -970,6 +970,18 @@
     "description": "UNION_ALL_SEM_DUPLICATAS"
   },
 
+  // REGIAO_ARQDEUA
+  "REGIAO_ARQDEUA": {
+    "scope": "sql",
+    "prefix": "ZREGARQ",
+    "body": [
+	  "      A.REGIAO                      ,",
+    "      A.NOMEDE AS URE               ,",
+	  "LEFT JOIN ARQDEUA0326 A ON B.COLUNA_UA = A.UA"
+    ],
+    "description": "REGIAO E URE DE ARQDEUA"
+  },
+
   // SAS_PAPUA_022026
 "SAS_PAPUA_022026": {
     "scope": "sql",
