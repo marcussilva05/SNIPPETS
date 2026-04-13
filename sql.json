@@ -982,6 +982,16 @@
     "description": "REGIAO E URE DE ARQDEUA"
   },
 
+  // ORDER_BY
+  "ORDER_BY": {
+    "scope": "sql",
+    "prefix": "ZORDER",
+    "body": [
+	  "ORDER BY REGIAO, URE, NOME",
+    ],
+    "description": "ORDER BY"
+  },
+
   // SAS_PAPUA_022026
 "SAS_PAPUA_022026": {
     "scope": "sql",
