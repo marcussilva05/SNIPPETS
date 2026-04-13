@@ -139,10 +139,10 @@
       "description": "QUERY_COLETIVA"
   },
 
-    // BASE_CABECALHO
-  "BASE_CABECALHO": {
+    // CABECALHO
+  "CABECALHO": {
       "scope": "sql",
-      "prefix": "ZBASE",
+      "prefix": "ZCABE",
       "body": [
           "/*",
           "BANCOS DE DADOS CONSULTADOS:",
