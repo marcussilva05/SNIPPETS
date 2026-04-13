@@ -1696,6 +1696,21 @@
     "description": "CONTAGEH_TB_FUNCIONAL"
 },
 
+// SAS_TB_CARGO
+"SAS_TB_CARGO": {
+    "scope": "sql",
+    "prefix": "ZSASCARGOS",
+    "body": [
+        "SELECT",
+        "     CD_QUADRO          ,",
+        "     CD_CARGO           ,",
+        "     NM_CARGO           ,",
+        "     CD_TIPO             ",
+        "FROM SAS.[${1:03}2026].[TB_CARGOS]"
+    ],
+    "description": "SAS_TB_CARGO"
+},
+
 // SAS_TB_CAD_FREQUENCIA
 "SAS_BFE": {
     "scope": "sql",
