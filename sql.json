@@ -1063,7 +1063,7 @@
         "    ID_PCNP            ,",
         "    COD_DISCIPLINA_PCNP",
         "FROM SAS.[${1:03}2026].[TB_UA_ALOCACAO]",
-        "WHERE FL_SITUACAO = 'A' -- FILTRO INATIVOS"
+        "WHERE FL_SITUACAO = 'A'"
     ],
     "description": "SAS_TB_UA_ALOCACAO"
 },
