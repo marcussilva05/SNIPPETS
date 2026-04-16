@@ -1770,8 +1770,6 @@
     "scope": "sql",
     "prefix": "ZCEPEACTG",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "     CPF          ,",
         "     RG           ,",
@@ -1863,8 +1861,6 @@
     "scope": "sql",
     "prefix": "ZCEPEAARQDEUA",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "     UA             ,",
         "     UO             ,",
@@ -1887,8 +1883,6 @@
     "scope": "sql",
     "prefix": "ZCEPEABFE",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "     CPF           ,",
         "     RG            ,",
@@ -1914,8 +1908,6 @@
     "scope": "sql",
     "prefix": "ZCEPEACHORSALA",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "     REGIAO             ,",
         "     CD_DIRETORIA AS CD_URE,",
@@ -2014,8 +2006,6 @@
     "scope": "sql",
     "prefix": "ZCEPEAESCOLAS",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "     POLO              ,",
         "     REGIAO            ,",
@@ -2120,8 +2110,6 @@
     "scope": "sql",
     "prefix": "ZCEPEANIVELFORM",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "     NOME          ,",
         "     RG            ,",
@@ -2189,8 +2177,6 @@
     "scope": "sql",
     "prefix": "ZCEPEAQUALIF",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "     CPF                 ,",
         "     RG12                ,",
@@ -2217,8 +2203,6 @@
     "scope": "sql",
     "prefix": "ZCEPEATABCARGO",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "     CD_CARGO  ,",
         "     NM_CARGO  ,",
@@ -2235,8 +2219,6 @@
     "scope": "sql",
     "prefix": "ZCEPEABFE",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "     COD       ,",
         "     EVENTO    ,",
@@ -2251,8 +2233,6 @@
     "scope": "sql",
     "prefix": "ZCEPEANIVELCURSO",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "     ID_TIPO_NIVEL_CURSO,",
         "     CD_TIPO_NIVEL_CURSO,",
@@ -2269,8 +2249,6 @@
     "scope": "sql",
     "prefix": "ZCEPEAID",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "     ID,",
         "     CPF         ",
@@ -2285,8 +2263,6 @@
     "scope": "sql",
     "prefix": "Z00DISC",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "     CODMAE,",
         "     DEN_CODMAE       ",
@@ -2300,8 +2276,6 @@
     "scope": "sql",
     "prefix": "Z00LOC",
     "body": [
-        "USE CEPEA_SAS",
-        "",
         "SELECT",
         "    CD_LOCALIZACAO,",
         "    LOCALIZACAO         ",
