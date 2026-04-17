@@ -163,7 +163,7 @@
     "scope": "sql",
     "prefix": "ZUSE",
     "body": [
-      "${2:USE ${1:CEPEA_SAS}}"
+      "${1:USE CEPEA_SAS}"
     ],
     "description": "USE_BD"
   },
