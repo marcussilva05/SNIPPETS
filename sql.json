@@ -122,6 +122,46 @@
     "description": "TERMINAL COM COLUNAS_NA_VERTICAL_SAS"
   },
 
+  // LISTAR_INSTANCIAS_SQL_SERVER
+"LISTAR_INSTANCIAS_SQL_SERVER": {
+    "scope": "sql",
+    "prefix": "ZSYSINST",
+    "body": [
+        "DECLARE @GetInstances TABLE (Value nvarchar(100), InstanceNames nvarchar(100), Data nvarchar(100));",
+        "INSERT INTO @GetInstances",
+        "EXECUTE xp_regread",
+        "    @rootkey = 'HKEY_LOCAL_MACHINE',",
+        "    @key = 'SOFTWARE\\Microsoft\\Microsoft SQL Server',",
+        "    @value_name = 'InstalledInstances'",
+        "SELECT InstanceNames FROM @GetInstances"
+    ],
+    "description": "LISTAR INSTANCIAS SQL SERVER INSTALADAS"
+  },
+
+  // INSTANCIA_INFO_SERVIDOR_SQL
+"INSTANCIA_INFO_SERVIDOR_SQL": {
+    "scope": "sql",
+    "prefix": "ZSYSISNTINFO",
+    "body": [
+        "SELECT  ",
+        "    @@SERVERNAME AS NomeServidor,",
+        "    SERVERPROPERTY('MachineName') AS NomeMaquina,",
+        "    SERVERPROPERTY('InstanceName') AS Instancia,",
+        "    SERVERPROPERTY('IsLocalDB') AS IsLocalDB"
+    ],
+    "description": "INFORMACOES DO SERVIDOR/INSTANCIA SQL"
+},
+
+  // EXECUTE_INSTANCIA
+"EXECUTE_INSTANCIA": {
+    "scope": "sql",
+    "prefix": "ZSYSEXECINST",
+    "body": [
+        "EXEC xp_cmdshell 'sc query ${1:INSTANCIA_ENTRE_ASPAS_DUPLAS}'"
+    ],
+    "description": "EXECUTE_INSTANCIA"
+},
+
   // QUERY_COLETIVA
   "QUERY_COLETIVA": {
       "scope": "sql",
