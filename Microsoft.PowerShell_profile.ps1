@@ -1,189 +1,540 @@
 # ===== INSTRUÇÕES =====
-# no PS digite e excute o comando: 
-# notepad $PROFILE  
+# no PS ADMNISTRADOR digite e excute os comandos: 
+# Get-ExecutionPolicy 
+# Verifique a política atual se NÃO for restricted, ok, se for restrita então
+# Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+# Mudará a política para: 'RemoteSigned:' permite scripts locais e scripts da internet apenas se assinados por um editor confiável e '-Scope CurrentUser:' aplica apenas ao seu usuário, sem precisar de permissão de administrador para todo o sistema
+# code $PROFILE  
+# mude o usuário da função código 'function code {' conforme instruções da última função ao final do código 
 # copie e cole todos os códigos deste arquivo
-# ao salvar o arquivo, selecione 'salvar como', no 'tipo' selecione 'Todo tipo de arquivo' e nome do arquivo 'Microsoft.PowerShell_profile.ps1'
+# ao salvar o arquivo, selecione 'salvar como', no 'tipo' selecione 'Todo tipo de arquivo' e nome do arquivo 'Microsoft.PowerShell_profile.ps1' e no campo "Codificação" selecione "UTF-8 com BOM"
 # no PS digite . $PROFILE 
 # teste digitando z+space+tab
 # aparecerá menu de "snippets"
+# se der erro de $PROFILE, faça os 4 passos abaixo:
+# 1) No PowerShell, digite: Rename-Item -Path "$HOME\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1" -NewName "Microsoft.VSCode_profile.ps1"
+# 2) No PowerShell, digite: $PROFILE 
+# 3) No PowerShell, recarregue: . $PROFILE
+# 4) teste digitando z+space+tab, aparecerá menu de "snippets"
 
 function z {
     param(
         [string]$comando
     )
 
-    switch ($comando) {
+    switch ($comando) {	
+		
+		# ===== POWER SHELL =====
+		"nav_buscar_por_nome" { Get-ChildItem -Filter "*documen*" -File -Recurse }
+		"nav_desktop" { Set-Location ~/Desktop }
+		"nav_downloads" { Set-Location ~/Downloads }		
+		"nav_home" { Set-Location ~ }
+		"nav_listar" { Get-ChildItem }
+		"nav_listar_ocultos" { Get-ChildItem -Force }
+		"nav_listar_recursivo" { Get-ChildItem -Recurse }
+		"nav_listar_so_pastas" { Get-ChildItem -Directory }
+		"nav_listar_so_arquivos" { Get-ChildItem -File }
+		"nav_onde_estou?" { pwd }
+		"nav_volta_1_diretorio" { Set-Location .. }
+		"nav_volta_2_diretorios" { Set-Location ..\.. }
+		"nav_volta_desktop" { Set-Location ~/Desktop }
+		"nav_volta_home" { Set-Location ~ }
+		"sys_bateria" { Get-WmiObject Win32_Battery | Format-Table Caption, EstimatedChargeRemaining }
+		"sys_bluetooth" { Get-WmiObject Win32_PnPEntity | Where-Object {$_.PNPClass -eq "Bluetooth"} | Format-Table Caption }
+		"sys_diagnostico_bluetooth" {
+			Write-Host "`n=== DIAGNOSTICO COMPLETO BLUETOOTH ===" -ForegroundColor Cyan
+			
+			# 1. Hardware
+			Write-Host "`n1. Dispositivos Bluetooth no hardware:" -ForegroundColor Yellow
+			$btDevices = Get-PnpDevice | Where-Object {$_.FriendlyName -like "*bluetooth*" -or $_.Class -eq "Bluetooth"}
+			if ($btDevices) {
+				$btDevices | Format-Table FriendlyName, Status, Class -AutoSize
+			} else {
+				Write-Host "NENHUM dispositivo Bluetooth encontrado!" -ForegroundColor Red
+			}
+			
+			# 2. Servicos
+			Write-Host "`n2. Servicos Bluetooth:" -ForegroundColor Yellow
+			$btServices = Get-Service | Where-Object {$_.Name -like "*bluetooth*"}
+			if ($btServices) {
+				$btServices | Format-Table Name, Status, StartType -AutoSize
+			} else {
+				Write-Host "NENHUM servico Bluetooth encontrado!" -ForegroundColor Red
+			}
+			
+			# 3. Adaptadores de rede
+			Write-Host "`n3. Adaptadores de rede (possiveis dispositivos Bluetooth):" -ForegroundColor Yellow
+			Get-PnpDevice | Where-Object {$_.Class -eq "Net"} | Select-Object FriendlyName, Status | Format-Table -AutoSize
+			
+			# 4. Dispositivos ocultos
+			Write-Host "`n4. Dispositivos ocultos (desabilitados):" -ForegroundColor Yellow
+			Get-PnpDevice -PresentOnly | Where-Object {$_.Class -eq "Bluetooth" -or $_.FriendlyName -like "*bluetooth*"} | Format-Table FriendlyName, Status
+			
+			Write-Host "`n=== FIM DIAGNOSTICO ===" -ForegroundColor Cyan
+			Write-Host "`nSe nao apareceu NENHUM dispositivo Bluetooth, seu PC nao tem hardware Bluetooth." -ForegroundColor Magenta
+		}
+		"sys_bios" { Get-WmiObject Win32_BIOS | Select-Object -ExpandProperty SMBIOSBIOSVersion }
+		"sys_cpu" { Get-WmiObject Win32_Processor | Format-Table Name, MaxClockSpeed, NumberOfCores -AutoSize }
+		"sys_discoinfo" { Get-WmiObject Win32_DiskDrive | Format-Table DeviceID, Caption, @{Label="Size(GB)";Expression={[math]::round($_.Size/1GB,2)}}, MediaType }
+		"sys_discos" { Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Name }
+		"sys_disco_espaco" { Get-PSDrive -PSProvider FileSystem | Format-Table Name, @{Label="Used(GB)";Expression={[math]::round($_.Used/1GB,2)}}, @{Label="Free(GB)";Expression={[math]::round($_.Free/1GB,2)}} }
+		"sys_gpu" { Get-WmiObject Win32_VideoController | Format-Table Caption, @{Label="RAM(MB)";Expression={[math]::round($_.AdapterRAM/1MB,2)}} }
+		"sys_impressoras" { Get-WmiObject Win32_Printer | Format-Table Name }
+		"sys_ip" { ipconfig }
+		"sys_ip_geral" { ipconfig /all }
+		"sys_memoria_slots" { Get-WmiObject Win32_PhysicalMemory | Select-Object -ExpandProperty DeviceLocator }
+		"sys_memorias" { Get-WmiObject Win32_PhysicalMemory | Format-Table Capacity, Speed, FormFactor }
+		"sys_modelo_pc" { Get-WmiObject Win32_ComputerSystem | Select-Object -ExpandProperty Model }
+		"sys_placa_mae" { Get-WmiObject Win32_BaseBoard | Format-Table Manufacturer, Product, Version, SerialNumber -AutoSize }
+		"sys_particoes" { Get-WmiObject Win32_DiskPartition | Select-Object -ExpandProperty DeviceID }
+		"sys_programas_instalados" { Get-WmiObject Win32_Product | Format-Table Name, Version }
+		"sys_rede" { Get-WmiObject Win32_NetworkAdapter | Where-Object {$_.MACAddress} | Format-Table Name, MACAddress }
+		"sys_sistema_operacional" { Get-WmiObject Win32_OperatingSystem | Format-Table Caption, Version, OSArchitecture }
+		"sys_abre_snippet_notepad" { notepad $PROFILE }
+		"sys_abre_snippet_vscode" { code $PROFILE }
+		"sys_atualizar_snippet" { . $PROFILE }
+		"sys_som" { Get-WmiObject Win32_SoundDevice | Format-Table Caption }
+		"sys_usb" { Get-WmiObject Win32_PnPSignedDriver | Format-Table DeviceName }
+		"sys_usuarios" { Get-LocalUser | Format-Table Name, Enabled }
 
-        "bateria" { Get-WmiObject Win32_Battery | Format-Table Caption, EstimatedChargeRemaining }
-        "bluetooth" { Get-WmiObject Win32_PnPEntity | Where-Object {$_.PNPClass -eq "Bluetooth"} | Format-Table Caption }
-        "bios" { Get-WmiObject Win32_BIOS | Select-Object -ExpandProperty SMBIOSBIOSVersion }
-        "buscar_por_nome" { Get-ChildItem -Filter "*documen*" -File -Recurse }
-        "cpu" { Get-WmiObject Win32_Processor | Format-Table Name, MaxClockSpeed, NumberOfCores -AutoSize }
-        "desktop" { Set-Location ~/Desktop }
-	"discoinfo" { Get-WmiObject Win32_DiskDrive | Format-Table DeviceID, Caption, @{Label="Size(GB)";Expression={[math]::round($_.Size/1GB,2)}}, MediaType }
-        "discos" { Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Name }
-        "disco_espaco" { Get-PSDrive -PSProvider FileSystem | Format-Table Name, @{Label="Used(GB)";Expression={[math]::round($_.Used/1GB,2)}}, @{Label="Free(GB)";Expression={[math]::round($_.Free/1GB,2)}} }
-        "gpu" { Get-WmiObject Win32_VideoController | Format-Table Caption, @{Label="RAM(MB)";Expression={[math]::round($_.AdapterRAM/1MB,2)}} }
-        "home" { Set-Location ~ }
-        "impressoras" { Get-WmiObject Win32_Printer | Format-Table Name }
-        "ip" { ipconfig }
-        "ip_geral" { ipconfig /all }
-        "listar" { Get-ChildItem }
-        "listar_force" { Get-ChildItem -Force }
-        "listar_recursivo" { Get-ChildItem -Recurse }
-        "listar_so_pastas" { Get-ChildItem -Directory }
-        "listar_so_arquivos" { Get-ChildItem -File }
-        "memoria_slots" { Get-WmiObject Win32_PhysicalMemory | Select-Object -ExpandProperty DeviceLocator }
-        "memorias" { Get-WmiObject Win32_PhysicalMemory | Format-Table Capacity, Speed, FormFactor }
-        "modelo_pc" { Get-WmiObject Win32_ComputerSystem | Select-Object -ExpandProperty Model }
-        "onde_estou?" { pwd }
-        "placa_mae" { Get-WmiObject Win32_BaseBoard | Format-Table Manufacturer, Product, Version, SerialNumber -AutoSize }
-        "particoes" { Get-WmiObject Win32_DiskPartition | Select-Object -ExpandProperty DeviceID }
-        "programas_instalados" { Get-WmiObject Win32_Product | Format-Table Name, Version }
-        "rede" { Get-WmiObject Win32_NetworkAdapter | Where-Object {$_.MACAddress} | Format-Table Name, MACAddress }
-        "sistema_operacional" { Get-WmiObject Win32_OperatingSystem | Format-Table Caption, Version, OSArchitecture }
-        "snippet_abrir" { code $PROFILE }
-        "snippet_atualizar" { . $PROFILE }
-		"som" { Get-WmiObject Win32_SoundDevice | Format-Table Caption }
-        "usb" { Get-WmiObject Win32_PnPSignedDriver | Format-Table DeviceName }
-        "usuarios" { Get-LocalUser | Format-Table Name, Enabled }
-        "volta_1_diretorio" { Set-Location .. }
-        "volta_2_diretorios" { Set-Location ..\.. }
+		# ===== EXTENSÕES =====
+		"sys_inst_exten_inic_vscode" {
 
-	# ===== EXTENSÕES =====
-	"instal_extens_inic" {
-
-	    Write-Host ""
-	    Write-Host "Instalando extensoes do VS Code..."
-	    Write-Host ""
-
-	    $extensoes = @(
-	        "mads-hartmann.bash-ide-vscode",
-	        "jeff-hykin.better-cpp-syntax",
-	        "ms-vscode.cpptools",
-	        "ms-vscode.cpptools-extension-pack",
-	        "ms-vscode.cmake-tools",
-	        "llvm-vs-code-extensions.vscode-clangd",
-	        "xaver.clang-format",
-	        "vadimcn.vscode-lldb",
-	        "twxs.cmake",
-	        "ms-vscode.makefile-tools",
-	        "cschlosser.doxdocgen",
-	        "donjayamanne.githistory",
-	        "eamodio.gitlens",
-	        "ritwickdey.liveserver",
-	        "ms-vsliveshare.vsliveshare",
-	        "yzhang.markdown-all-in-one",
-	        "ms-ceintl.vscode-language-pack-pt-BR",
-	        "ms-vscode.powershell",
-	        "ms-python.python",
-	        "ms-python.vscode-pylance",
-	        "ms-python.debugpy",
-	        "ms-vscode-remote.remote-ssh",
-	        "ms-vscode-remote.remote-ssh-edit",
-	        "ms-vscode-remote.remote-explorer",
-	        "ms-vscode-remote.remote-wsl",
-	        "foxundermoon.shell-format",
-	        "alexcvzz.vscode-sqlite",
-	        "mssql.mssql",
-	        "rangav.vscode-thunder-client"
-	    )
-
-	    $instaladas = code --list-extensions
-
-	    foreach ($ext in $extensoes) {
-	        if ($instaladas -notcontains $ext) {
-	            Write-Host "Instalando $ext..."
-	            code --install-extension $ext
-	        } else {
-	            Write-Host "$ext ja instalada"
-	        }
-	    }
-	
-	    Write-Host ""
-	    Write-Host "Instalacao concluida!"
-	    Write-Host ""
-	}
-
-	"instal_extens_py_sql" {
-
-	    Write-Host ""
-	    Write-Host "Instalando extensoes Python + SQL..."
- 	    Write-Host ""
-
-	    $extensoes = @(
-	        "ms-python.python",
-	        "ms-python.vscode-pylance",
-	        "mssql.mssql",
-	        "mtxr.sqltools",
-	        "ms-toolsai.jupyter",
-	        "ms-toolsai.datawrangler",
-	        "njpwerner.autodocstring",
-	        "kevinrose.vsc-python-indent",
-	        "njpwerner.autodocstring",
-	        "coenraads.bracket-pair-colorizer-2",
-	        "christian-kohler.path-intellisense",
-	        "littlefoxteam.vscode-python-test-adapter",
-	        "ms-python.black-formatter",
-	        "ms-python.isort",
-	        "ms-python.flake8",
-	        "ms-python.debugpy",
-	        "cweijan.vscode-database-client2",
-	        "grapecity.gc-excelviewer",
-	        "mechatroner.rainbow-csv"
-	    )
-
-	    $instaladas = code --list-extensions
-
-	    foreach ($ext in $extensoes) {
-	        if ($instaladas -notcontains $ext) {
-	            Write-Host "Instalando $ext..."
-	            code --install-extension $ext
-	        } else {
-	            Write-Host "$ext ja instalada"
-	        }
-	    }
-
-	    Write-Host ""
-	    Write-Host "Instalacao concluida!"
-	    Write-Host ""
-	}
-
-		# ===== COMANDOS =====
-        "comandos_vscode" {
 			Write-Host ""
-            Write-Host "=== COMANDOS VSCODE ==="
-            Write-Host "cd nome-da-pasta                  # entrar na pasta"
-            Write-Host "cd ..                             # voltar pasta"
-            Write-Host "cd ..\..                          # voltar duas ou mais pastas"
-            Write-Host "cd ~                              # Ir para a pasta do usuário (home)"
-            Write-Host ".\nome_do_arquivo                 # Ir para a pasta do usuário (home)"
-            Write-Host "!!                                # executar comando anterior"
-            Write-Host "pwd                               # ver onde está"
-            Write-Host "ls                                # lista arquivos e pastas"
-            Write-Host "ls -Force                         # mostra ocultos"
-            Write-Host "ls -Directory                     # listar somente pastas"
-            Write-Host "ls -File                          # listar somente arquivos"
-            Write-Host "ls -Recurse                       # lista tudo (subpastas)"
-            Write-Host "ls C:\Users *documen* -File -Recurse       # pesquisa por arquivos com trecho %documen%"
-        }
+			Write-Host "Instalando extensoes do VS Code..."
+			Write-Host ""
 
-        # ===== HELP =====
-        "help" {
-            Write-Host ""
-            Write-Host "=== USE SNIPPETS ==="
-            Write-Host "NA LINHA DE COMANDO DESTE TERMINAL DIGITE:"
-            Write-Host "z + space + tab"
-            Write-Host "uma lista de comandos aparecerá"
-            Write-Host ""
-            Write-Host "=== ARQUIVO DE SNIPPETS ==="
-            Write-Host "DIGITE notepad $PROFILE"
-            Write-Host ""
-        }
+			$extensoes = @(
+				"mads-hartmann.bash-ide-vscode",
+				"jeff-hykin.better-cpp-syntax",
+				"ms-vscode.cpptools",
+				"ms-vscode.cpptools-extension-pack",
+				"ms-vscode.cmake-tools",
+				"llvm-vs-code-extensions.vscode-clangd",
+				"xaver.clang-format",
+				"vadimcn.vscode-lldb",
+				"twxs.cmake",
+				"ms-vscode.makefile-tools",
+				"cschlosser.doxdocgen",
+				"donjayamanne.githistory",
+				"eamodio.gitlens",
+				"ritwickdey.liveserver",
+				"ms-vsliveshare.vsliveshare",
+				"yzhang.markdown-all-in-one",
+				"ms-ceintl.vscode-language-pack-pt-BR",
+				"ms-vscode.powershell",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-python.debugpy",
+				"ms-vscode-remote.remote-ssh",
+				"ms-vscode-remote.remote-ssh-edit",
+				"ms-vscode-remote.remote-explorer",
+				"ms-vscode-remote.remote-wsl",
+				"foxundermoon.shell-format",
+				"alexcvzz.vscode-sqlite",
+				"mssql.mssql",
+				"rangav.vscode-thunder-client"
+			)
 
-        default {
-            Write-Host "Comando nao reconhecido. Use: z help"
-        }
+			$instaladas = code --list-extensions
+
+			foreach ($ext in $extensoes) {
+				if ($instaladas -notcontains $ext) {
+					Write-Host "Instalando $ext..."
+					code --install-extension $ext
+				} else {
+					Write-Host "$ext ja instalada"
+				}
+			}
+		
+			Write-Host ""
+			Write-Host "Instalacao concluida!"
+			Write-Host ""
+		}
+
+		"sys_inst_exten_py_sql" {
+
+			Write-Host ""
+			Write-Host "Instalando extensoes Python + SQL..."
+			Write-Host ""
+
+			$extensoes = @(
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"mssql.mssql",
+				"mtxr.sqltools",
+				"ms-toolsai.jupyter",
+				"ms-toolsai.datawrangler",
+				"njpwerner.autodocstring",
+				"kevinrose.vsc-python-indent",
+				"njpwerner.autodocstring",
+				"coenraads.bracket-pair-colorizer-2",
+				"christian-kohler.path-intellisense",
+				"littlefoxteam.vscode-python-test-adapter",
+				"ms-python.black-formatter",
+				"ms-python.isort",
+				"ms-python.flake8",
+				"ms-python.debugpy",
+				"cweijan.vscode-database-client2",
+				"grapecity.gc-excelviewer",
+				"mechatroner.rainbow-csv"
+			)
+
+			$instaladas = code --list-extensions
+
+			foreach ($ext in $extensoes) {
+				if ($instaladas -notcontains $ext) {
+					Write-Host "Instalando $ext..."
+					code --install-extension $ext
+				} else {
+					Write-Host "$ext ja instalada"
+				}
+			}
+
+			Write-Host ""
+			Write-Host "Instalacao concluida!"
+			Write-Host ""
+		}
+
+		# ===== VERIFICAR PYTHON =====
+		"sys_verificar_python" {
+		Write-Host "`n=== VERIFICAÇÃO DO AMBIENTE PYTHON ===" -ForegroundColor Cyan
+		
+		# Python
+		Write-Host "`nPython version:" -ForegroundColor Yellow
+		python --version 2>&1
+		
+		# Pip
+		Write-Host "`nPip version:" -ForegroundColor Yellow
+		pip --version
+		
+		# Pacotes importantes
+		Write-Host "`nPacotes instalados (principais):" -ForegroundColor Yellow
+		pip list | findstr -i "pandas pyodbc sqlalchemy dotenv numpy"
+		
+		# PATH do Python
+		Write-Host "`nLocalização do Python:" -ForegroundColor Yellow
+		where.exe python
+		
+		Write-Host "`n=== FIM ===" -ForegroundColor Cyan
+		}
+
+		# ===== INSTALAR PYTHON =====
+		"sys_instalar_python" {
+
+		Write-Host ""
+		Write-Host "=== INSTALACAO DO AMBIENTE PYTHON ==="
+		Write-Host ""
+
+		# Instalar Python via winget (recomendado)
+		Write-Host "Instalando Python..."
+		winget install Python.Python.3.12
+
+		# Atualizar pip
+		Write-Host "Atualizando pip..."
+		python -m pip install --upgrade pip
+
+		# Instalar bibliotecas essenciais
+		Write-Host "Instalando pacotes Python..."
+		pip install pyodbc pandas SQLAlchemy python-dotenv
+
+		# Instalar driver ODBC
+		Write-Host "Instalando ODBC Driver 18..."
+		Start-BitsTransfer -Source "https://go.microsoft.com/fwlink/?linkid=2249006" -Destination "$env:TEMP\msodbcsql.msi"
+		Start-Process -Wait -FilePath msiexec -ArgumentList "/i `"$env:TEMP\msodbcsql.msi`" /quiet IACCEPTMSODBCSQLLICENSETERMS=YES"
+
+		# Instalar requirements se existir
+		if (Test-Path "requirements.txt") {
+			Write-Host "Instalando requirements.txt..."
+			pip install -r requirements.txt
+		}
+
+		Write-Host ""
+		Write-Host "=== INSTALACAO CONCLUIDA ==="
+		Write-Host ""
+		}
+
+		# ===== COLA DE LISTA DE COMANDOS POWER SHELL =====
+		"cola_vscode" {
+				Write-Host ""
+				Write-Host "=== COMANDOS VSCODE ==="
+				Write-Host "cd nome-da-pasta                  # entrar na pasta"
+				Write-Host "cd ..                             # voltar pasta"
+				Write-Host "cd ..\..                          # voltar duas ou mais pastas"
+				Write-Host "cd ~                              # Ir para a pasta do usuário (home)"
+				Write-Host ".\nome_do_arquivo                 # Ir para a pasta do usuário (home)"
+				Write-Host "!!                                # executar comando anterior"
+				Write-Host "pwd                               # ver onde está"
+				Write-Host "ls                                # lista arquivos e pastas"
+				Write-Host "ls -Force                         # mostra ocultos"
+				Write-Host "ls -Directory                     # listar somente pastas"
+				Write-Host "ls -File                          # listar somente arquivos"
+				Write-Host "ls -Recurse                       # lista tudo (subpastas)"
+				Write-Host "Invoke-Item                       # abrir arquivo ou pasta"
+				Write-Host "ls C:\Users *documen* -File -Recurse       # pesquisa por arquivos com trecho %documen%"
+		}
+
+		# ===== COLA DE LISTA DE COMANDOS GIT =====
+		"cola_git" {
+			Write-Host ""
+			Write-Host "=== COMANDOS GIT ==="
+			Write-Host ""
+			Write-Host "--- CONFIGURAÇÃO ---"
+			Write-Host "git config user.name 'nome'              # configurar nome"
+			Write-Host "git config user.email 'email'            # configurar email"
+			Write-Host "git config --global user.email 'email'   # configurar global"
+			Write-Host "git config credential.helper store       # salvar credenciais"
+			Write-Host "git config --unset credential.helper     # remover credencial local"
+			Write-Host "git config --global --unset credential.helper  # remover global"
+			Write-Host "git remote -v                            # ver repositórios remotos"
+			Write-Host ""
+			Write-Host "--- INÍCIO / CLONE ---"
+			Write-Host "git init                                 # iniciar repositório"
+			Write-Host "git init --bare                          # criar repositório central"
+			Write-Host "git clone URL                            # clonar repositório"
+			Write-Host "git remote add origin URL                # conectar repositório remoto"
+			Write-Host ""
+			Write-Host "--- STATUS / ADICIONAR ---"
+			Write-Host "git status                               # status do projeto"
+			Write-Host "git status --ignored                     # status incluindo ignorados"
+			Write-Host "git add arquivo                          # adicionar arquivo"
+			Write-Host "git add .                                # adicionar todos"
+			Write-Host "git rm arquivo                           # remover arquivo do Git"
+			Write-Host "git mv antigo novo                       # renomear arquivo"
+			Write-Host ""
+			Write-Host "--- COMMIT ---"
+			Write-Host "git commit -m 'mensagem'                 # commitar"
+			Write-Host "git commit --amend -m 'nova'             # corrigir último commit"
+			Write-Host ""
+			Write-Host "--- LOG ---"
+			Write-Host "git log                                  # todos commits"
+			Write-Host "git log -2                               # últimos 2 commits"
+			Write-Host "git log --oneline                        # resumido"
+			Write-Host "git log --author='nome'                  # por autor"
+			Write-Host "git log --before='2022-10-05'            # anteriores a data"
+			Write-Host "git log --after='2022-10-05'             # posteriores a data"
+			Write-Host ""
+			Write-Host "--- DIFF / RESTORE / RESET ---"
+			Write-Host "git diff                                 # diferenças antes do add"
+			Write-Host "git diff --staged                        # diferenças depois do add"
+			Write-Host "git diff commit1..commit2                # diferenças entre commits"
+			Write-Host "git restore --staged arquivo             # voltar arquivo do staged"
+			Write-Host "git checkout -- arquivo                  # voltar arquivo (antes do add)"
+			Write-Host "git checkout HEAD -- arquivo             # voltar arquivo (após add)"
+			Write-Host "git checkout HEAD -- .                   # voltar TODOS (após add)"
+			Write-Host "git reset HEAD --hard                    # resetar para último commit"
+			Write-Host "git reset HEAD~1 --hard                  # excluir último commit"
+			Write-Host "git reset HEAD~1                         # voltar commit sem excluir"
+			Write-Host "git revert IDcommit                      # reverter commit específico"
+			Write-Host ""
+			Write-Host "--- BRANCH ---"
+			Write-Host "git branch                               # listar branches"
+			Write-Host "git branch nome                          # criar branch"
+			Write-Host "git branch -d nome                       # deletar branch"
+			Write-Host "git branch -D nome                       # deletar forçado"
+			Write-Host "git checkout nome                        # mudar para branch"
+			Write-Host "git checkout -b nome                     # criar e mudar"
+			Write-Host "git merge nome                           # mesclar branch ao master"
+			Write-Host "git merge --no-ff nome                   # merge com histórico"
+			Write-Host "git switch -c nome                       # criar branch (novo comando)"
+			Write-Host ""
+			Write-Host "--- REMOTO (PUSH/PULL/FETCH) ---"
+			Write-Host "git push                                 # enviar alterações"
+			Write-Host "git push -u origin master                # enviar e conectar"
+			Write-Host "git push origin v1.0                     # enviar tag"
+			Write-Host "git pull                                 # puxar e mesclar"
+			Write-Host "git pull origin master                   # puxar da branch master"
+			Write-Host "git fetch                                # baixar sem mesclar"
+			Write-Host "git rebase                               # mesclar após fetch"
+			Write-Host ""
+			Write-Host "--- STASH ---"
+			Write-Host "git stash                                # guardar alterações"
+			Write-Host "git stash pop                            # recuperar alterações"
+			Write-Host ""
+			Write-Host "--- TAG ---"
+			Write-Host "git tag                                  # ver tags"
+			Write-Host "git tag v1.0                             # criar tag"
+			Write-Host "git checkout tag v1.0                    # ir para tag"
+			Write-Host ""
+			Write-Host "--- .GITIGNORE ---"
+			Write-Host ".gitignore                               # arquivo de ignorados"
+			Write-Host "# *.mp3                                  # ignora todos mp3"
+			Write-Host "# **/pasta                               # ignora pasta inteira"
+			Write-Host ""
+			Write-Host "--- PROBLEMAS COMUNS ---"
+			Write-Host "git checkout -b branch-salvamento        # resolver HEAD detached"
+			Write-Host "git branch acerto 'hash'                 # corrigir Detached Head"
+			Write-Host "git fetch origin pull/3/head:correcao    # testar pull request"
+			Write-Host ""
+			Write-Host "=== GITHUB ==="
+			Write-Host "git remote add origin URL                # conectar ao GitHub"
+			Write-Host "git push -u origin master                # primeiro push"
+			Write-Host "git pull origin master                   # puxar do GitHub"
+			Write-Host ""
+			Write-Host "=== TAGS MARKDOWN ==="
+			Write-Host "# Título H1"
+			Write-Host "## Título H2"
+			Write-Host "**negrito**"
+			Write-Host "_itálico_"
+			Write-Host "[texto](url)"
+			Write-Host "![alt](imagem.png)"
+			Write-Host "- [ ] tarefa pendente"
+			Write-Host "- [x] tarefa concluída"
+			Write-Host "aspas simples tripla"
+			Write-Host ""
+		}
+
+
+		# ===== COMANDOS GIT =====
+		"git_status" { git status }
+		"git_add" { git add . }
+		"git_commit" { 
+			$msg = Read-Host "Mensagem do commit"
+			git commit -m "$msg"
+		}
+		"git_push" { git push }
+		"git_pull" { git pull }
+		"git_log" { git log --oneline -10 }
+		"git_branch" { git branch }
+		"git_checkout" { 
+			$branch = Read-Host "Nome da branch"
+			git checkout $branch
+		}
+		"git_diff" { git diff }
+		"git_stash" { git stash }
+		"git_stash_pop" { git stash pop }
+		"git_init" { git init }
+		"git_log_oneline" { git log --oneline }
+		"git_log_author" { 
+			$autor = Read-Host "Nome do autor"
+			git log --author="$autor"
+		}
+		"git_log_before" { 
+			$data = Read-Host "Data (YYYY-MM-DD)"
+			git log --before="$data"
+		}
+		"git_log_after" { 
+			$data = Read-Host "Data (YYYY-MM-DD)"
+			git log --after="$data"
+		}
+		"git_restore_staged" { 
+			$arquivo = Read-Host "Nome do arquivo"
+			git restore --staged $arquivo
+		}
+		"git_reset_hard" { git reset HEAD --hard }
+		"git_reset_soft" { 
+			$qtde = Read-Host "Quantos commits voltar (ex: 1,2,3...)"
+			git reset HEAD~$qtde
+		}
+		"git_amend" { 
+			$msg = Read-Host "Nova mensagem do commit"
+			git commit --amend -m "$msg"
+		}
+		"git_revert" { 
+			$id = Read-Host "ID do commit"
+			git revert $id
+		}
+		"git_branch_D" { 
+			$branch = Read-Host "Nome da branch para deletar FORCADO"
+			git branch -D $branch
+		}
+		"git_merge" { 
+			$branch = Read-Host "Nome da branch para merge"
+			git merge $branch
+		}
+		"git_checkout_b" { 
+			$branch = Read-Host "Nome da nova branch"
+			git checkout -b $branch
+		}
+		"git_clone" { 
+			$url = Read-Host "URL do repositório"
+			git clone $url
+		}
+		"git_remote_v" { git remote -v }
+		"git_remote_add" { 
+			$url = Read-Host "URL do repositório"
+			git remote add origin $url
+		}
+		"git_push_u" { git push -u origin master }
+		"git_pull_origin" { git pull origin master }
+		"git_fetch" { git fetch }
+		"git_rebase" { git rebase }
+		"git_tag" { git tag }
+		"git_tag_v" { 
+			$versao = Read-Host "Versão (ex: v1.0)"
+			git tag $versao
+		}
+		"git_tag_push" { 
+			$versao = Read-Host "Versão (ex: v1.0)"
+			git push origin $versao
+		}
+		"git_checkout_tag" { 
+			$tag = Read-Host "Nome da tag"
+			git checkout $tag
+		}
+		"git_switch_c" { 
+			$branch = Read-Host "Nome do branch a partir da tag"
+			git switch -c $branch
+		}
+		"git_checkout_detached_fix" { 
+			Write-Host "Criando branch para salvar commits perdidos..." -ForegroundColor Yellow
+			git checkout -b branch-salvamento
+			git checkout master
+			git merge --no-ff branch-salvamento
+			Write-Host "Branch branch-salvamento criada. Delete se não precisar: git branch -d branch-salvamento" -ForegroundColor Green
+		}
+		"git_checkout_head" { git checkout HEAD -- . }
+		"git_checkout_head_arquivo" { 
+			$arquivo = Read-Host "Nome do arquivo"
+			git checkout HEAD -- $arquivo
+		}
+		"git_config_user" {
+			Write-Host "1 - Marcus-Vinicius-Dev (pessoal)"
+			Write-Host "2 - Marcus-Vinicius-C-S (trabalho)"
+			$opcao = Read-Host "Escolha 1 ou 2"
+			if ($opcao -eq "1") {
+				git config user.name "Marcus-Vinicius-Dev"
+				git config user.email "marcus.vini.dev@gmail.com"
+			} elseif ($opcao -eq "2") {
+				git config user.name "Marcus-Vinicius-C-S"
+				git config user.email "ciapdivtectic@gmail.com"
+			}
+		}
+		"git_config_global" {
+			$email = Read-Host "Email global"
+			git config --global user.email "$email"
+		}
+		"git_credential_store" { git config credential.helper store }
+		"git_credential_unset" { git config --unset credential.helper }
+		"git_credential_unset_global" { git config --global --unset credential.helper }
+		"git_ignore_criar" { New-Item -Path ".gitignore" -ItemType File }
+		"git_status_ignore" { git status --ignored }
+		"git_mv" {
+			$antigo = Read-Host "Nome atual do arquivo"
+			$novo = Read-Host "Novo nome"
+			git mv $antigo $novo
+		}
+		"git_rm" {
+			$arquivo = Read-Host "Arquivo para remover"
+			git rm $arquivo
+		}
+
+		# ===== HELP =====
+		"help" {
+				Write-Host ""
+				Write-Host "=== USE SNIPPETS ==="
+				Write-Host "NA LINHA DE COMANDO DESTE TERMINAL DIGITE:"
+				Write-Host "z + space + tab"
+				Write-Host "uma lista de comandos aparecerá"
+				Write-Host ""
+				Write-Host "=== ARQUIVO DE SNIPPETS ==="
+				Write-Host "DIGITE notepad $PROFILE"
+				Write-Host ""
+		}
+
+		default {
+				Write-Host "Comando nao reconhecido. Use: z help"
+		}
     }
 }
 
@@ -192,13 +543,17 @@ Register-ArgumentCompleter -CommandName z -ParameterName comando -ScriptBlock {
     param($commandName, $parameterName, $wordToComplete)
 
     $comandos = @(
-    "bateria","bios","bluetooth","buscar_por_nome","comandos_vscode","cpu","desktop","disco_espaco","discoinfo",
-	"discos","help","home","gpu","impressoras","instal_extens_inic","instal_extens_py_sql",
-	"ip","ip_geral","listar","listar_force","listar_so_pastas","listar_so_arquivos",
-	"listar_recursivo","memoria_slots","memorias","modelo_pc","onde_estou?","particoes",
-	"placa_mae","programas_instalados","rede","sistema_operacional","snippet_abrir",
-	"snippet_atualizar","som","usb","usuarios","volta_1_diretorio","volta_2_diretorios"          
-    )
+    "cola_vscode","cola_git","help","nav_buscar_por_nome","nav_desktop","nav_downloads","nav_home","nav_listar","nav_listar_ocultos","nav_listar_so_pastas","nav_listar_so_arquivos",
+	"nav_listar_recursivo","nav_volta_1_diretorio","nav_volta_2_diretorios","nav_volta_desktop","nav_volta_home","nav_onde_estou?","sys_bateria","sys_bios","sys_bluetooth",
+	"sys_diagnostico_bluetooth","sys_cpu","sys_disco_espaco","sys_discoinfo","sys_discos","sys_gpu","sys_impressoras","sys_ip","sys_ip_geral","sys_memoria_slots","sys_memorias",
+	"sys_modelo_pc","sys_particoes","sys_placa_mae","sys_programas_instalados","sys_rede","sys_sistema_operacional","sys_som","sys_usb","sys_usuarios",
+	"sys_abre_snippet_notepad","sys_abre_snippet_vscode","sys_atualizar_snippet","sys_inst_exten_inic_vscode","sys_inst_exten_py_sql","sys_verificar_python","sys_instalar_python",
+	"git_status","git_add","git_commit","git_push","git_pull","git_log","git_branch","git_checkout","git_diff","git_stash","git_stash_pop","git_init","git_log_oneline",
+	"git_log_author","git_log_before","git_log_after","git_restore_staged","git_reset_hard","git_reset_soft","git_amend","git_revert","git_branch_D","git_merge",
+	"git_checkout_b","git_clone","git_remote_v","git_remote_add","git_push_u","git_pull_origin","git_fetch","git_rebase","git_tag","git_tag_v","git_tag_push",
+	"git_checkout_tag","git_switch_c","git_checkout_detached_fix","git_checkout_head","git_checkout_head_arquivo","git_config_user","git_config_global","git_credential_store",
+	"git_credential_unset","git_credential_unset_global","git_ignore_criar","git_status_ignore","git_mv","git_rm"
+	)
 
     $comandos | Where-Object { $_ -like "$wordToComplete*" } |
     ForEach-Object {
@@ -209,6 +564,11 @@ Register-ArgumentCompleter -CommandName z -ParameterName comando -ScriptBlock {
 # MENU COM TAB
 Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
 
+# MENSAGEM quando abre o terminal
+Write-Host "Perfil PowerShell carregado!" -ForegroundColor Green 
+
+# ENDEREÇO onde o VSCode pesquisa o arquivo com snippets
 function code {
-    & "C:\Users\vinic\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" @args
+    # mude o caminho do usuário: C:\Users\SEU_USUARIO\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd
+    & "C:\Users\marcus.silva05\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" @args
 }
