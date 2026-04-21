@@ -470,7 +470,7 @@
       "WHERE ROW${4:1} = 1 --PRIMEIRA LINHA DA DUPLICATA",  
       "ORDER BY ${3:CPF_DI}"
       ],
-    "description": "FILTRA UMA COLUNA ELIMINANDO DADOS DUPLICADOS"
+    "description": "ROW_NUMBER"
   },
 
     // ROW_NUMBER_MULTIPLO
