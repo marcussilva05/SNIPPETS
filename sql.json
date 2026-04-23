@@ -308,13 +308,13 @@
     "description": "00_MAPEAMENTO_MUDANCA_DE_COLUNAS"
   },
 
-// CRIAR_00_MAPEAMENTO_BD0000
-"CRIAR_00_MAPEAMENTO_BD0000": {
+// CRIAR_00_MAPEAMENTO
+"CRIAR_00_MAPEAMENTO": {
     "scope": "sql",
     "prefix": "ZMAPCRIAR",
     "body": [
         "USE CEPEA_SAS",
-        "DROP TABLE IF EXISTS [00_MAPEAMENTO_BD0000]",
+        "DROP TABLE IF EXISTS [00_MAPEAMENTO]",
         "",
         "IF OBJECT_ID('TEMPDB..#MAPEAMENTO') IS NOT NULL",
         "    DROP TABLE #MAPEAMENTO",
@@ -356,23 +356,23 @@
         "",
         "-- Atualizar bd",
         "SELECT *",
-        "INTO [00_MAPEAMENTO_BD0000]",
+        "INTO [00_MAPEAMENTO]",
         "FROM #MAPEAMENTO"
     ],
-    "description": "CRIAR 00_MAPEAMENTO_BD0000"
+    "description": "CRIAR 00_MAPEAMENTO"
 },
 
-// 00_MAPEAMENTO_BD0000_CONSULTA
-"00_MAPEAMENTO_BD0000_CONSULTA": {
+// 00_MAPEAMENTO_CONSULTA
+"00_MAPEAMENTO_CONSULTA": {
     "scope": "sql",
-    "prefix": "ZMAP0000",
+    "prefix": "ZMAPCONS",
     "body": [
         "SELECT *          ",
-        "FROM [00_MAPEAMENTO_BD0000]",
+        "FROM [00_MAPEAMENTO]",
         "-- WHERE END_COMPLETO LIKE '%${1:DADO}%'",
         "ORDER BY ANO_TABELA DESC, BD, TABELA, COLUNA"
     ],
-    "description": "CONSULTAR 00_MAPEAMENTO_BD0000"
+    "description": "CONSULTAR 00_MAPEAMENTO"
 },
 
     // CRIAR E-MAIL DE ESCOLA
