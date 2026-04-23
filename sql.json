@@ -1022,20 +1022,19 @@
     "scope": "sql",
     "prefix": "ZUNION",
     "body": [
-	  "${7:DROP TABLE IF EXISTS ${1:#BASE__UNIDA}}",
+	  "${7:DROP TABLE IF EXISTS ${1:#BASE}_UNION}",
       "SELECT",
 	  "${2:COLUNA1}",
 	  "${3:COLUNA2}",
 	  "${4:COLUNA2}",
-	  "INTO ${1:#BASE__UNIDA}",
-	  "FROM ${5#BASE1}",
+	  "INTO ${1:#BASE}_UNION",
+	  "FROM ${5:#BASE1}",
 	  "UNION",
 	  "SELECT",
 	  "${2:COLUNA1}",
 	  "${3:COLUNA2}",
 	  "${4:COLUNA2}",
-	  "INTO ${1:#BASE__UNIDA}",
-	  "FROM ${6#BASE2} -- SE QUISER, COPIE MAIS UM UNION SEGUIDO DE SELECT E ETC... PARA MAIS UNIONS" 
+	  "FROM ${6:#BASE2} -- SE QUISER, COPIE MAIS UM 'UNION ATÉ FROM'" 
     ],
     "description": "UNION_SEM_DUPLICATAS"
   },
@@ -1057,8 +1056,7 @@
 	  "${2:COLUNA1}",
 	  "${3:COLUNA2}",
 	  "${4:COLUNA2}",
-	  "INTO ${1:#BASE__UNIDA}",
-	  "FROM ${6#BASE2} -- SE QUISER, COPIE MAIS UM UNION ALL SEGUIDO DE SELECT E ETC... PARA MAIS UNIONS" 
+	  "FROM ${6#BASE2} -- SE QUISER, COPIE MAIS UM 'UNION ATÉ FROM'" 
     ],
     "description": "UNION_ALL_SEM_DUPLICATAS"
   },
