@@ -268,25 +268,6 @@
     "description": "00_SQL"
   },
 
-  // 00_MAPEAMENTO_BD
-  "00_MAPEAMENTO_BD": {
-    "scope": "sql",
-    "prefix": "ZMAP",
-    "body": [
-      "${3:SELECT                                          }",
-      "   ANO_TABELA,",
-      "   BD,",
-      "   TABELA,",
-      "   COLUNA,",
-      "   END_COMPLETO",
-      "FROM [dbo].[00_MAPEAMENTO_BD${1:03}26]",
-      "WHERE END_COMPLETO LIKE '%${2:DADO}%'",
-      "${4:AND BD = 'CEPEA_SAS'}",
-      "ORDER BY ANO_TABELA DESC, BD, TABELA, COLUNA"
-    ],
-    "description": "00_MAPEAMENTO_BD"
-  },
-
   // 00_MAPEAMENTO_MUDANCA_DE_COLUNAS
   "00_MAPEAMENTO_MUDANCA_DE_COLUNAS": {
     "scope": "sql",
@@ -368,6 +349,11 @@
     "prefix": "ZMAPCONS",
     "body": [
         "SELECT *          ",
+      "   ANO_TABELA,",
+      "   BD,",
+      "   TABELA,",
+      "   COLUNA,",
+      "   END_COMPLETO",
         "FROM [00_MAPEAMENTO]",
         "-- WHERE END_COMPLETO LIKE '%${1:DADO}%'",
         "ORDER BY ANO_TABELA DESC, BD, TABELA, COLUNA"
