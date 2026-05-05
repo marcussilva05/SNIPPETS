@@ -774,6 +774,10 @@ function z {
 		Write-Host "Instalando pacotes Python..."
 		pip install selenium
 
+		# Instalar ferramentas para Web Scraping
+		Write-Host "Instalando pacotes para Web Scraping..."
+		python -m pip install openpyxl
+
 		# Instalar requirements se existir
 		if (Test-Path "requirements.txt") {
 			Write-Host "Instalando requirements.txt..."
