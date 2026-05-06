@@ -1805,11 +1805,7 @@
         "    CD_MODAL             ,",
         "    IDENT_GENERO         ,",
         "    FL_CEEJA             ",
-        "FROM DESENV.DBO.DISCIPLINA",
-        "WHERE NR_CPF IN (",
-        "SELECT *          ",
-        "FROM #CPF",
-        ")"
+        "FROM DESENV.DBO.DISCIPLINA"
     ],
     "description": "DESENV_DISCIPLINA"
 },
