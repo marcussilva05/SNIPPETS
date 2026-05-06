@@ -771,11 +771,15 @@ function z {
 		Start-Process -Wait -FilePath msiexec -ArgumentList "/i `"$env:TEMP\msodbcsql.msi`" /quiet IACCEPTMSODBCSQLLICENSETERMS=YES"
 
 		# Instalar Selenium
-		Write-Host "Instalando pacotes Python..."
+		Write-Host "Instalando pacotes Selenium..."
 		pip install selenium
 
+		# Instalar Pandas
+		Write-Host "Instalando pacotes Pandas..."
+		python -m pip install pandas
+
 		# Instalar ferramentas para Web Scraping
-		Write-Host "Instalando pacotes para Web Scraping..."
+		Write-Host "Instalando pacotes para Web openpyxl..."
 		python -m pip install openpyxl
 
 		# Instalar requirements se existir
