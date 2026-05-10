@@ -100,6 +100,11 @@ function z {
 		"sys_modelo_pc" { Get-WmiObject Win32_ComputerSystem | Select-Object -ExpandProperty Model }
 		"sys_placa_mae" { Get-WmiObject Win32_BaseBoard | Format-Table Manufacturer, Product, Version, SerialNumber -AutoSize }
 		"sys_particoes" { Get-WmiObject Win32_DiskPartition | Select-Object -ExpandProperty DeviceID }
+		"sys_pio_upload" { 
+			$com = Read-Host "numero da porta COM (veja: z sys_porta_com)"
+			pio run --target upload --upload-port COM$com
+		}
+		"sys_porta_com" { Get-WmiObject Win32_SerialPort | Select-Object DeviceID, Description }
 		"sys_programas_instalados" { Get-WmiObject Win32_Product | Format-Table Name, Version }
 		"sys_rede" { Get-WmiObject Win32_NetworkAdapter | Where-Object {$_.MACAddress} | Format-Table Name, MACAddress }
 		"sys_sistema_operacional" { Get-WmiObject Win32_OperatingSystem | Format-Table Caption, Version, OSArchitecture }
@@ -1003,8 +1008,9 @@ Register-ArgumentCompleter -CommandName z -ParameterName comando -ScriptBlock {
 		# Sistema
 		"sys_bateria","sys_bios","sys_bluetooth","sys_diagnostico_bluetooth","sys_chrome_modo_debug","sys_cpu","sys_disco_espaco","sys_discoinfo",
 		"sys_discos","sys_edge_modo_debug","sys_edge_encerar_processos","sys_edge_ouvindo_porta","sys_edge_verificacao","sys_gpu","sys_impressoras",
-		"sys_ip","sys_ip_geral","sys_memoria_slots","sys_memorias","sys_modelo_pc","sys_particoes","sys_placa_mae","sys_programas_instalados",
-		"sys_rede","sys_sistema_operacional","sys_som","sys_usb","sys_usuarios","sys_abre_snippet_notepad","sys_abre_snippet_vscode","sys_atualizar_snippet",
+		"sys_ip","sys_ip_geral","sys_memoria_slots","sys_memorias","sys_modelo_pc","sys_particoes","sys_pio_upload","sys_placa_mae","sys_porta_com",
+		"sys_programas_instalados","sys_rede","sys_sistema_operacional","sys_som","sys_usb","sys_usuarios","sys_abre_snippet_notepad", 
+		"sys_abre_snippet_vscode","sys_atualizar_snippet",
 		# Extensões
 		"exten_git","exten_c","exten_python","exten_sql","exten_rust","exten_geral","exten_todas",
 		# Colas
