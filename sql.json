@@ -692,6 +692,16 @@
 		"description": "NULIFICA"
 	},
 
+  //COALESCE
+	"COALESCE": {
+		"scope": "sql",
+		"prefix": "ZCOAL",
+		"body": [
+			"COALESCE(${1:COLUNA}, '') AS ${1:COLUNA}", 
+		],
+		"description": "COALESCE NULIFICANDO"
+	},
+
 	//QUANTIDADE_DE_CARACTERES
 	"QUANTIDADE_DE_CARACTERES": {
 		"scope": "sql",
