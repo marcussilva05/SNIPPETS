@@ -2432,7 +2432,7 @@
 // 00_UA
 "00_UA": {
 	"scope": "sql",
-	"prefix": "Z00_UA",
+	"prefix": "Z00UA",
 	"body": [
 		"SELECT           ",
 		"   ID                ,",
@@ -2554,10 +2554,10 @@
 	"description": "TABELA COMPLETA DE 00_UA"
 },
 
-// CRIA_00_UA
-"Z00UACRIAR": {
+// CRIA_00_FUNCIONAL
+"Z00FUNCCRIAR": {
 	"scope": "sql",
-	"prefix": "Z00UACRIAR",
+	"prefix": "Z00FUNCCRIAR",
 	"body": [
 		"/*",
 		"",
