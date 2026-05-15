@@ -974,6 +974,22 @@ Cargo.lock
 			Write-Host "rs_analisar              # cargo clippy"
 			Write-Host ""
 		}
+
+# ===========================================================
+# PLATFORMIO ESP32
+# ===========================================================
+
+		"pio_execute" {  
+		Write-Host "`n Zerar e baixar novo programa no ESP32:" -ForegroundColor Yellow
+		pio run --target erase
+		pio run --target upload
+		}
+
+		"pio_monitor" {  
+		Write-Host "`n Mostrar monitor:" -ForegroundColor Yellow
+		pio device monitor --baud 115200
+		}
+
 # ===========================================================
 # HELP
 # ===========================================================
@@ -1027,6 +1043,8 @@ Register-ArgumentCompleter -CommandName z -ParameterName comando -ScriptBlock {
 		"rs_instalar_completo","rs_novo_projeto","rs_abrir_cargo_toml","rs_abrir_main","rs_instal","rs_path","rs_principal","rs_verifica_install","rs_criar_gitignore",
 		"rs_executar","rs_construir","rs_construir_release","rs_testar","rs_documentar","rs_limpar","rs_atualizar_deps","rs_adicionar_dependencia","rs_verificar",
 		"rs_formatar","rs_analisar","rs_help",
+		# PlatformIO
+		"pio_execute","pio_monitor",
 		# Help
 		"help"
 	)
