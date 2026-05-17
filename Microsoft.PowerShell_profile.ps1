@@ -1072,5 +1072,5 @@ function code {
     # mude o caminho do usuário: 
 	# C:\Users\vinic\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd
 	# C:\Users\marcus.silva05\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd
-    & "C:\Users\vinic\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" @args
+    & "C:\Users\marcus.silva05\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" @args
 }
