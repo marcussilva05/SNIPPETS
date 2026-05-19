@@ -3273,6 +3273,19 @@
 	"description": "00_FUNCIONAL"
 },
 
+// 00_CATEG
+"00_CATEG": {
+    "scope": "sql",
+    "prefix": "Z00CATEG",
+    "body": [
+        "SELECT",
+        "  CATEG      ,",
+        "  CATEG_DESC       ",
+        "FROM [00_CATEG]"
+    ],
+    "description": "00_CATEG"
+},
+
 // TB_FUNCIONAL_CONTAGEH
 "TB_FUNCIONAL_CONTAGEH": {
     "scope": "sql",
