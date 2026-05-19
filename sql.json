@@ -562,10 +562,16 @@
     "scope": "sql",
     "prefix": "ZCRIARTAB",
     "body": [
-      "CREATE TABLE ${1:nome_da_tabela} (",
-      "    coluna1,",
-      "    coluna2",
-      ")"    
+      "DROP TABLE IF EXISTS ${1:BASE}",
+      "CREATE TABLE ${1:BASE} (",
+      "    ${2:COLUNA1} VARCHAR(${3:100}),",
+      "    ${4:COLUNA2} VARCHAR(${5:100})",
+      ")",
+      " ",
+      "INSERT INTO [00_CATEG] (CATEG, CATEG_DESC) VALUES", 
+      "('DADO1COL1', 'DADOACOL2'),",   
+      "('DADO2COL1', 'DADOBCOL2'),",   
+      "('DADO3COL1', 'DADOCCOL2')", 
       ],
     "description": "CRIAR_TABELA"
   },
