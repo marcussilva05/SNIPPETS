@@ -1054,8 +1054,8 @@
     "description": "UNION_SEM_DUPLICATAS"
   },
 
-	// UNION_ALL_SEM_DUPLICATAS
-  "UNION_ALL_SEM_DUPLICATAS": {
+	// UNION_ALL_MANTEM_DUPLICATAS
+  "UNION_ALL_MANTEM_DUPLICATAS": {
     "scope": "sql",
     "prefix": "ZUNIONALL",
     "body": [
@@ -1073,7 +1073,7 @@
 	  "${4:COLUNA2}",
 	  "FROM ${6#BASE2} -- SE QUISER, COPIE MAIS UM 'UNION ATÉ FROM'" 
     ],
-    "description": "UNION_ALL_SEM_DUPLICATAS"
+    "description": "UNION_ALL_MANTEM_DUPLICATAS"
   },
 
   // REGIAO_ARQDEUA
