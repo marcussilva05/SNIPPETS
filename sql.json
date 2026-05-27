@@ -242,10 +242,10 @@
     "description": "DISTINCT"
   },
 
-  // VARRE_CEPEA_EAT1
-  "VARRE_CEPEA_EAT1": {
+  // EAT1_CRIAR
+  "EAT1_CRIAR": {
       "scope": "powershell",
-      "prefix": "Z00EAT1",
+      "prefix": "Z00EAT1_CRIAR",
       "body": [
           "# ============================================================",
           "# SCRIPT COMPLETO - VARREDURA RECURSIVA DE TODA A PASTA CEPEA",
@@ -378,6 +378,26 @@
           "}"
       ],
       "description": "Varredura recursiva da pasta CEPEA gerando CSV com metadados"
+  },
+
+// 00_EAT1_CONSULTA
+"00_EAT1_CONSULTA": {
+    "scope": "sql",
+    "prefix": "Z00EAT1_CONSULTA",
+    "body": [
+        "SELECT     ",
+        "ANO_ULT_ALTERACAO  ,",
+        "DT,",
+        "NOME_ARQ,",
+        "EXTENSAO_ARQ,",
+        "ULT_PASTA,",
+        "PENULT_PASTA,",
+        "END_COMPLETO",
+        "FROM [00_EAT1]",
+        "WHERE ${1:END_COMPLETO} LIKE '%${2:PESQUISA}%'",
+        "ORDER BY DT DESC"
+    ],
+    "description": "00_EAT1_CONSULTA"
   },
 
   // MAPEAMENTO_BD
