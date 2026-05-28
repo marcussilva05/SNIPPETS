@@ -1066,7 +1066,7 @@
 		"scope": "sql",
 		"prefix": "ZDDCONVERT",
 		"body": [
-			"CONVERT(int, 25.65)",
+			"CONVERT(${1:BIGINT}, A.${2:CPF}) AS ${2:CPF}   ",
 		],
 		"description": "CONVERTER"
 	},
@@ -1304,6 +1304,16 @@
     "FROM ${2:BASE}",
     ],
     "description": "TIRAR_ZEROS_ESQUERDA_CPF"
+  },
+
+  // TIRAR_TRAOOS_E_PONTOS_CPF
+  "TIRAR_TRAOOS_E_PONTOS_CPF": {
+    "scope": "sql",
+    "prefix": "ZCPFSEMPONTOS",
+    "body": [
+	  "REPLACE(REPLACE(A.CPF, '.', ''), '-', '') AS CPF_LIMPO ,"
+    ],
+    "description": "TIRAR_TRAOOS_E_PONTOS_CPF"
   },
 
   // SAS_PAPUA_022026
