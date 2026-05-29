@@ -4472,6 +4472,28 @@
     "LIMIT 10"
   ],
   "description": "Retorna as 10 primeiras linhas de uma tabela no Databricks (catalogo.esquema.tabela)"
+},
+
+// MAPEAMENTO_DATABRICKS
+"MAPEAMENTO_DATABRICKS": {
+  "scope": "sql",
+  "prefix": "BRIMAP",
+  "body": [
+    "SELECT ",
+    "    t.table_catalog AS Catalogo,",
+    "    t.table_schema AS Esquema,",
+    "    t.table_name AS Tabela,",
+    "    COUNT(c.column_name) AS Total_Colunas,",
+    "    STRING_AGG(c.column_name, ', ') WITHIN GROUP (ORDER BY c.ordinal_position) AS Nome_das_Colunas",
+    "FROM system.information_schema.tables t",
+    "JOIN system.information_schema.columns c ",
+    "  ON t.table_catalog = c.table_catalog ",
+    " AND t.table_schema = c.table_schema ",
+    " AND t.table_name = c.table_name",
+    "GROUP BY t.table_catalog, t.table_schema, t.table_name",
+    "ORDER BY Catalogo, Esquema, Tabela"
+  ],
+  "description": "MAPEAMENTO_DATABRICKS"
 }
 
 }
