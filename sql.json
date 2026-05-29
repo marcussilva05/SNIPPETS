@@ -4460,6 +4460,18 @@
       "SHOW TABLES;"
       ],
     "description": "LISTE_TABELAS"
+},
+
+// TOP 10 DATABRICKS
+"TOP10_DATABRICKS": {
+  "scope": "sql",
+  "prefix": "BRITOP10",
+  "body": [
+    "SELECT *",
+    "FROM ${1:producao}.${2:bronze}.${3:aviso_turma}",
+    "LIMIT 10"
+  ],
+  "description": "Retorna as 10 primeiras linhas de uma tabela no Databricks (catalogo.esquema.tabela)"
 }
 
 }
