@@ -4417,9 +4417,49 @@
     "scope": "sql",
     "prefix": "BRICATALOG",
     "body": [
-      "SHOW CATALOGS"
+      "SHOW CATALOGS;"
       ],
     "description": "CATALOGOS_DATABRICKS"
+},
+
+  // USE_CATALOG
+  "USE_CATALOG": {
+    "scope": "sql",
+    "prefix": "BRIUSE",
+    "body": [
+      "USE CATALOG ${1:producao};"
+      ],
+    "description": "USE_CATALOG"
+},
+
+// LISTE_ESQUEMA
+  "LISTE_ESQUEMA": {
+    "scope": "sql",
+    "prefix": "BRILISTESQUEMA",
+    "body": [
+      "SHOW SCHEMAS;"
+      ],
+    "description": "LISTE_ESQUEMA"
+},
+
+// USE_ESQUEMA
+  "USE_ESQUEMA": {
+    "scope": "sql",
+    "prefix": "BRIUSESQUEMA",
+    "body": [
+      "USE SCHEMA ${1:nome_do_schema};"
+      ],
+    "description": "USE_ESQUEMA"
+},
+
+// LISTE_TABELAS
+  "LISTE_TABELAS": {
+    "scope": "sql",
+    "prefix": "BRILISTAB",
+    "body": [
+      "SHOW TABLES;"
+      ],
+    "description": "LISTE_TABELAS"
 }
 
 }
