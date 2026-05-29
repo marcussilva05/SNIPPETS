@@ -388,10 +388,10 @@
         "SELECT     ",
         "ANO_ULT_ALTERACAO  ,",
         "DT,",
+        "PENULT_PASTA,",
+        "ULT_PASTA,",
         "NOME_ARQ,",
         "EXTENSAO_ARQ,",
-        "ULT_PASTA,",
-        "PENULT_PASTA,",
         "END_COMPLETO",
         "FROM [00_EAT1]",
         "WHERE ${1:END_COMPLETO} LIKE '%${2:PESQUISA}%'",
@@ -4410,6 +4410,16 @@
         "ORDER BY NOMEMUN, CODBFE"
     ],
     "description": "SIC_AFASTAMENTO_PROFESSORES_2023_2026"
+},
+
+  // CATALOGOS_DATABRICKS
+  "CATALOGOS_DATABRICKS": {
+    "scope": "sql",
+    "prefix": "BRICATALOG",
+    "body": [
+      "SHOW CATALOGS"
+      ],
+    "description": "CATALOGOS_DATABRICKS"
 }
 
 }
