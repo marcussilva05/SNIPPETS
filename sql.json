@@ -394,7 +394,7 @@
         "EXTENSAO_ARQ,",
         "END_COMPLETO",
         "FROM [00_EAT1]",
-        "WHERE ${1:END_COMPLETO} LIKE '%${2:PESQUISA}%'",
+        "-- WHERE ${1:END_COMPLETO} LIKE '%${2:PESQUISA}%'",
         "ORDER BY DT DESC"
     ],
     "description": "00_EAT1_CONSULTA"
@@ -4417,7 +4417,7 @@
     "scope": "sql",
     "prefix": "BRICATALOG",
     "body": [
-      "SHOW CATALOGS;"
+      "SHOW CATALOGS"
       ],
     "description": "CATALOGOS_DATABRICKS"
 },
@@ -4427,7 +4427,7 @@
     "scope": "sql",
     "prefix": "BRIUSE",
     "body": [
-      "USE CATALOG ${1:producao};"
+      "USE CATALOG ${1:producao}"
       ],
     "description": "USE_CATALOG"
 },
@@ -4437,7 +4437,7 @@
     "scope": "sql",
     "prefix": "BRILISTESQUEMA",
     "body": [
-      "SHOW SCHEMAS;"
+      "SHOW SCHEMAS"
       ],
     "description": "LISTE_ESQUEMA"
 },
@@ -4447,7 +4447,7 @@
     "scope": "sql",
     "prefix": "BRIUSESQUEMA",
     "body": [
-      "USE SCHEMA ${1:nome_do_schema};"
+      "USE SCHEMA ${1:nome_do_schema}"
       ],
     "description": "USE_ESQUEMA"
 },
@@ -4457,7 +4457,7 @@
     "scope": "sql",
     "prefix": "BRILISTAB",
     "body": [
-      "SHOW TABLES;"
+      "SHOW TABLES"
       ],
     "description": "LISTE_TABELAS"
 },
@@ -4474,26 +4474,62 @@
   "description": "Retorna as 10 primeiras linhas de uma tabela no Databricks (catalogo.esquema.tabela)"
 },
 
-// MAPEAMENTO_DATABRICKS
-"MAPEAMENTO_DATABRICKS": {
+// MAPEAMENTO_DATABRICKS_CRIAR 
+"MAPEAMENTO_DATABRICKS_CRIAR": {
   "scope": "sql",
-  "prefix": "BRIMAP",
+  "prefix": "BRIMAP_CRIAR",
   "body": [
     "SELECT ",
-    "    t.table_catalog AS Catalogo,",
-    "    t.table_schema AS Esquema,",
-    "    t.table_name AS Tabela,",
-    "    COUNT(c.column_name) AS Total_Colunas,",
-    "    STRING_AGG(c.column_name, ', ') WITHIN GROUP (ORDER BY c.ordinal_position) AS Nome_das_Colunas",
+    "    DATE_FORMAT(t.created, 'yyyy-MM-dd') AS DT_CRIACAO,",
+    "    DATE_FORMAT(t.last_altered, 'yyyy-MM-dd') AS DT_ULT_ALTERACAO,",
+    "    t.table_catalog AS CATALOGO,",
+    "    t.table_schema AS ESQUEMA,",
+    "    t.table_name AS TABELA,",
+    "    COUNT(c.column_name) AS COLUNAS,",
+    "    ARRAY_JOIN(COLLECT_LIST(c.column_name), ', ') AS NOME_DAS_COLUNAS,",
+    "    t.table_owner AS PROPRIETARIO,",
+    "    CONCAT('SELECT * FROM ', t.table_catalog, '.', t.table_schema, '.', t.table_name, ' LIMIT 10') AS ENDERECO",
     "FROM system.information_schema.tables t",
     "JOIN system.information_schema.columns c ",
     "  ON t.table_catalog = c.table_catalog ",
     " AND t.table_schema = c.table_schema ",
     " AND t.table_name = c.table_name",
-    "GROUP BY t.table_catalog, t.table_schema, t.table_name",
-    "ORDER BY Catalogo, Esquema, Tabela"
+    "GROUP BY t.created, t.last_altered, t.table_catalog, t.table_schema, t.table_name, t.table_owner",
+    "ORDER BY t.created DESC, t.last_altered DESC, CATALOGO, ESQUEMA, TABELA"
   ],
-  "description": "MAPEAMENTO_DATABRICKS"
+  "description": "MAPEAMENTO_DATABRICKS_CRIAR"
+},
+
+// MAPEAMENTO_DATABRICKS_CONSULTAR
+"MAPEAMENTO_DATABRICKS_CONSULTAR": {
+    "scope": "sql",
+    "prefix": "Z00BRICKS",
+    "body": [
+        "USE CEPEA_SAS",
+        "",
+        "SELECT *          ",
+        "FROM [00_BRICKS]",
+        "-- WHERE ENDERECO LIKE '%ALOC%'",
+        "-- OR NOME_DAS_COLUNAS LIKE '%ALOC%'",
+        "ORDER BY DT_CRIACAO DESC, DT_ULT_ALTERACAO DESC, CATALOGO, ESQUEMA, TABELA"
+    ],
+    "description": "MAPEAMENTO_DATABRICKS_CONSULTAR"
+},
+
+// 00_BRICKS
+"00_BRICKS": {
+    "scope": "sql",
+    "prefix": "Z00BRICKS",
+    "body": [
+        "USE CEPEA_SAS",
+        "",
+        "SELECT *          ",
+        "FROM [00_BRICKS]",
+        "-- WHERE ENDERECO LIKE '%ALOC%'",
+        "-- OR NOME_DAS_COLUNAS LIKE '%ALOC%'",
+        "ORDER BY DT_CRIACAO DESC, DT_ULT_ALTERACAO DESC, CATALOGO, ESQUEMA, TABELA"
+    ],
+    "description": "00_BRICKS"
 }
 
 }
