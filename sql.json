@@ -828,6 +828,16 @@
 		"description": "COALESCE NULIFICANDO"
 	},
 
+  // COALESCE_SEM_NULOS
+  "COALESCE_SEM_NULOS": {
+      "scope": "sql",
+      "prefix": "ZCOALNULLIF",
+      "body": [
+          "COALESCE(NULLIF(${1:COLUNA1}, ''), ${2:COLUNA2}, '') AS ${3:NOVO_NOME} ,"
+      ],
+      "description": "COALESCE com NULLIF para NOME, fallback para NOME_SERVIDOR e vazio"
+  },
+
 	//QUANTIDADE_DE_CARACTERES
 	"QUANTIDADE_DE_CARACTERES": {
 		"scope": "sql",
@@ -2800,7 +2810,7 @@
         "   CONCAT(RS, PV) AS RSPV,",
         "   DTNASC AS NASCIMENTO",
         "INTO #CPFPESSOAL",
-        "FROM SAS.[032026].EDUCA_PESSOAL",
+        "FROM SAS.[${3:042026}].EDUCA_PESSOAL",
         "SELECT",
         "   NOME,",
         "   RS,",
@@ -4412,15 +4422,7 @@
     "description": "SIC_AFASTAMENTO_PROFESSORES_2023_2026"
 },
 
-  // CATALOGOS_DATABRICKS
-  "CATALOGOS_DATABRICKS": {
-    "scope": "sql",
-    "prefix": "BRICATALOG",
-    "body": [
-      "SHOW CATALOGS"
-      ],
-    "description": "CATALOGOS_DATABRICKS"
-},
+// ---------------------------------- DATABRICKS ----------------------------------
 
   // USE_CATALOG
   "USE_CATALOG": {
@@ -4430,16 +4432,6 @@
       "USE CATALOG ${1:producao}"
       ],
     "description": "USE_CATALOG"
-},
-
-// LISTE_ESQUEMA
-  "LISTE_ESQUEMA": {
-    "scope": "sql",
-    "prefix": "BRILISTESQUEMA",
-    "body": [
-      "SHOW SCHEMAS"
-      ],
-    "description": "LISTE_ESQUEMA"
 },
 
 // USE_ESQUEMA
@@ -4452,14 +4444,56 @@
     "description": "USE_ESQUEMA"
 },
 
+  // LISTE_CATALOGOS
+  "LISTE_CATALOGOS": {
+    "scope": "sql",
+    "prefix": "BRILISTCATALOG",
+    "body": [
+      "SHOW CATALOGS"
+      ],
+    "description": "LISTE_CATALOGOS"
+},
+
+// LISTE_ESQUEMA
+  "LISTE_ESQUEMA": {
+    "scope": "sql",
+    "prefix": "BRILISTESQUEMA",
+    "body": [
+      "SHOW SCHEMAS"
+      ],
+    "description": "LISTE_ESQUEMA"
+},
+
 // LISTE_TABELAS
   "LISTE_TABELAS": {
     "scope": "sql",
-    "prefix": "BRILISTAB",
+    "prefix": "BRILISTTAB",
     "body": [
       "SHOW TABLES"
       ],
     "description": "LISTE_TABELAS"
+},
+
+// LISTE_COLUNAS
+"LISTE_COLUNAS": {
+  "scope": "sql",
+  "prefix": "BRILISTCOL",
+  "body": [
+    "SELECT *",
+    "DESCRIBE ${1:catalogo}.${2:esquema}.${3:tabela}",
+  ],
+  "description": "LISTE_COLUNAS"
+},
+
+// TIPO_DADOS_TABELA
+"TIPO_DADOS_TABELA": {
+  "scope": "sql",
+  "prefix": "BRILISTCOL",
+  "body": [
+    "SELECT *",
+    "DESCRIBE ${1:catalogo}.${2:esquema}.${3:tabela}",
+  ],
+  "description": "TIPO_DADOS_TABELA"
 },
 
 // TOP 10 DATABRICKS
@@ -4468,7 +4502,7 @@
   "prefix": "BRITOP10",
   "body": [
     "SELECT *",
-    "FROM ${1:producao}.${2:bronze}.${3:aviso_turma}",
+    "FROM ${1:catalogo}.${2:esquema}.${3:tabela}",
     "LIMIT 10"
   ],
   "description": "Retorna as 10 primeiras linhas de uma tabela no Databricks (catalogo.esquema.tabela)"
@@ -4548,6 +4582,74 @@
         "ORDER BY DT_CRIACAO DESC, DT_ULT_ALTERACAO DESC, CATALOGO, ESQUEMA, TABELA"
     ],
     "description": "00_BRICKS"
+},
+
+// TB_SALDO_AULAS_META
+"TB_SALDO_AULAS_META": {
+  "scope": "sql",
+  "prefix": "BRITBSALDO",
+  "body": [
+    "SELECT",
+    "ANO,",
+    "MES,",
+    "DIA,",
+    "DT_IMPORT,",
+    "SEQUENCE_RAW,",
+    "ID_SALDO_AULAS,",
+    "ID_VERSAO,",
+    "NR_ANO_LETIVO,",
+    "CD_TURMA,",
+    "DS_TURMA,",
+    "CD_QUADRO_AULA,",
+    "CD_ESCOLA,",
+    "NM_ESCOLA,",
+    "CD_DIRETORIA,",
+    "NM_DIRETORIA,",
+    "CD_REDE_ENSINO,",
+    "CD_UNIDADE,",
+    "CD_MUNICIPIO,",
+    "NM_MUNICIPIO,",
+    "CD_TURNO,",
+    "NM_TURNO,",
+    "DS_HORARIO,",
+    "CD_DISCIPLINA,",
+    "NM_DISCIPLINA,",
+    "CD_TIPO_ENSINO,",
+    "NM_TIPO_ENSINO,",
+    "FL_SUBS,",
+    "FL_LIV,",
+    "QT_AULAS,",
+    "DT_INIC_AULA,",
+    "DT_FIM_AULA,",
+    "CD_QUADRO_AULA_EXPANSAO,",
+    "QT_AULAS_EXPANSAO,",
+    "CD_SEMESTRE,",
+    "ID_PROFESSOR,",
+    "CD_ATRIBUICAO,",
+    "DT_ATRIBUICAO_REALIZADA,",
+    "ID_USU_ALTER,",
+    "DT_ALTER,",
+    "ID_USU_EXCL,",
+    "DT_EXCL,",
+    "DS_EXCL_MOTIVO,",
+    "ID_TURMA,",
+    "NR_SERIE,",
+    "NR_CLASSE,",
+    "NR_REF_CPF_SUB,",
+    "NR_REF_DI_SUB,",
+    "DS_SUBSTITUICAO,",
+    "DT_INI_VIG_SUB,",
+    "DT_FIM_VIG_SUB,",
+    "CD_REF_ATRIBUICAO_SUB,",
+    "CD_REF_ATRIBUICAO_SUB_EXPANSAO,",
+    "CD_TURMA_EXPANSAO,",
+    "ID_AREA_CONHECIMENTO,",
+    "SEQUENCE,",
+    "_rescued_data,",
+    "load_datetime",
+    "FROM producao.silver.tb_saldo_aulas_meta"
+  ],
+  "description": "TB_SALDO_AULAS_META"
 }
 
 }
