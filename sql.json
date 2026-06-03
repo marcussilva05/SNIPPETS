@@ -1691,7 +1691,7 @@
         "   CONCAT(RS, PV) AS RSPV,",
         "   DTNASC AS NASCIMENTO,",
         "   CPF,",
-        "   CPFDV AS DI,",
+        "   CPFDV AS DV,",
         "   RIGHT(CPF, 9) AS CPF_9",
         "INTO #CPFPESSOAL",
         "FROM SAS.[${1:03}2026].EDUCA_PESSOAL",
@@ -1703,14 +1703,14 @@
         "   RSPV,",
         "   NASCIMENTO,",
         "   CPF,",
-        "   DI,",
+        "   DV,",
         "   CPF_9,",        
-        "   CONCAT(CPF_9, DI) AS CPF_DI",
+        "   CONCAT(CPF_9, DV) AS CPF_DV",
         "INTO #CPF_COMPL",
         "FROM #CPFPESSOAL",
         "SELECT *",
         "FROM #CPF_COMPL",
-        "ORDER BY CPF_DI"
+        "ORDER BY CPF_DV"
     ],
     "description": "SAS_EDUCA_PESSOAL"
 },
@@ -3913,6 +3913,19 @@
         "ORDER BY REGIAO_C, URE_C, NOMEUA_C, NOME"
     ],
     "description": "00_FUNCIONAL_CONSULTA"
+},
+
+// 00_CATEG
+"00_CATEG": {
+    "scope": "sql",
+    "prefix": "Z00CATEG",
+    "body": [
+        "SELECT ",
+        "    CATEG       ,",
+        "    CATEG_DESC  ",
+        "FROM [00_CATEG]"
+    ],
+    "description": "00_CATEG"
 },
 
 // TB_FUNCIONAL_CONTAGEH
