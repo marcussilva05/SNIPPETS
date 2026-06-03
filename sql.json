@@ -5,7 +5,7 @@
     "scope": "sql",
     "prefix": "ZSYSCPU",
     "body": [
-      "${1:SELECT              }",
+      "$1:SELECT              ",
       "   cpu_count / NULLIF(hyperthread_ratio, 0) AS QTD_CPU_FISICA,",
       "   physical_memory_kb / 1024 / 1024 AS RAM_FISICA_GB,",
       "   virtual_machine_type_desc AS TIPO_CPU_VIRTUAL,",
@@ -20,7 +20,7 @@
     "scope": "sql",
     "prefix": "ZSYSSERV",
     "body": [
-      "${1:SELECT              }",
+      "$1:SELECT              ",
       "   NAME,",
       "   data_source,",
       "   modify_date",
@@ -35,7 +35,7 @@
     "scope": "sql",
     "prefix": "ZSYSBD?",
     "body": [
-      "${1:SELECT DB_NAME()}"    
+      "$1:SELECT DB_NAME()"    
       ],
     "description": "QUAL_BD_ESTOU?"
   },
@@ -45,7 +45,7 @@
     "scope": "sql",
     "prefix": "ZSYSBDLIST",
     "body": [
-      "${1:SELECT              }",
+      "$1:SELECT              ",
       "   NAME,",
       "   CREATE_DATE,",
       "   STATE_DESC",
@@ -60,7 +60,7 @@
     "scope": "sql",
     "prefix": "ZSYSBDEXEC",
     "body": [
-      "${2:EXEC sp_helpdb '${1:nome_do_banco}'}"    
+      "$2:EXEC sp_helpdb '${1:nome_do_banco}'"    
       ],
     "description": "EXECUTE_BD"
   },
@@ -70,7 +70,7 @@
     "scope": "sql",
     "prefix": "ZSYSTABLIST",
     "body": [  
-      "SELECT", 
+      "$1:SELECT", 
       "t.name AS NOME_TABELA,",
       "SCHEMA_NAME(t.schema_id) AS ESQUEMA,",
       "YEAR(t.create_date) AS ANO_CRIACAO,",
@@ -96,7 +96,7 @@
     "scope": "sql",
     "prefix": "ZSYSCOLVCEPEA",
     "body": [
-      "${4:SELECT                                    }",    
+      "$4:SELECT                                    ",    
       "COLUMN_NAME AS COLUNA",
       "FROM INFORMATION_SCHEMA.COLUMNS",
       "WHERE TABLE_SCHEMA = '${1:dbo}'      ${3:-- schema separado sem colchetes [dbo] = dbo}",
@@ -203,7 +203,7 @@
     "scope": "sql",
     "prefix": "ZUSE",
     "body": [
-      "${1:USE CEPEA_SAS}"
+      "$1:USE CEPEA_SAS"
     ],
     "description": "USE_BD"
   },
@@ -213,8 +213,8 @@
     "scope": "sql",
     "prefix": "ZTOP",
     "body": [
-      "${2:SELECT TOP 10 *      }",
-      "FROM ${1:CTG0226}"
+      "$2:SELECT TOP 10 *      ",
+      "FROM ${1:CTG0526}"
     ],
     "description": "TOP 10"
   },
@@ -224,8 +224,8 @@
     "scope": "sql",
     "prefix": "ZSEL",
     "body": [
-      "${2:SELECT *          }",
-      "FROM ${1:CTG0226}"
+      "$2:SELECT *          ",
+      "FROM ${1:CTG0526}"
     ],
     "description": "SELECT SIMPLES"
   },
@@ -235,9 +235,9 @@
     "scope": "sql",
     "prefix": "ZDIS",
     "body": [
-      "${3:SELECT DISTINCT}",
-      "   ${2:-- COLUNA}",
-      "FROM CTG${1:02}26"
+      "$3:SELECT DISTINCT",
+      "   ${1:-- COLUNA}",
+      "FROM ${2:CTG0226}"
     ],
     "description": "DISTINCT"
   },
@@ -394,7 +394,7 @@
         "EXTENSAO_ARQ,",
         "END_COMPLETO",
         "FROM [00_EAT1]",
-        "-- WHERE ${1:END_COMPLETO} LIKE '%${2:PESQUISA}%'",
+        "${1:WHERE ${2:END_COMPLETO} LIKE '%${3:PESQUISA}%'}",
         "ORDER BY DT DESC"
     ],
     "description": "00_EAT1_CONSULTA"
@@ -464,19 +464,19 @@
       "scope": "sql",
       "prefix": "ZMAP_CONSULTA",
       "body": [
-          "SELECT DISTINCT",
+          "$4:SELECT DISTINCT",
           "    ANO_TABELA,",
           "    ANO_ULT_ALTERACAO,",
           "    BD,",
           "    ESQUEMA,",
           "    TABELA,",
-          "    ${2:--}COLUNA,",
+          "    ${1:--}COLUNA,",
           "    NUM_COLUNAS,",
           "    NUM_LINHAS,",
           "    END_COMPLETO",
           "FROM [00_MAP]",
-          "${2:--} WHERE END_COMPLETO LIKE '%${1:PESQUISA}%' OR COLUNA LIKE '%${1:PESQUISA}%'",
-          "ORDER BY ANO_TABELA DESC, BD, ESQUEMA, TABELA ${2:--}, COLUNA"
+          "${2:--} WHERE END_COMPLETO LIKE '%${3:PESQUISA}%' ${1:,--} OR COLUNA LIKE '%${3:PESQUISA}%'",
+          "ORDER BY ANO_TABELA DESC, BD, ESQUEMA, TABELA ${1:--}, COLUNA"
       ],
       "description": "00_MAP_SELECT"
   },
@@ -484,7 +484,7 @@
     // CRIAR E-MAIL DE ESCOLA
   "CRIAR_E-MAIL_ESCOLA": {
     "scope": "sql",
-    "prefix": "ZEMA",
+    "prefix": "ZEMAIL",
     "body": [
       "${1:CASE                                                              }",
       "   WHEN CATESC='VINCULADA' THEN",
@@ -528,23 +528,6 @@
     "description": "WHERE"
   },
 
-  // WHERE_MULT_AND_OR
-  "WHERE_MULT_AND_OR": {
-    "scope": "sql",
-    "prefix": "ZWHEREMULT",
-    "body": [
-      "WHERE ${1:coluna1} ${2:SITUACAO1}", 
-      "${3:AND} ${4:coluna2} ${5:SITUACAO2}", 
-      "${7:AND ${8:coluna3} ${9:SITUACAO3}}",  
-      "AND (",
-      "   ${10:coluna4} ${11:SITUACAO4}",
-      "   OR ${12:coluna5} ${13:SITUACAO5}",
-      "   ${14:OR ${15:coluna6} ${16:SITUACAO6}}",
-      ")"
-      ],
-    "description": "WHERE_COM_MULTIPLAS_CONDICOES_AND_OR"
-  },
-
     // WHERE_DATAS
   "WHERE_DATAS": {
     "scope": "sql",
@@ -562,7 +545,7 @@
     "scope": "sql",
     "prefix": "ZROW",
     "body": [
-      "WITH BASE_RANK${1:1} AS (",                                                              
+      "$5:WITH BASE_RANK${1:1} AS (",                                                              
       "   --SELECT *",
       "   --FROM BASE",
       "),",
@@ -584,7 +567,7 @@
     "scope": "sql",
     "prefix": "ZROWMULT",
     "body": [
-      "WITH BASE_RANK${1:1} AS (",                                                              
+      "$6:WITH BASE_RANK${1:1} AS (",                                                              
       "   --SELECT *",
       "   --FROM BASE",
       "),",
@@ -595,7 +578,7 @@
       "   FROM BASE_RANK${1:1}",
       ")",
       "SELECT *",
-      "INTO ${7:BASE_SEM_DUPLICIDADE}",
+      "INTO ${5:BASE_SEM_DUPLICIDADE}",
       "FROM RANK${2:1}",
       "WHERE RANK_${3:coluna1} = 1   -- Primeira linha de cada DADO DA COLUNA ${3:coluna1}",  
       "   OR RANK_${4:coluna2} = 1   -- Primeira linha de cada DADO DA COLUNA ${4:coluna2}", 
@@ -682,7 +665,7 @@
     "scope": "sql",
     "prefix": "ZCRIARTAB",
     "body": [
-      "DROP TABLE IF EXISTS ${1:BASE}",
+      "$12:DROP TABLE IF EXISTS ${1:BASE}",
       "CREATE TABLE ${1:BASE} (",
       "    ${2:COLUNA1} VARCHAR(${3:100}),",
       "    ${4:COLUNA2} VARCHAR(${5:100})",
@@ -755,13 +738,9 @@
   "GROUP_BY": {
       "scope": "sql",
       "prefix": "ZGROUP",
-      "body": [
-      "${1:SELECT}",
-      "     ${2:COLUNA1,}",
-      "     COUNT(*) AS TOTAL -- SUM(* OU COLUNA), AVG(* OU COLUNA), MAX(* OU COLUNA), MIN(* OU COLUNA)",  
-      "${3:FROM BASE}", 
-      "${4:GROUP BY COLUNA1}",
-      "${5:ORDER BY TOTAL DESC}"
+      "body": [        
+      "$3:GROUP BY ${1:COLUNA1}",
+      "${2:ORDER BY TOTAL DESC}"
       ],
       "description": "GROUP_BY"
   },
@@ -769,33 +748,13 @@
   // HAVING
   "HAVING": {
       "scope": "sql",
-      "prefix": "ZHAVING",
+      "prefix": "ZCOUNTHAVING",
       "body": [
-      "${1:SELECT}",
-      "     ${1:COLUNA1,}",
-      "     ${1:COUNT(*) AS TOTAL, -- SUM(* OU COLUNA), AVG(* OU COLUNA), MAX(* OU COLUNA), MIN(* OU COLUNA)}", 
-      "     ${1:AVG(PRECO) AS PRECO}",
-      "${1:FROM BASE}", 
-      "${1:GROUP BY COLUNA1}",
-      "${1:HAVING COUNT(*) > 10 }",
-      "   ${1:AND AVG(preco) > 50}",
-      "${1:ORDER BY TOTAL DESC}"
+      "HAVING ${1:COUNT(*) > 10 } -- FILTRAR APÓS O GROUP BY COM COUNT",
+      "   ${2:AND AVG(preco) > 50}",
+      "${3:ORDER BY TOTAL DESC}"
       ],
-      "description": "HAVING"
-  },
-
-  // TEMPORARIA
-  "TEMPORARIA": {
-      "scope": "sql",
-      "prefix": "ZTEMP",
-      "body": [
-      "DROP TABLE IF EXISTS #${1:BASE1}",
-      "SELECT",
-      "     ${2:CPF}", 
-      "INTO #${1:BASE1}",
-      "FROM ${3:BASE2}"
-      ],
-      "description": "TEMPORARIA"
+      "description": "HAVING = FILTRAR APÓS O GROUP BY"
   },
 
   // NULL
@@ -857,6 +816,18 @@
 		],
 		"description": "RENOMEIA TABELA"
 	},
+  
+	//BACKUP_DA_TABELA
+	"BACKUP_DA_TABELA": {
+		"scope": "sql",
+		"prefix": "ZBKPTAB",
+		"body": [
+     	    "SELECT *",
+			"INTO #BKP",
+			"FROM ${1:BD} -- depois INTO BD_BKP FROM #BKP" 
+		],
+		"description": "BACKUP_DA_TABELA"
+	},
 
 	//BACKUP_DE_BD
 	"BACKUP_DE_BD": {
@@ -866,18 +837,6 @@
 			"BACKUP DATABASE ${1:CNOME_BD} TO DISK = 'C:ENDERECO_COMPLETO_NOME_BANCO_BACKUP.bak'"
 		],
 		"description": "BACKUP_DE_BD"
-	},
-
-	//BACKUP_DE_TABELA
-	"BACKUP_DE_TABELA": {
-		"scope": "sql",
-		"prefix": "ZBKPTAB",
-		"body": [
-     	    "SELECT *",
-			"INTO #BKP",
-			"FROM ${1:BD} -- depois INTO BD_BKP FROM #BKP" 
-		],
-		"description": "BACKUP_DE_TABELA"
 	},
 
 	//CONCATENAR
@@ -1713,6 +1672,105 @@
         "ORDER BY CPF_DV"
     ],
     "description": "SAS_EDUCA_PESSOAL"
+},
+
+// SAS_TB_PESSOAL
+"SAS_TB_PESSOAL": {
+    "scope": "sql",
+    "prefix": "ZSASTBPESSOAL",
+    "body": [
+        "$3SELECT",
+        "    CD_SIT_REG,",
+        "    DT_SIT_REG,",
+        "    NR_CPF,",
+        "    NM_PESSOA,",
+        "    NR_RG,",
+        "    NR_IDENT_RG,",
+        "    CD_VERIF_RG,",
+        "    SG_UF_RG,",
+        "    ID_ORG_EMIS_RG,",
+        "    DT_EMIS_RG,",
+        "    DT_NASC,",
+        "    SG_UF_NASC,",
+        "    NM_MUN_NASC,",
+        "    CD_NAC,",
+        "    ID_SEXO,",
+        "    ID_COR,",
+        "    CD_EST_CIVIL,",
+        "    FL_CONJUG_EXE,",
+        "    QT_DEP_IR,",
+        "    QT_DEP_SAL_FAM,",
+        "    DT_INIC_SERV_PUBL,",
+        "    DT_ANO_PRIM_EMPR,",
+        "    CD_GRAU_ESCOL,",
+        "    CD_SIT_ESCOL,",
+        "    EN_PESSOA,",
+        "    CD_CEP,",
+        "    NR_DIG_CEP,",
+        "    NM_BAIRRO,",
+        "    CD_IDENT_DISTRIT,",
+        "    NM_MUN_RESID,",
+        "    SG_UF_END_PESSOA,",
+        "    NR_CART_PROF,",
+        "    NR_SER_CART_PROF,",
+        "    SG_UF_CART_PROF,",
+        "    NR_PIS_PASEP,",
+        "    NR_TIT_ELE,",
+        "    CD_MUN_TIT_ELE,",
+        "    SG_UF_TIT_ELE,",
+        "    DT_EMIS_TIT_ELE,",
+        "    NR_SEC_ELE,",
+        "    NR_ZN_ELE,",
+        "    NR_IDENT_SRV_MED,",
+        "    CD_DDD,",
+        "    NR_TEL,",
+        "    CD_DDD_CEL,",
+        "    NR_TEL_CEL,",
+        "    DT_OPC_ESTRG,",
+        "    DT_ANO_ENTR_BR,",
+        "    ID_PAIS_ORIG,",
+        "    NM_EMAIL,",
+        "    NM_MAE,",
+        "    NM_PAI,",
+        "    DT_ULT_ALT,",
+        "    NM_LOGRADOURO,",
+        "    NR_LOGRADOURO,",
+        "    NM_COMPLEMENTO,",
+        "    FL_DEFICIENCIA,",
+        "    TP_DEFICIENCIA,",
+        "    FL_DEFIC_COND_LEI,",
+        "    NR_TAM_FONTE,",
+        "    FL_ALDEADO,",
+        "    FL_FACIL_ACESSO,",
+        "    FL_FONTE_AMPL,",
+        "    CD_DDD_TEL2,",
+        "    NR_TEL2,",
+        "    NM_EMAIL_RH,",
+        "    NM_EMAIL_INST,",
+        "    NM_PESSOA_SOCIAL,",
+        "    USER_ID,",
+        "    DT_INCLUSAO,",
+        "    USER_ID_INCLUSAO,",
+        "    FL_ALTER_PIS_ANO,",
+        "    FL_CPF_ALTERADO,",
+        "    FL_SED,",
+        "    TP_ESPECIFICACAO_DEFICIENCIA,",
+        "    TP_DEFICIENCIA_2,",
+        "    TP_ESPECIFICACAO_DEFICIENCIA_2,",
+        "    TP_DEFICIENCIA_3,",
+        "    TP_ESPECIFICACAO_DEFICIENCIA_3,",
+        "    FL_DEFICIENCIA_MULTIPLA,",
+        "    NR_RNE,",
+        "    TP_ESCOLARIDADE,",
+        "    FL_UsaAparelhoAuditivo,",
+        "    FL_ALTERAR_APENAS_CPF,",
+        "    CD_DDD_CEL2,",
+        "    NR_TEL_CEL2,",
+        "    NM_EMAIL2",
+        "FROM SAS.[${1:052026}].TB_PESSOAL",
+        "${2:WHERE CD_SIT_REG = 'A'}"
+    ],
+    "description": "SAS_TB_PESSOAL"
 },
 
 // SAS_TB_ATRIB_ASSOCIACAO
