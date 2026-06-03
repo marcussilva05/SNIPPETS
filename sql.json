@@ -3928,6 +3928,19 @@
     "description": "00_CATEG"
 },
 
+// 00_QUADRO
+"00_QUADRO": {
+    "scope": "sql",
+    "prefix": "Z00QUADRO",
+    "body": [
+        "SELECT ",
+        "    QUADRO       ,",
+        "    QUADRO_DESC  ",
+        "FROM [00_QUADRO]"
+    ],
+    "description": "00_QUADRO"
+},
+
 // TB_FUNCIONAL_CONTAGEH
 "TB_FUNCIONAL_CONTAGEH": {
     "scope": "sql",
