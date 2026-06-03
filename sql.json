@@ -20,7 +20,7 @@
     "scope": "sql",
     "prefix": "ZSYSSERV",
     "body": [
-      "$1:SELECT              ",
+      "$1SELECT              ",
       "   NAME,",
       "   data_source,",
       "   modify_date",
@@ -35,7 +35,7 @@
     "scope": "sql",
     "prefix": "ZSYSBD?",
     "body": [
-      "$1:SELECT DB_NAME()"    
+      "$1SELECT DB_NAME()"    
       ],
     "description": "QUAL_BD_ESTOU?"
   },
@@ -45,7 +45,7 @@
     "scope": "sql",
     "prefix": "ZSYSBDLIST",
     "body": [
-      "$1:SELECT              ",
+      "$1SELECT              ",
       "   NAME,",
       "   CREATE_DATE,",
       "   STATE_DESC",
@@ -60,7 +60,7 @@
     "scope": "sql",
     "prefix": "ZSYSBDEXEC",
     "body": [
-      "$2:EXEC sp_helpdb '${1:nome_do_banco}'"    
+      "$2EXEC sp_helpdb '${1:nome_do_banco}'"    
       ],
     "description": "EXECUTE_BD"
   },
@@ -70,7 +70,7 @@
     "scope": "sql",
     "prefix": "ZSYSTABLIST",
     "body": [  
-      "$1:SELECT", 
+      "$1SELECT", 
       "t.name AS NOME_TABELA,",
       "SCHEMA_NAME(t.schema_id) AS ESQUEMA,",
       "YEAR(t.create_date) AS ANO_CRIACAO,",
@@ -96,7 +96,7 @@
     "scope": "sql",
     "prefix": "ZSYSCOLVCEPEA",
     "body": [
-      "$4:SELECT                                    ",    
+      "$4SELECT                                    ",    
       "COLUMN_NAME AS COLUNA",
       "FROM INFORMATION_SCHEMA.COLUMNS",
       "WHERE TABLE_SCHEMA = '${1:dbo}'      ${3:-- schema separado sem colchetes [dbo] = dbo}",
@@ -203,7 +203,7 @@
     "scope": "sql",
     "prefix": "ZUSE",
     "body": [
-      "$1:USE CEPEA_SAS"
+      "$1USE CEPEA_SAS"
     ],
     "description": "USE_BD"
   },
@@ -213,7 +213,7 @@
     "scope": "sql",
     "prefix": "ZTOP",
     "body": [
-      "$2:SELECT TOP 10 *      ",
+      "$2SELECT TOP 10 *      ",
       "FROM ${1:CTG0526}"
     ],
     "description": "TOP 10"
@@ -224,7 +224,7 @@
     "scope": "sql",
     "prefix": "ZSEL",
     "body": [
-      "$2:SELECT *          ",
+      "$2SELECT *          ",
       "FROM ${1:CTG0526}"
     ],
     "description": "SELECT SIMPLES"
@@ -235,7 +235,7 @@
     "scope": "sql",
     "prefix": "ZDIS",
     "body": [
-      "$3:SELECT DISTINCT",
+      "$3SELECT DISTINCT",
       "   ${1:-- COLUNA}",
       "FROM ${2:CTG0226}"
     ],
@@ -464,7 +464,7 @@
       "scope": "sql",
       "prefix": "ZMAP_CONSULTA",
       "body": [
-          "$4:SELECT DISTINCT",
+          "$4SELECT DISTINCT",
           "    ANO_TABELA,",
           "    ANO_ULT_ALTERACAO,",
           "    BD,",
@@ -545,7 +545,7 @@
     "scope": "sql",
     "prefix": "ZROW",
     "body": [
-      "$5:WITH BASE_RANK${1:1} AS (",                                                              
+      "$5WITH BASE_RANK${1:1} AS (",                                                              
       "   --SELECT *",
       "   --FROM BASE",
       "),",
@@ -567,7 +567,7 @@
     "scope": "sql",
     "prefix": "ZROWMULT",
     "body": [
-      "$6:WITH BASE_RANK${1:1} AS (",                                                              
+      "$6WITH BASE_RANK${1:1} AS (",                                                              
       "   --SELECT *",
       "   --FROM BASE",
       "),",
@@ -665,7 +665,7 @@
     "scope": "sql",
     "prefix": "ZCRIARTAB",
     "body": [
-      "$12:DROP TABLE IF EXISTS ${1:BASE}",
+      "$12DROP TABLE IF EXISTS ${1:BASE}",
       "CREATE TABLE ${1:BASE} (",
       "    ${2:COLUNA1} VARCHAR(${3:100}),",
       "    ${4:COLUNA2} VARCHAR(${5:100})",
@@ -729,7 +729,7 @@
     "scope": "sql",
     "prefix": "ZCOUNT",
     "body": [
-      "COUNT(*) AS ${1:TOTAL} ${2:-- SUM(* OU COLUNA), AVG(* OU COLUNA), MAX(* OU COLUNA), MIN(* OU COLUNA) VEJA MAIS EM ZGROUP}",  
+      "COUNT(${1:CPF+DI}) AS ${2:TOTAL} ${3:-- SUM(* OU COLUNA), AVG(* OU COLUNA), MAX(* OU COLUNA), MIN(* OU COLUNA) VEJA MAIS EM ZGROUP}",  
       ],
     "description": "CONTAR E AGRUPAR"
   },	
@@ -739,7 +739,7 @@
       "scope": "sql",
       "prefix": "ZGROUP",
       "body": [        
-      "$3:GROUP BY ${1:COLUNA1}",
+      "$3GROUP BY ${1:COLUNA1}",
       "${2:ORDER BY TOTAL DESC}"
       ],
       "description": "GROUP_BY"
