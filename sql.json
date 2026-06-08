@@ -91,6 +91,16 @@
     "description": "LISTAR TEBELAS"
   },
 
+  // DADOS_DA_TABELA
+  "DADOS_DA_TABELA": {
+      "scope": "sql",
+      "prefix": "ZSYSDDTAB",
+      "body": [
+          "EXEC sp_help '${1:NOME_TABELA}'"
+      ],
+      "description": "Retorna informações da tabela (colunas, índices, constraints) via sp_help"
+  },
+
   // COLUNAS_NA_VERTICAL_CEPEA_SAS
   "COLUNAS_NA_VERTICAL_CEPEA_SAS": {
     "scope": "sql",
@@ -2553,8 +2563,8 @@
         "     LICENCIA            ,",
         "     NM_TIPO_NIVEL_CURSO ,",
         "     COD_HABILITACAO_TRAB,",
-        "     NM_HABILITACAO_TRAB ,         ",
-        "FROM QUALIF${1:03}26"
+        "     NM_HABILITACAO_TRAB          ",
+        "FROM QUALIF${1:05}26"
     ],
     "description": "CEPEA_QUALIF"
 },
