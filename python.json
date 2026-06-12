@@ -571,82 +571,41 @@
 
 //********************************************************************** Web Scraping (web) **********************************************************************
 
-	// cabecalho_explorador
-"cabecalho_explorador": {
-	"prefix": "webexplorasite",
-	"body": [
-		"# usar outro interpretador de python / digite Ctrl+Shift+P / procure por \"Python: Select Interpreter\" / Escolha o Python 3.12",
-		"# execute o comando zcmd para abrir o navegador em modo debug (ex: zcmd + enter)",
-		"# EXPLORADOR COMPLETO DE SITES - Descobre elementos automaticamente"
-	],
-	"description": "Cabecalho de explorador de sites com Selenium"
-},
-
-	// abrir_navegador_por_debug_pelo_cmd
-"abrir_navegador_por_debug_pelo_cmd": {
-	"prefix": "webnavegadordebug",
+	// cola_de_modo_debug
+"cola_de_modo_debug": {
+	"prefix": "webcoladebug",
 	"body": [
 		"# porta padrão 9222, mas pode ser qualquer porta disponível entre 1024 e 65535",
 		"# host padrão para qualquer máquina: 127.0.0.1 ou localhost",
-		"# debug edge: ${1:start msedge --remote-debugging-port=9222 --user-data-dir=C:\\temp\\edge_debug}",
-		"# debug chrome: ${2:\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" --remote-debugging-port=9222 --user-data-dir=C:\\temp\\chrome_debug}",
-		"# debug firefox: ${3:\"C:\\Program Files\\Mozilla Firefox\\firefox.exe\" --remote-debugging-port 9222}"
+		"# debug edge: Start-Process msedge -ArgumentList \"--remote-debugging-port=9222\", \"--user-data-dir=C:\\temp\\edge_debug\"",
+		"# debug chrome: Start-Process chrome -ArgumentList \"--remote-debugging-port=9222\", \"--user-data-dir=C:\\temp\\chrome_debug\"",
+		"# debug chrome: Start-Process firefox -ArgumentList \"-start-debugger-server", "9222\", \"-no-remote", "-profile", "C:\\temp\\firefox_debug_profile\""
 	],
 	"description": "Abre o Site via CMD ADM para usar com Selenium via Debug"
-},
-
-// modulo_principal_webdriver
-"modulo_principal_webdriver": {
-	"prefix": "webmoduloprinc",
-	"body": [
-		"from selenium import webdriver     # Núcleo: controla o navegador (abrir, fechar, navegar)"
-	],
-	"description": "Módulo Principal de exploracao de sites com o webdriver do Selenium"
-},
-
-// FUNCAO_NAVEGADOR
-"FUNCAO_NAVEGADOR": {
-	"prefix": "webnav",
-	"body": [
-		"${1:# Após zcmd}",
-		"${2:from selenium import webdriver}",
-		"from selenium.webdriver.${3:edge}.options import Options  # ou chrome ou firefox",
-		"from selenium.webdriver.common.by import By",
-		"from selenium.webdriver.support.ui import Select",
-		"",
-		"def conectar():",
-		"    print(\"🔌 Conectando ao ${4:Edge}...\")  # ou Chrome ou Firefox",
-		"    options = Options()",
-		"    options.add_experimental_option(\"debuggerAddress\", \"127.0.0.1:9222\")",
-		"    driver = webdriver.${5:Edge}(options=options)  # ou Chrome ou Firefox",
-		"    print(\"✅ Conectado!\")",
-		"    return driver",
-		"driver = conectar()",
-	],
-	"description": "Navegadores após uso do cmd adm navegador debugado (Edge, Chrome ou Firefox)"
 },
 
 // cabeçalho web scraping
     "cabecalho_web_scraping": {
         "prefix": "webcab",
         "body": [
-            "# 1) z py_venv_ativar",
-            "# 2) z sys_edge_modo_debug (Edge aberto com --remote-debugging-port=9222)",
-            "# 3) Site ${1:https://sed.educacao.sp.gov.br/Funcional/Consulta/Index}",
-            "# 4) python ${2:teste.py}",
-            "",
-            "from selenium import webdriver",
-            "from selenium.webdriver.edge.options import Options",
-            "from selenium.webdriver.common.by import By",
-            "from selenium.webdriver.support.ui import Select, WebDriverWait",
-            "from selenium.webdriver.support import expected_conditions as EC",
-            "import time",
-            "import csv",
-            "import os",
-            "from datetime import datetime"
-        ],
-        "description": "Cabecalho de web scraping com Selenium para site SED (inclui ativacao de venv, edge debug, imports)"
-    },
+        "# Extrator para: CADASTRO = EVENTO → extrair motivos da 3ª coluna",
+        "# 1) z py_venv_ativar",
+        "# 2) z sys_edge_modo_debug ou ( Start-Process msedge -ArgumentList \"--remote-debugging-port=9222\", \"--user-data-dir=C:\\temp\\edge_debug\" ) ou Google Chrome ( Start-Process chrome -ArgumentList \"--remote-debugging-port=9222\", \"--user-data-dir=C:\\temp\\chrome_debug\" )",
+        "# 3) Site https://sed.educacao.sp.gov.br/Funcional/Consulta/Index",
+        "# 4) python teste.py",
+        "",
+        "from selenium import webdriver",
+        "from selenium.webdriver.edge.options import Options",
+        "from selenium.webdriver.common.by import By",
+        "from selenium.webdriver.support.ui import Select, WebDriverWait",
+        "from selenium.webdriver.support import expected_conditions as EC",
+        "import time",
+        "import csv",
+        "import os",
+        "from datetime import datetime"
+    ],
+    "description": "Cabecalho extrator para CADASTRO = EVENTO (motivos 3a coluna)"
+},
 
 	// requirements webscraping
 "webrequisitos": {
