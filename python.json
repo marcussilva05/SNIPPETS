@@ -1,3261 +1,626 @@
 {
-
-  // SERVER_CPU
-  "SERVER_CPU": {
-    "scope": "sql",
-    "prefix": "ZSYSCPU",
-    "body": [
-      "${1:SELECT              }",
-      "   cpu_count / NULLIF(hyperthread_ratio, 0) AS QTD_CPU_FISICA,",
-      "   physical_memory_kb / 1024 / 1024 AS RAM_FISICA_GB,",
-      "   virtual_machine_type_desc AS TIPO_CPU_VIRTUAL,",
-      "   virtual_memory_kb / 1024 / 1024 / 1024 AS RAM_VIRTUAL_GB",
-      "FROM sys.dm_os_sys_info"
-      ],
-    "description": "INFO SOBRE CPU DO SERVER"
-  },
-
-  // SERVERS
-  "SERVERS": {
-    "scope": "sql",
-    "prefix": "ZSYSSERV",
-    "body": [
-      "${1:SELECT              }",
-      "   NAME,",
-      "   data_source,",
-      "   modify_date",
-      "FROM sys.servers",
-      "ORDER BY modify_date"
-      ],
-    "description": "LISTE OS SERVERS SQL"
-  },
-
-  // QUAL_BD_ESTOU?
-  "QUAL_BD_ESTOU?": {
-    "scope": "sql",
-    "prefix": "ZSYSBD?",
-    "body": [
-      "${1:SELECT DB_NAME()}"    
-      ],
-    "description": "QUAL_BD_ESTOU?"
-  },
-
-  // LISTE_BD
-  "LISTE_BD": {
-    "scope": "sql",
-    "prefix": "ZSYSBDLIST",
-    "body": [
-      "${1:SELECT              }",
-      "   NAME,",
-      "   CREATE_DATE,",
-      "   STATE_DESC",
-      "FROM sys.databases",
-      "ORDER BY NAME"
-      ],
-    "description": "LISTE OS BANCOS DE DADOS"
-  },
-
-  // EXECUTE_BD
-  "EXECUTE_BD": {
-    "scope": "sql",
-    "prefix": "ZSYSBDEXEC",
-    "body": [
-      "${2:EXEC sp_helpdb '${1:nome_do_banco}'}"    
-      ],
-    "description": "EXECUTE_BD"
-  },
-
-  // LISTAR_TEBELAS
-  "LISTAR_TEBELAS": {
-    "scope": "sql",
-    "prefix": "ZSYSTABLIST",
-    "body": [  
-      "SELECT", 
-      "t.name AS NOME_TABELA,",
-      "SCHEMA_NAME(t.schema_id) AS ESQUEMA,",
-      "YEAR(t.create_date) AS ANO_CRIACAO,",
-      "YEAR(t.modify_date) AS ANO_MODIFICACAO,",
-      "(SELECT COUNT(*) FROM sys.columns c WHERE c.object_id = t.object_id) AS QTD_COLUNAS,",
-      "SUM(p.rows) AS QTD_LINHAS_APROX",
-      "FROM sys.tables t",
-      "LEFT JOIN sys.partitions p ON t.object_id = p.object_id",
-      "GROUP BY ",
-      "    t.name,",
-      "    t.schema_id,",
-      "    t.create_date,",
-      "    t.modify_date,",
-      "    t.object_id ",
-      "ORDER BY ",
-      "    ANO_MODIFICACAO DESC"      
-      ],
-    "description": "LISTAR TEBELAS"
-  },
-
-  // COLUNAS_NA_VERTICAL_CEPEA_SAS
-  "COLUNAS_NA_VERTICAL_CEPEA_SAS": {
-    "scope": "sql",
-    "prefix": "ZSYSCOLVCEPEA",
-    "body": [
-      "${4:SELECT                                    }",    
-      "COLUMN_NAME AS COLUNA",
-      "FROM INFORMATION_SCHEMA.COLUMNS",
-      "WHERE TABLE_SCHEMA = '${1:dbo}'      ${3:-- schema separado sem colchetes [dbo] = dbo}",
-      "  AND TABLE_NAME = 'CTG${2:02}26'  ${3:-- nome da tabela sem colchetes}",
-      "ORDER BY ORDINAL_POSITION"
-      ],
-    "description": "TERMINAL COM COLUNAS_NA_VERTICAL_CEPEA_SAS"
-  },
-
-  // COLUNAS_NA_VERTICAL_SAS
-  "COLUNAS_NA_VERTICAL_SAS": {
-    "scope": "sql",
-    "prefix": "ZSYSCOLVSAS",
-    "body": [
-      "${5:USE ${1:SAS}                                    }",
-      "SELECT",    
-      "   COLUMN_NAME AS COLUNA",
-      "FROM INFORMATION_SCHEMA.COLUMNS",
-      "WHERE TABLE_SCHEMA = '${2:02}2026' ${4:-- schema separado sem colchetes [022026] = 022026}",
-      "  AND TABLE_NAME = '${3:pap_ua}'  ${4:-- nome da tabela sem colchetes}",
-      "ORDER BY ORDINAL_POSITION"
-      ],
-    "description": "TERMINAL COM COLUNAS_NA_VERTICAL_SAS"
-  },
-
-  // LISTAR_INSTANCIAS_SQL_SERVER
-"LISTAR_INSTANCIAS_SQL_SERVER": {
-    "scope": "sql",
-    "prefix": "ZSYSINST",
-    "body": [
-        "DECLARE @GetInstances TABLE (Value nvarchar(100), InstanceNames nvarchar(100), Data nvarchar(100));",
-        "INSERT INTO @GetInstances",
-        "EXECUTE xp_regread",
-        "    @rootkey = 'HKEY_LOCAL_MACHINE',",
-        "    @key = 'SOFTWARE\\Microsoft\\Microsoft SQL Server',",
-        "    @value_name = 'InstalledInstances'",
-        "SELECT InstanceNames FROM @GetInstances"
-    ],
-    "description": "LISTAR INSTANCIAS SQL SERVER INSTALADAS"
-  },
-
-  // INSTANCIA_INFO_SERVIDOR_SQL
-"INSTANCIA_INFO_SERVIDOR_SQL": {
-    "scope": "sql",
-    "prefix": "ZSYSISNTINFO",
-    "body": [
-        "SELECT  ",
-        "    @@SERVERNAME AS NomeServidor,",
-        "    SERVERPROPERTY('MachineName') AS NomeMaquina,",
-        "    SERVERPROPERTY('InstanceName') AS Instancia,",
-        "    SERVERPROPERTY('IsLocalDB') AS IsLocalDB"
-    ],
-    "description": "INFORMACOES DO SERVIDOR/INSTANCIA SQL"
-},
-
-  // EXECUTE_INSTANCIA
-"EXECUTE_INSTANCIA": {
-    "scope": "sql",
-    "prefix": "ZSYSEXECINST",
-    "body": [
-        "EXEC xp_cmdshell 'sc query ${1:INSTANCIA_ENTRE_ASPAS_DUPLAS}'"
-    ],
-    "description": "EXECUTE_INSTANCIA"
-},
-
-  // QUERY_COLETIVA
-  "QUERY_COLETIVA": {
-      "scope": "sql",
-      "prefix": "ZCOLET",
-      "body": [
-          "--QUERY COLETIVA",
-          "/*",
-          "     SOLICITAÇÃO:",
-          "${1:COLE O TEXTO DA SOLICITAÇÃO AQUI}",
-          "*/",
-          "-------------- SCRIPT COLETIVO --------------",
-          "",
-          "-------------- SCRIPT COLETIVO FIM --------------",            
-      ],
-      "description": "QUERY_COLETIVA"
-  },
-
-    // CABECALHO
-  "CABECALHO": {
-      "scope": "sql",
-      "prefix": "ZCABE",
-      "body": [
-          "/*",
-          "BANCOS DE DADOS CONSULTADOS:",
-          "${1:CEPEA_SAS}",
-          "",
-          "TABELAS:",
-          "",
-          "TEMPORÁRIAS:",
-          "",
-          "*/",
-          "------------------------------------------"           
-      ],
-      "description": "CABECALHO_DE_QUERY_BD_BASES_TEMPS"
-  },
-
-    // USE_BD
-  "USE_BD": {
-    "scope": "sql",
-    "prefix": "ZUSE",
-    "body": [
-      "${1:USE CEPEA_SAS}"
-    ],
-    "description": "USE_BD"
-  },
-
-  // TOP 10
-  "TOP 10": {
-    "scope": "sql",
-    "prefix": "ZTOP",
-    "body": [
-      "${2:SELECT TOP 10 *      }",
-      "FROM ${1:CTG0226}"
-    ],
-    "description": "TOP 10"
-  },
-
-  // SELECT
-  "SELECT": {
-    "scope": "sql",
-    "prefix": "ZSEL",
-    "body": [
-      "${2:SELECT *          }",
-      "FROM ${1:CTG0226}"
-    ],
-    "description": "SELECT SIMPLES"
-  },
-
-  // DISTINCT
-  "DISTINCT": {
-    "scope": "sql",
-    "prefix": "ZDIS",
-    "body": [
-      "${3:SELECT DISTINCT}",
-      "   ${2:-- COLUNA}",
-      "FROM CTG${1:02}26"
-    ],
-    "description": "DISTINCT"
-  },
-
-    // 00_EAT1
-  "00_EAT1": {
-    "scope": "sql",
-    "prefix": "Z00EAT1",
-    "body": [
-      "${3:SELECT *                                 }",
-      "FROM [00_NOVO_ESQUEMA_EAT1${1:02}26]",
-      "WHERE END_COMPLETO LIKE '%${2:DADO}%'",
-      "ORDER BY DT DESC"
-    ],
-    "description": "00_EAT1"
-  },
-
-  // 00_SQL
-  "00_SQL": {
-    "scope": "sql",
-    "prefix": "Z00SQL",
-    "body": [
-      "${3:SELECT *                                 }",
-      "FROM [00_SQL_SERVER_SCRIPTS${1:02}26]",
-      "WHERE END_COMPLETO LIKE '%${2:DADO}%'",
-      "ORDER BY DT DESC"
-    ],
-    "description": "00_SQL"
-  },
-
-  // 00_MAPEAMENTO_MUDANCA_DE_COLUNAS
-  "00_MAPEAMENTO_MUDANCA_DE_COLUNAS": {
-    "scope": "sql",
-    "prefix": "ZMAPMUDCOL",
-    "body": [
-      "${3:SELECT                                          }",
-      "   ANO_TABELA,",
-      "   BD,",
-      "   TABELA,",
-      "   --COLUNA,",
-      "   --END_COMPLETO",
-      "   COUNT(*) AS TOTAL",
-      "FROM [dbo].[00_MAPEAMENTO_BD${1:03}26]",
-      "WHERE TABELA LIKE '%${2:NOME}%'",
-      "AND BD = 'CEPEA_SAS'",
-      "GROUP BY ANO_TABELA,    BD,     TABELA --COLUNA,  END_COMPLETO",
-      "ORDER BY ANO_TABELA, TOTAL ASC"
-    ],
-    "description": "00_MAPEAMENTO_MUDANCA_DE_COLUNAS"
-  },
-
-// CRIAR_00_MAPEAMENTO
-"CRIAR_00_MAPEAMENTO": {
-    "scope": "sql",
-    "prefix": "ZMAPCRIAR",
-    "body": [
-        "USE CEPEA_SAS",
-        "DROP TABLE IF EXISTS [00_MAPEAMENTO]",
-        "",
-        "IF OBJECT_ID('TEMPDB..#MAPEAMENTO') IS NOT NULL",
-        "    DROP TABLE #MAPEAMENTO",
-        "",
-        "CREATE TABLE #MAPEAMENTO (",
-        "    ANO_TABELA int NULL,",
-        "    BD sysname NULL,",
-        "    TABELA sysname NULL,",
-        "    COLUNA sysname NULL,",
-        "    END_COMPLETO varchar(500) NULL ",
-        ") ",
-        "",
-        "/* ",
-        "sp_MSforeachdb e um procedimento armazenado nao documentado da Microsoft que executa um comando para cada banco de dados no servidor. O comando e passado como string, e o ",
-        "nome do banco de dados atual e representado por '?' dentro da string. ",
-        "*/",
-        "EXEC sp_MSforeachdb ' ",
-        "USE [?]",
-        "INSERT INTO #MAPEAMENTO (ANO_TABELA, BD, TABELA, COLUNA, END_COMPLETO)",
-        "SELECT",
-        "    YEAR(A.create_date) AS ANO_TABELA,  ",
-        "    DB_NAME() AS BD,",
-        "    A.name AS TABELA,",
-        "    B.name AS COLUNA,    ",
-        "    CAST(YEAR(A.create_date) AS varchar(4)) + ''/'' + -- ← Barra normal",
-        "    DB_NAME() + ''/'' + ",
-        "    A.name + ''/'' + ",
-        "    B.name AS END_COMPLETO",
-        "FROM sys.tables A ",
-        "INNER JOIN sys.columns B ON A.object_id = B.object_id",
-        "WHERE A.is_ms_shipped = 0",
-        "'",
-        "",
-        "/*",
-        "is_ms_shipped = 1 indica que a tabela foi criada pela Microsoft (tabelas do sistema)",
-        "is_ms_shipped = 0 indica tabelas criadas pelo usuario (tabelas dos usuarios)",
-        "is_ms_shipped e uma coluna na tabela sys.tables que indica se a tabela e um objeto do sistema (1) ou um objeto do usuario (0).",
-        "*/",
-        "",
-        "-- Atualizar bd",
-        "SELECT *",
-        "INTO [00_MAPEAMENTO]",
-        "FROM #MAPEAMENTO"
-    ],
-    "description": "CRIAR 00_MAPEAMENTO"
-},
-
-// 00_MAPEAMENTO_CONSULTA
-"00_MAPEAMENTO_CONSULTA": {
-    "scope": "sql",
-    "prefix": "ZMAPCONS",
-    "body": [
-        "SELECT           ",
-      "   ANO_TABELA,",
-      "   BD,",
-      "   TABELA,",
-      "   COLUNA,",
-      "   END_COMPLETO",
-        "FROM [00_MAPEAMENTO]",
-        "-- WHERE END_COMPLETO LIKE '%${1:DADO}%'",
-        "ORDER BY ANO_TABELA DESC, BD, TABELA, COLUNA"
-    ],
-    "description": "CONSULTAR 00_MAPEAMENTO"
-},
-
-    // CRIAR E-MAIL DE ESCOLA
-  "CRIAR_E-MAIL_ESCOLA": {
-    "scope": "sql",
-    "prefix": "ZEMA",
-    "body": [
-      "${1:CASE                                                              }",
-      "   WHEN CATESC='VINCULADA' THEN",
-      "      CONCAT('e', FORMAT(ESCVINC, '000000'), 'a@educacao.sp.gov.br')",
-      "   ELSE",
-      "       CONCAT('e', FORMAT(CODESC, '000000'), 'a@educacao.sp.gov.br')",
-      "END",
-      "AS EMAIL"
-    ],
-    "description": "CRIAÇÃO DE E-MAIL DE ESCOLAS"
-  },
-
-      // EXTRAIR ZEROS RG 12
-  "EXTRAIR_ZEROS_RG_12": {
-    "scope": "sql",
-    "prefix": "ZDDRG",
-    "body": [
-      "${1:LEFT(NR_RG, 12) AS RG_TRUNCADO,}"
-    ],
-    "description": "EXTRAIR ZEROS RG 12"
-  },
-
-  // E-MAILS_VAZIOS
-  "E-MAILS_VAZIOS": {
-    "scope": "sql",
-    "prefix": "ZEMAVAZIO",
-    "body": [
-      "${2:COALESCE(NULLIF(EMAIL_INST2, ''), EMAIL_INST1) AS EMAILI_DIRETOR,}  -- NULLIF converte string vazia para NULL, só assim COALESCE funciona para acrescentar e-mail2 quando email1 for vazio ",
-      "${1:-- COALESCE(NULLIF(EMAIL_INST2, ''), NULLIF(EMAIL_INST1, ''), 'SEM_EMAIL') AS EMAIL_DIRETOR -- valor padrão quando ambos forem vazios}"
-    ],
-    "description": "E-MAILS_VAZIOS"
-  },
-
-    // WHERE
-  "WHERE": {
-    "scope": "sql",
-    "prefix": "ZWHERE",
-    "body": [
-      "${5:WHERE ${1:coluna1} ${2:LIKE} '%${3:DADO}%' ${4:-- LIKE '%%', NOT LIKE '%%', = '', <> '', MAIOR/MENOR/IGUAL, OR, AND, BETWEEN, IN ('','',''), NOT IN('','',''), NULL/NOTNULL}}"    
-      ],
-    "description": "WHERE"
-  },
-
-  // WHERE_MULT_AND_OR
-  "WHERE_MULT_AND_OR": {
-    "scope": "sql",
-    "prefix": "ZWHEREMULT",
-    "body": [
-      "WHERE ${1:coluna1} ${2:SITUACAO1}", 
-      "${3:AND} ${4:coluna2} ${5:SITUACAO2}", 
-      "${7:AND ${8:coluna3} ${9:SITUACAO3}}",  
-      "AND (",
-      "   ${10:coluna4} ${11:SITUACAO4}",
-      "   OR ${12:coluna5} ${13:SITUACAO5}",
-      "   ${14:OR ${15:coluna6} ${16:SITUACAO6}}",
-      ")"
-      ],
-    "description": "WHERE_COM_MULTIPLAS_CONDICOES_AND_OR"
-  },
-
-    // WHERE_DATAS
-  "WHERE_DATAS": {
-    "scope": "sql",
-    "prefix": "ZWHERED",
-    "body": [
-      "${7:WHERE ${1:coluna1} BETWEEN '%${2:DATA1}%' AND '%${3:DATA2}%' ${6:-- LIKE '%%', NOT LIKE '%%', = '', <> '', MAIOR/MENOR/IGUAL, OR, AND, BETWEEN, IN ('','',''), NOT IN('','',''), NULL/NOTNULL}}",   
-      "${4:--YEAR(coluna1) = 2024}", 
-      "${5:--MONTH(coluna1) = 01}"
-      ],
-    "description": "WHERE_DATAS"
-  },
-
-    // ROW_NUMBER
-  "ROW_NUMBER_SEM_DUPLICATAS": {
-    "scope": "sql",
-    "prefix": "ZROW",
-    "body": [
-      "WITH BASE_RANK${1:1} AS (",                                                              
-      "   --SELECT *",
-      "   --FROM BASE",
-      "),",
-      "RANK${2:1} AS (",
-      "   SELECT *,",
-      "      ROW_NUMBER() OVER (PARTITION BY ${3:CPF_DI} ORDER BY (SELECT NULL)) AS ROW${4:1}",
-      "   FROM BASE_RANK${1:1}",
-      ")",
-      "SELECT *",
-      "FROM RANK${2:1}",
-      "WHERE ROW${4:1} = 1 --PRIMEIRA LINHA DA DUPLICATA",  
-      "ORDER BY ${3:CPF_DI}"
-      ],
-    "description": "ROW_NUMBER"
-  },
-
-    // ROW_NUMBER_MULTIPLO
-  "ROW_NUMBER_MULTIPLO": {
-    "scope": "sql",
-    "prefix": "ZROWMULT",
-    "body": [
-      "WITH BASE_RANK${1:1} AS (",                                                              
-      "   --SELECT *",
-      "   --FROM BASE",
-      "),",
-      "RANK${2:1} AS (",
-      "   SELECT *,",
-      "      ROW_NUMBER() OVER (PARTITION BY ${3:coluna1} ORDER BY (SELECT NULL)) AS RANK_${3:coluna1},",
-      "      ROW_NUMBER() OVER (PARTITION BY ${4:coluna2} ORDER BY (SELECT NULL)) AS RANK_${4:coluna2}",
-      "   FROM BASE_RANK${1:1}",
-      ")",
-      "SELECT *",
-      "INTO ${7:BASE_SEM_DUPLICIDADE}",
-      "FROM RANK${2:1}",
-      "WHERE RANK_${3:coluna1} = 1   -- Primeira linha de cada DADO DA COLUNA ${3:coluna1}",  
-      "   OR RANK_${4:coluna2} = 1   -- Primeira linha de cada DADO DA COLUNA ${4:coluna2}", 
-      "ORDER BY ${3:CPF_DI}"
-      ],
-    "description": "FILTRO DUPLO EM LISTA ÚNICA"
-  },
-
-  // EXTRAI_TEMPO
-  "EXTRAI_TEMPO": {
-    "scope": "sql",
-    "prefix": "ZDDTEMP",
-    "body": [
-      "YEAR(A.create_date) AS ANO_TABELA",
-      "MONTH(A.create_date) AS MES_TABELA,",
-      "DAY(A.create_date) AS DIA_TABELA,",
-      "DATEPART(HOUR, A.create_date) AS HORA_TABELA,",
-      "DATEPART(MINUTE, A.create_date) AS MINUTO_TABELA,",
-      "DATEPART(SECOND, A.create_date) AS SEGUNDOS_TABELA"
-      ],
-    "description": "EXTRAI REGISTROS DE TEMPOS COMPOSTOS DD/MM/YYYY HH:MM:SS"
-  },
-
-  // COLA_DE_DADOS
-  "COLA_DE_DADOS": {
-    "scope": "sql",
-    "prefix": "ZCOLADATA",
-    "body": [
-      "/*",
-      "REGRAS DE BOAS PRÁTICAS:",
-      "  - VARCHAR para textos (a menos que precise de Unicode)",
-      "  - Tipos numéricos para números (nunca guarde números em VARCHAR)",
-      "  - Tipos de data para datas (nunca guarde datas em texto)",
-      "  - Evite MAX a menos que necessário (índices não funcionam bem)",
-      "",
-      "TIPO          |                                        | OCUPAÇÃO       | EXEMPLO DE USO                 | O QUE ARMAZENA",
-      "--------------|----------------------------------------|----------------|--------------------------------|-------------------------------",
-      "BIT 0 ou 1                                             | 1 byte         | ativo BIT DEFAULT 1            | 1 (verdadeiro), 0 (falso)",
-      "TINYINT(0 a 255)                                       | 1 byte         | idade TINYINT                  | 25, 0, 255",
-      "INT(-2,1Bi a 2,1Bi)                                    | 4 bytes        | id INT IDENTITY(1,1)           | 1, 999, -4587",
-      "DECIMAL(p,s) Até 38 dígitos                            | 5-17 bytes     | salario DECIMAL(10,2)          | 12345.67, -999.99",
-      "NUMERIC(p,s) Mesmo que DECIMAL                         | 5-17 bytes     | nota NUMERIC(4,2)              | 9.75, 7.50",
-      "MONEY(-922 tri a 922 tri)                              | 8 bytes        | salario MONEY                  | 5250.75, 125000.00",
-      "FLOAT(-1.79E+308 a 1.79E+308)                          | 4 ou 8 bytes   | temperatura FLOAT              | 23.56789, -15.3",
-      "CHAR(1 a 8000) Fixo, n = 1-8000                        | n bytes        | uf CHAR(2)                     | 'SP', 'RJ', 'MG'",
-      "VARCHAR(1-8000) Variável, n = 1-8000                   | tam + 2 bytes  | nome VARCHAR(100)              | 'João Silva', 'Ana'",
-      "VARCHAR(MAX) Até 2GB                                   | tam + 2 bytes  | observacao VARCHAR(MAX)        | Textos longos",
-      "NCHAR(1 a 4000) Unicode fixo, n = 1-4000               | n * 2 bytes    | nome_japones NCHAR(50)         | '田中太郎'",
-      "NVARCHAR(1-4000) Unicode var, n = 1-4000               | (tam*2)+2 bytes| nome_completo NVARCHAR(100)    | 'João', '张伟', '😊'",
-      "NVARCHAR(MAX) Unicode até 2GB                          | (tam*2)+2 bytes| comentario NVARCHAR(MAX)       | Textos c/ emojis",
-      "TEXT Obsoleto (use VARCHAR(MAX))                       | Variável       | descricao TEXT (evitar)        | 'Texto antigo...'",
-      "NTEXT Obsoleto (use NVARCHAR(MAX))                     | Variável       | descricao NTEXT (evitar)       | 'Texto unicode antigo'",
-      "DATE do tipo 0001-01-01 a 9999-12-31                   | 3 bytes        | data_nascimento DATE           | '1990-05-15'",
-      "TIME(n) do tipo 00:00:00 a 23:59:59.9999999            | 3-5 bytes      | hora_entrada TIME              | '14:30:00'",
-      "DATETIME do tipo 1753-01-01 a 9999-12-31               | 8 bytes        | data_cadastro DATETIME         | '2024-03-19 15:45:30'",
-      "*/"
-    ],
-    "description": "Cola de tipos de dados SQL Server"
-  },
-
-  // ID_PRIMRIRA_VEZ
-  "ID_PRIMRIRA_VEZ": {
-    "scope": "sql",
-    "prefix": "ZID",
-    "body": [
-      "${1:ID INT IDENTITY(1,1) PRIMARY KEY}"    
-      ],
-    "description": "ID_PRIMRIRA_VEZ"
-  },
-
-  // ID_ACRESCENTADO_EM_COLUNA
-  "ID_ACRESCENTADO_EM_COLUNA": {
-    "scope": "sql",
-    "prefix": "ZID+",
-    "body": [
-      "ALTER TABLE ${1:tabela}",
-      "ADD ID INT IDENTITY(1,1) PRIMARY KEY",
-    ],
-    "description": "ACRESCENTA COLUNA ID COM PRIMARY KEY (direto)"
-  },
-
-  // CRIAR_TABELA
-  "CRIAR_TABELA": {
-    "scope": "sql",
-    "prefix": "ZCRIARTAB",
-    "body": [
-      "CREATE TABLE ${1:nome_da_tabela} (",
-      "    coluna1,",
-      "    coluna2",
-      ")"    
-      ],
-    "description": "CRIAR_TABELA"
-  },
-
-  // CRIAR_COLUNA
-  "CRIAR_COLUNA": {
-    "scope": "sql",
-    "prefix": "ZCRIARCOL",
-    "body": [
-      "ALTER TABLE ${1:nome_da_tabela}",
-      "    ADD  ${2:coluna1} NVARCHAR(${3:100}) NULL,",
-      "    ADD  ${4:coluna1} NVARCHAR(${5:100}) NULL"   
-      ],
-    "description": "CRIAR_COLUNA"
-  },
-  
-  // DROP_TABLE
-  "DROP_TABLE": {
-    "scope": "sql",
-    "prefix": "ZDROP",
-    "body": [
-      "${2:DROP TABLE IF EXISTS ${1:#BASE}}",
-      ],
-    "description": "DROP TABLE IF EXISTS"
-  },
-
-    // EXCLUIR_COLUNA
-  "EXCLUIR_COLUNA": {
-    "scope": "sql",
-    "prefix": "ZEXCLCOL",
-    "body": [
-      "ALTER TABLE ${1:tabela}",
-      "DROP COLUMN ${2:coluna1}, ${3:coluna2}"   
-      ],
-    "description": "EXCLUIR_COLUNA"
-  },
-  // EXCLUIR_LINHAS_NULL
-  "EXCLUIR_LINHAS_NULL": {
-    "scope": "sql",
-    "prefix": "ZEXCLLINULL",
-    "body": [
-      "DELETE FROM ${1:tabela}",
-      "WHERE ${2:coluna1} IS NULL",
-      "   AND ${3:coluna2} IS NULL",  
-      "   AND ${4:coluna3} IS NULL", 
-      ],
-    "description": "EXCLUIR_LINHAS_NULL"
-  },
-
-  // COUNT
-  "COUNT": {
-    "scope": "sql",
-    "prefix": "ZCOUNT",
-    "body": [
-      "COUNT(*) AS ${1:TOTAL} ${2:-- SUM(* OU COLUNA), AVG(* OU COLUNA), MAX(* OU COLUNA), MIN(* OU COLUNA) VEJA MAIS EM ZGROUP}",  
-      ],
-    "description": "CONTAR E AGRUPAR"
-  },	
-
-  // GROUP_BY
-  "GROUP_BY": {
-      "scope": "sql",
-      "prefix": "ZGROUP",
-      "body": [
-      "${1:SELECT}",
-      "     ${2:COLUNA1,}",
-      "     COUNT(*) AS TOTAL -- SUM(* OU COLUNA), AVG(* OU COLUNA), MAX(* OU COLUNA), MIN(* OU COLUNA)",  
-      "${3:FROM BASE}", 
-      "${4:GROUP BY COLUNA1}",
-      "${5:ORDER BY TOTAL DESC}"
-      ],
-      "description": "GROUP_BY"
-  },
-
-  // HAVING
-  "HAVING": {
-      "scope": "sql",
-      "prefix": "ZHAVING",
-      "body": [
-      "${1:SELECT}",
-      "     ${1:COLUNA1,}",
-      "     ${1:COUNT(*) AS TOTAL, -- SUM(* OU COLUNA), AVG(* OU COLUNA), MAX(* OU COLUNA), MIN(* OU COLUNA)}", 
-      "     ${1:AVG(PRECO) AS PRECO}",
-      "${1:FROM BASE}", 
-      "${1:GROUP BY COLUNA1}",
-      "${1:HAVING COUNT(*) > 10 }",
-      "   ${1:AND AVG(preco) > 50}",
-      "${1:ORDER BY TOTAL DESC}"
-      ],
-      "description": "HAVING"
-  },
-
-  // TEMPORARIA
-  "TEMPORARIA": {
-      "scope": "sql",
-      "prefix": "ZTEMP",
-      "body": [
-      "DROP TABLE IF EXISTS #${1:BASE1}",
-      "SELECT",
-      "     ${2:CPF}", 
-      "INTO #${1:BASE1}",
-      "FROM ${3:BASE2}"
-      ],
-      "description": "TEMPORARIA"
-  },
-
-  // NULL
-  "NULL": {
-      "scope": "sql",
-      "prefix": "ZNULL",
-      "body": [
-      "ISNULL(${1:COLUNA},'') AS ${2:NOVO_NOME1},"
-      ],
-      "description": "NULL"
-  },
-
-  //NULIFICA
-	"NULIFICA": {
-		"scope": "sql",
-		"prefix": "ZNULLIF",
+	//Listar Drivers ODBC
+	"Listar Drivers ODBC": {
+		"prefix": "pysyslistodbc",
 		"body": [
-			"SELECT NULLIF(${1:COLUNA}, 25) AS SEM_25", 
+			"import pyodbc",
+			"",
+			"print(\"Drivers ODBC instalados:\")",
+			"for driver in pyodbc.drivers():",
+			"    print(f\"  - {driver}\")",
+			""
 		],
-		"description": "NULIFICA"
+		"description": "Lista todos os drivers ODBC instalados no sistema"
 	},
 
-	//QUANTIDADE_DE_CARACTERES
-	"QUANTIDADE_DE_CARACTERES": {
-		"scope": "sql",
-		"prefix": "ZDDQTDCHAR",
+	//Filtrar Programas no Windows
+	"Filtrar Programas no Windows": {
+		"prefix": "pysysprogfilt",
 		"body": [
-			"DATALENGTH(${1:coluna1}) AS BYTE"
+			"${2:import winreg}",
+			"",
+			"x = \"${1:digite o nome do programa}\"",
+			"",
+			"print(f\"=== PROGRAMAS RELACIONADOS A {x} ===\\n\")",
+			"",
+			"# Local 1: App Paths (executáveis)",
+			"caminho_apps = r\"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\"",
+			"",
+			"try:",
+			"    chave = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, caminho_apps)",
+			"    ",
+			"    for i in range(100):",
+			"        try:",
+			"            nome_programa = winreg.EnumKey(chave, i)",
+			"            # Filtro usando a variável x",
+			"            if x in nome_programa.lower():",
+			"                subchave = winreg.OpenKey(chave, nome_programa)",
+			"                caminho_exe = winreg.QueryValueEx(subchave, \"\")[0]",
+			"                print(f\"📌 {nome_programa}\")",
+			"                print(f\"   → {caminho_exe}\\n\")",
+			"                winreg.CloseKey(subchave)",
+			"        except:",
+			"            pass",
+			"    winreg.CloseKey(chave)",
+			"except:",
+			"    print(\"Erro ao acessar App Paths\")",
+			"",
+			"# Local 2: Uninstall (programas instalados)",
+			"print(f\"=== PROGRAMAS RELACIONADOS A {x} (SEM DUPLICATAS) ===\\n\")",
+			"",
+			"caminho_uninstall = r\"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"",
+			"programas_vistos = set()  # ← Para evitar duplicatas",
+			"",
+			"try:",
+			"    chave = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, caminho_uninstall)",
+			"    ",
+			"    for i in range(200):",
+			"        try:",
+			"            subkey_name = winreg.EnumKey(chave, i)",
+			"            subchave = winreg.OpenKey(chave, subkey_name)",
+			"            ",
+			"            try:",
+			"                nome = winreg.QueryValueEx(subchave, \"DisplayName\")[0]",
+			"                if x in nome.lower():",
+			"                    # Verifica se já viu este programa",
+			"                    if nome not in programas_vistos:",
+			"                        programas_vistos.add(nome)",
+			"                        print(f\"📦 {nome}\")",
+			"                        ",
+			"                        try:",
+			"                            versao = winreg.QueryValueEx(subchave, \"DisplayVersion\")[0]",
+			"                            print(f\"   Versão: {versao}\")",
+			"                        except:",
+			"                            pass",
+			"                        print()",
+			"            except:",
+			"                pass",
+			"            winreg.CloseKey(subchave)",
+			"        except:",
+			"            pass",
+			"    winreg.CloseKey(chave)",
+			"except Exception as e:",
+			"    print(f\"Erro: {e}\")",
+			"",
+			"# Local 3: Drivers ODBC",
+			"print(f\"\\n=== DRIVERS ODBC {x} ===\\n\")",
+			"caminho_odbc = r\"SOFTWARE\\ODBC\\ODBCINST.INI\"",
+			"",
+			"try:",
+			"    chave = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, caminho_odbc)",
+			"    ",
+			"    for i in range(50):",
+			"        try:",
+			"            nome_driver = winreg.EnumKey(chave, i)",
+			"            # Filtro usando a variável x",
+			"            if x in nome_driver.lower():",
+			"                subchave = winreg.OpenKey(chave, nome_driver)",
+			"                ",
+			"                print(f\"🔌 {nome_driver}\")",
+			"                try:",
+			"                    driver_dll = winreg.QueryValueEx(subchave, \"Driver\")[0]",
+			"                    print(f\"   DLL: {driver_dll}\")",
+			"                except:",
+			"                    pass",
+			"                try:",
+			"                    versao = winreg.QueryValueEx(subchave, \"DriverODBCVer\")[0]",
+			"                    print(f\"   Versão ODBC: {versao}\")",
+			"                except:",
+			"                    pass",
+			"                print()",
+			"                ",
+			"                winreg.CloseKey(subchave)",
+			"        except:",
+			"            pass",
+			"    winreg.CloseKey(chave)",
+			"except:",
+			"    print(\"Erro ao acessar drivers ODBC\")",
+			""
 		],
-		"description": "CONTA A QUANTIDADE DE CARACTERES"
-	},  
-
-	//RENOMEAR_TABELA
-	"RENOMEAR_TABELA": {
-		"scope": "sql",
-		"prefix": "ZRENTAB",
-		"body": [
-			"EXEC sp_rename '${1:nome_atual}', '${2:novo_nome}'"
-		],
-		"description": "RENOMEIA TABELA"
+		"description": "Lista todos os programas do filtro que estejam instalados ou App Paths ou drivers ODBC via Windows Registry"
 	},
 
-	//BACKUP_DE_BD
-	"BACKUP_DE_BD": {
-		"scope": "sql",
-		"prefix": "ZBKPBD",
+	//Listar Todos Programas Instalados
+	"Listar Todos Programas Instalados": {
+		"prefix": "pysysproglist",
 		"body": [
-			"BACKUP DATABASE ${1:CNOME_BD} TO DISK = 'C:ENDERECO_COMPLETO_NOME_BANCO_BACKUP.bak'"
+			"import winreg",
+			"",
+			"print(\"=== TODOS PROGRAMAS INSTALADOS (COMPLETO) ===\\n\")",
+			"",
+			"def listar_programas(reg_key, caminho):",
+			"    programas = []",
+			"    try:",
+			"        chave = winreg.OpenKey(reg_key, caminho)",
+			"        for i in range(500):",
+			"            try:",
+			"                subkey_name = winreg.EnumKey(chave, i)",
+			"                subchave = winreg.OpenKey(chave, subkey_name)",
+			"                try:",
+			"                    nome = winreg.QueryValueEx(subchave, \"DisplayName\")[0]",
+			"                    if nome and nome not in programas:",
+			"                        programas.append(nome)",
+			"                except:",
+			"                    pass",
+			"                winreg.CloseKey(subchave)",
+			"            except:",
+			"                break",
+			"        winreg.CloseKey(chave)",
+			"    except:",
+			"        pass",
+			"    return programas",
+			"",
+			"# Lista de locais onde programas podem estar registrados",
+			"locais = [",
+			"    (winreg.HKEY_LOCAL_MACHINE, r\"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"),",
+			"    (winreg.HKEY_LOCAL_MACHINE, r\"SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"),",
+			"    (winreg.HKEY_CURRENT_USER, r\"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\")",
+			"]",
+			"",
+			"todos_programas = []",
+			"",
+			"for reg_key, caminho in locais:",
+			"    todos_programas.extend(listar_programas(reg_key, caminho))",
+			"",
+			"# Remove duplicatas e ordena",
+			"todos_programas = sorted(set(todos_programas))",
+			"",
+			"for p in todos_programas:",
+			"    print(f\"📦 {p}\")",
+			"",
+			"print(f\"\\n✅ Total: {len(todos_programas)} programas instalados\")",
+			""
 		],
-		"description": "BACKUP_DE_BD"
+		"description": "Lista TODOS os programas instalados no Windows (HKLM 64/32 e HKCU) sem duplicatas e ordenado"
 	},
 
-	//BACKUP_DE_TABELA
-	"BACKUP_DE_TABELA": {
-		"scope": "sql",
-		"prefix": "ZBKPTAB",
+	//Listar Instâncias SQL Server
+	"Listar Instâncias SQL Server": {
+		"prefix": "pysyslistinstancias",
 		"body": [
-     	    "SELECT *",
-			"INTO #BKP",
-			"FROM ${1:BD} -- depois INTO BD_BKP FROM #BKP" 
+			"import winreg",
+			"",
+			"caminho = r\"SOFTWARE\\Microsoft\\Microsoft SQL Server\"",
+			"chave = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, caminho)",
+			"instancias = winreg.QueryValueEx(chave, \"InstalledInstances\")[0]",
+			"winreg.CloseKey(chave)",
+			"",
+			"for i in instancias:",
+			"    print(i)",
+			""
 		],
-		"description": "BACKUP_DE_TABELA"
+		"description": "Lista instâncias SQL Server instaladas lendo do Windows Registry"
 	},
 
-	//CONCATENAR
-	"CONCATENAR": {
-		"scope": "sql",
-		"prefix": "ZCONC",
+//Varrer Bancos de Dados
+	"Varrer Bancos de Dados": {
+		"prefix": "pysysbdvarredura",
 		"body": [
-			"CONCAT(${1:col1}, ${2:col2}) AS ${3:NOME}"
+			"import pyodbc",
+			"import winreg",
+			"import socket",
+			"",
+			"print(\"=== INSTÂNCIAS SQL SERVER E BANCOS ===\\n\")",
+			"",
+			"# PASSO 1: Descobrir todas as instâncias instaladas",
+			"caminho_reg = r\"SOFTWARE\\Microsoft\\Microsoft SQL Server\"",
+			"nomes_instancias = []",
+			"",
+			"try:",
+			"    chave = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, caminho_reg)",
+			"    nomes_instancias = winreg.QueryValueEx(chave, \"InstalledInstances\")[0]",
+			"    winreg.CloseKey(chave)",
+			"    print(f\"📋 Instâncias encontradas no registro: {nomes_instancias}\\n\")",
+			"except:",
+			"    print(\"⚠️ Não foi possível ler registro\\n\")",
+			"",
+			"# PASSO 2: Montar lista de strings de conexão",
+			"# Pega o nome do computador automaticamente",
+			"nome_computador = socket.gethostname()",
+			"print(f\"💻 Nome do computador: {nome_computador}\\n\")",
+			"",
+			"# Lista de possíveis conexões (prioriza instâncias descobertas)",
+			"instancias_conexao = [",
+			"    \"localhost\",                    # sempre tenta",
+			"    \".\",                           # ponto (mesmo que localhost)",
+			"    f\"{nome_computador}\",          # nome do computador",
+			"]",
+			"",
+			"# Adiciona as instâncias encontradas no registro",
+			"for inst in nomes_instancias:",
+			"    instancias_conexao.append(f\"localhost\\\\{inst}\")",
+			"    instancias_conexao.append(f\"{nome_computador}\\\\{inst}\")",
+			"",
+			"# Remove duplicatas mantendo ordem",
+			"vistas = set()",
+			"instancias_conexao_unicas = []",
+			"for inst in instancias_conexao:",
+			"    if inst not in vistas:",
+			"        vistas.add(inst)",
+			"        instancias_conexao_unicas.append(inst)",
+			"",
+			"print(f\"🔍 Testando {len(instancias_conexao_unicas)} possíveis conexões...\\n\")",
+			"",
+			"# PASSO 3: Testar cada instância e listar bancos",
+			"resultados = []",
+			"",
+			"for inst in instancias_conexao_unicas:",
+			"    try:",
+			"        conn = pyodbc.connect(",
+			"            f'DRIVER={{ODBC Driver 17 for SQL Server}};'",
+			"            f'SERVER={inst};'",
+			"            'Trusted_Connection=yes;'",
+			"            'Connection Timeout=3'",
+			"        )",
+			"        cursor = conn.cursor()",
+			"        ",
+			"        # Pega nome real da instância",
+			"        cursor.execute(\"SELECT @@SERVERNAME\")",
+			"        nome_real = cursor.fetchone()[0]",
+			"        ",
+			"        # Lista bancos do usuário",
+			"        cursor.execute(\"\"\"",
+			"            SELECT name, database_id, create_date",
+			"            FROM sys.databases ",
+			"            WHERE database_id > 4",
+			"            ORDER BY name",
+			"        \"\"\")",
+			"        ",
+			"        bancos = cursor.fetchall()",
+			"        ",
+			"        # Armazena resultado",
+			"        resultados.append({",
+			"            'conexao': inst,",
+			"            'nome_real': nome_real,",
+			"            'bancos': bancos",
+			"        })",
+			"        ",
+			"        cursor.close()",
+			"        conn.close()",
+			"        ",
+			"    except Exception as e:",
+			"        # Ignora falhas de conexão silenciosamente",
+			"        pass",
+			"",
+			"# PASSO 4: Exibir resultados",
+			"if not resultados:",
+			"    print(\"❌ Nenhuma instância SQL Server encontrada ou acessível\")",
+			"else:",
+			"    for i, r in enumerate(resultados):",
+			"        print(f\"\\n{'='*60}\")",
+			"        print(f\"🖥️  INSTÂNCIA: {r['nome_real']}\")",
+			"        print(f\"   (conexão usada: {r['conexao']})\")",
+			"        print('='*60)",
+			"        ",
+			"        if r['bancos']:",
+			"            print(f\"📀 BANCOS DO USUÁRIO ({len(r['bancos'])}):\")",
+			"            for b in r['bancos']:",
+			"                print(f\"   • {b.name} (ID: {b.database_id})\")",
+			"        else:",
+			"            print(f\"📀 Nenhum banco de usuário encontrado\")",
+			"            print(f\"   (apenas bancos do sistema)\")",
+			"",
+			"print(f\"\\n{'='*60}\")",
+			"print(f\"✅ Total: {len(resultados)} instância(s) SQL Server ativa(s)\")",
+			""
 		],
-		"description": "CONCATENAR"
+		"description": "Varredura por Detecção automaticamente de instâncias SQL Server via registro e lista bancos de usuário"
 	},
 
-  // TIPO_DADOS_TABELA
-  "TIPO_DADOS_TABELA": {
-    "scope": "sql",
-    "prefix": "ZDDTIPO",
-    "body": [
-      "${2:EXEC sp_help '${1:nome_da_tabela}'}"    
-      ],
-    "description": "TIPO DE DADOS DA TABELA POR COLUNA"
-  },
-
-  // ALTERAR_TIPO_DADOS_COLUNA
-  "ALTERAR_TIPO_DADOS_COLUNA": {
-    "scope": "sql",
-    "prefix": "ZDDALTERTIPO",
-    "body": [
-      "ALTER TABLE ${1:tabela} ${6:ALTER COLUMN ${2:coluna1} ${3:TIPO}(${4:tamanho}) NULL ${5:-- VERIFICAR ZCOLA}}"
-      ],
-    "description": "ALTERAR O TIPO DE DADO DA COLUNA"
-  },
-
-	//EXTRAIR_CARACTERES_DA_ESQUERDA_OU_DIREITA
-	"EXTRAIR_CARACTERES_DA_ESQUERDA_OU_DIREITA": {
-		"scope": "sql",
-		"prefix": "ZDDEXTRCHAR",
+	//Listar Bancos por Instância
+	"Listar Bancos por Instância": {
+		"prefix": "pysysbdlist",
 		"body": [
-			"${1:LEFT}${2:RIGHT}(${3:coluna}, ${4:3}) AS ${5:EXTRACAO_ESQUERDA}"
+			"import pyodbc",
+			"",
+			"instancia = '${1:MSSQLSERVER01}'  # mude a instância",
+			"",
+			"try:",
+			"    conn = pyodbc.connect(",
+			"        f'DRIVER={{ODBC Driver 17 for SQL Server}};'",
+			"        f'SERVER=localhost\\\\{instancia};'",
+			"        'Trusted_Connection=yes;'",
+			"    )",
+			"    cursor = conn.cursor()",
+			"    ",
+			"    cursor.execute(\"SELECT name FROM sys.databases WHERE database_id > 4 ORDER BY name\")",
+			"    ",
+			"    for b in cursor.fetchall():",
+			"        print(b.name)",
+			"    ",
+			"    cursor.close()",
+			"    conn.close()",
+			"except Exception as e:",
+			"    print(f\"Erro: {e}\")",
+			""
 		],
-		"description": "EXTRAIR_CARACTERES_DA_ESQUERDA_OU_DIREITA"
+		"description": "Lista bancos de usuário de uma instância SQL Server específica"
 	},
 
-	//LIMPAR_ESPACOS_VAZIOS_DA_ESQUERDA_OU_DIREITA
-	"LIMPAR_ESPACOS_VAZIOS_DA_ESQUERDA_OU_DIREITA": {
-		"scope": "sql",
-		"prefix": "ZDDLIMP1",
+	// CRIAR TABELA .CSV
+	"CRIAR TABELA .CSV": {
+		"prefix": "pytabcsv",
 		"body": [
-			"${1:LTRIM}${2:RTRIM}(${3:COLUNA}) AS LIMPA_${4:ESQUERDA}${5:DIREITA}"
+			"import pyodbc",
+			"import csv",
+			"",
+			"instancia = '${1:NOME_DA_INSTÂNCIA}'",
+			"banco = '${2:NOME_DO_BANCO}'",
+			"caminho_csv = r'${3:C:\\Users\\CAMINHO\\ARQUIVO.csv}'",
+			"nome_tabela = '${4:TABELA}' # NOME DA TABELA A SER CRIADA",
+			"",
+			"try:",
+			"    conn = pyodbc.connect(",
+			"        f'DRIVER={{ODBC Driver 17 for SQL Server}};'",
+			"        f'SERVER=localhost\\\\{instancia};'",
+			"        'Trusted_Connection=yes;'",
+			"    )",
+			"    cursor = conn.cursor()",
+			"    ",
+			"    cursor.execute(f\"USE {banco}\")",
+			"    ",
+			"    # Lê primeira linha com encoding 'utf-8-sig' (remove BOM automaticamente)",
+			"    with open(caminho_csv, 'r', encoding='utf-8-sig') as f:",
+			"        leitor = csv.reader(f, delimiter=';')  # Seu CSV usa ponto e vírgula?",
+			"        colunas_originais = next(leitor)",
+			"    ",
+			"    # Encurta nomes das colunas (máximo 50 caracteres)",
+			"    colunas = []",
+			"    for col in colunas_originais:",
+			"        # Remove espaços extras e encurta",
+			"        col_limpa = col.strip().replace(' ', '_')[:50]",
+			"        colunas.append(col_limpa)",
+			"    ",
+			"    # Cria a tabela com nomes encurtados",
+			"    colunas_sql = ', '.join([f\"[{col}] NVARCHAR(MAX)\" for col in colunas])",
+			"    cursor.execute(f\"DROP TABLE IF EXISTS {nome_tabela}\")",
+			"    cursor.execute(f\"CREATE TABLE {nome_tabela} ({colunas_sql})\")",
+			"    print(f\"✅ Tabela {nome_tabela} criada com {len(colunas)} colunas\")",
+			"    ",
+			"    # Insere os dados",
+			"    with open(caminho_csv, 'r', encoding='utf-8-sig') as f:",
+			"        leitor = csv.reader(f, delimiter=';')",
+			"        next(leitor)",
+			"        ",
+			"        for linha in leitor:",
+			"            # Garante que a linha tem o mesmo número de colunas",
+			"            while len(linha) < len(colunas):",
+			"                linha.append('')",
+			"            placeholders = ', '.join(['?' for _ in range(len(colunas))])",
+			"            cursor.execute(f\"INSERT INTO {nome_tabela} VALUES ({placeholders})\", linha[:len(colunas)])",
+			"    ",
+			"    conn.commit()",
+			"    ",
+			"    cursor.execute(f\"SELECT COUNT(*) FROM {nome_tabela}\")",
+			"    total = cursor.fetchone()[0]",
+			"    print(f\"✅ {total} linhas inseridas\")",
+			"    ",
+			"    cursor.execute(f\"SELECT TOP 1 * FROM {nome_tabela}\")",
+			"    print(\"\\n📀 Primeira linhas:\")",
+			"    for row in cursor.fetchall():",
+			"        print(f\"   {row}\")",
+			"    ",
+			"    cursor.close()",
+			"    conn.close()",
+			"    ",
+			"except Exception as e:",
+			"    print(f\"Erro: {e}\")",
+			""
 		],
-		"description": "LIMPAR_ESPACOS_VAZIOS_DA_ESQUERDA_OU_DIREITA"
+		"description": "Criar tabela no SQL importando dados de um arquivo .csv"
 	},
 
-	//LIMPAR_TODOS_OS_ESPACOS_VAZIOS
-	"LIMPAR_TODOS_OS_ESPACOS_VAZIOS": {
-		"scope": "sql",
-		"prefix": "ZDDLIMP",
+	//Procurar Termo em BD/Tabelas/Colunas (NÃO DADOS) LEVE
+	"Procurar Termo em BD/Tabelas/Colunas (NÃO DADOS) LEVE": {
+		"prefix": "pybdfiltroleve",
 		"body": [
-			"TRIM('     SQL Tutorial!     ') AS SEM_ESPACOS"
+			"#PROCURA PELO TERMO DETERMINADO EM TABELAS/COLUNAS",
+			"import pyodbc",
+			"",
+			"termo = '${1:NOME114}'",
+			"instancia = '${2:MSSQLSERVER01}'",
+			"",
+			"print(f\"🔍 Varredura completa por '{termo}' em {instancia}\\n\")",
+			"",
+			"try:",
+			"    conn = pyodbc.connect(",
+			"        f'DRIVER={{ODBC Driver 17 for SQL Server}};'",
+			"        f'SERVER=localhost\\\\{instancia};'",
+			"        'Trusted_Connection=yes;'",
+			"    )",
+			"    cursor = conn.cursor()",
+			"    ",
+			"    # Script SQL que varre tudo",
+			"    sql = f\"\"\"",
+			"    DECLARE @SearchTerm NVARCHAR(100) = '{termo}';",
+			"    DECLARE @Results TABLE (FoundIn NVARCHAR(500));",
+			"    ",
+			"    -- Buscar em nomes de bancos",
+			"    INSERT INTO @Results",
+			"    SELECT 'database: ' + name",
+			"    FROM sys.databases",
+			"    WHERE name LIKE '%' + @SearchTerm + '%' AND database_id > 4;",
+			"    ",
+			"    -- Para cada banco, buscar em tabelas e colunas",
+			"    DECLARE @db NVARCHAR(128);",
+			"    DECLARE db_cursor CURSOR FOR",
+			"    SELECT name FROM sys.databases WHERE database_id > 4;",
+			"    ",
+			"    OPEN db_cursor;",
+			"    FETCH NEXT FROM db_cursor INTO @db;",
+			"    ",
+			"    WHILE @@FETCH_STATUS = 0",
+			"    BEGIN",
+			"        DECLARE @sql NVARCHAR(MAX) = '",
+			"            USE [' + @db + '];",
+			"            ",
+			"            INSERT INTO @Results",
+			"            SELECT ''' + @db + '.table: '' + TABLE_SCHEMA + ''.'' + TABLE_NAME",
+			"            FROM INFORMATION_SCHEMA.TABLES",
+			"            WHERE TABLE_NAME LIKE ''%'' + @SearchTerm + ''%'';",
+			"            ",
+			"            INSERT INTO @Results",
+			"            SELECT ''' + @db + '.column: '' + TABLE_SCHEMA + ''.'' + TABLE_NAME + ''.'' + COLUMN_NAME",
+			"            FROM INFORMATION_SCHEMA.COLUMNS",
+			"            WHERE COLUMN_NAME LIKE ''%'' + @SearchTerm + ''%'';",
+			"        ';",
+			"        EXEC sp_executesql @sql, N'@SearchTerm NVARCHAR(100)', @SearchTerm;",
+			"        ",
+			"        FETCH NEXT FROM db_cursor INTO @db;",
+			"    END",
+			"    ",
+			"    CLOSE db_cursor;",
+			"    DEALLOCATE db_cursor;",
+			"    ",
+			"    SELECT * FROM @Results;",
+			"    \"\"\"",
+			"    ",
+			"    cursor.execute(sql)",
+			"    resultados = cursor.fetchall()",
+			"    ",
+			"    if resultados:",
+			"        print(\"✅ ENCONTRADO EM:\\n\")",
+			"        for r in resultados:",
+			"            print(f\"   📌 {r[0]}\")",
+			"    else:",
+			"        print(f\"❌ Nada encontrado para '{termo}'\")",
+			"    ",
+			"    cursor.close()",
+			"    conn.close()",
+			"    ",
+			"except Exception as e:",
+			"    print(f\"Erro: {e}\")",
+			""
 		],
-		"description": "LIMPAR_TODOS_OS_ESPACOS_VAZIOS"
+		"description": "Procurar Termo em Tabelas/Colunas LEVE"
 	},
 
-	//MUDAR_CARACTER_POR_OUTRO
-	"MUDAR_CARACTER_POR_OUTRO": {
-		"scope": "sql",
-		"prefix": "ZDDMUDCHAR",
+	//Procurar TERMO em Todos os dados das Tabelas (NÃO BD/TABELAS) PESADO
+	"Procurar TERMO em Todos os dados das Tabelas (NÃO BD/TABELAS) PESADO": {
+		"prefix": "pybdfiltropesado",
 		"body": [
-			"REPLACE(${1:colnua1}, '${2:T}', '${3:M}') ${4:-- muda a coluna original onde é T vira M}",
-			"${5:--REPLACE(REPLACE(nome, 'T', 'M'), 't', 'm') AS coluna2 -- mantém coluna original e cria coluna editada}"
+			"#PROCURA PELO TERMO DETERMINADO EM TODOS OS DADOS DA INSTÂNCIA",
+			"import pyodbc",
+			"",
+			"termo = '${1:DIGITE_DADO}' # O que você quer encontrar",
+			"instancias = ['${2:DIGITE_INSTÂNCIA}'] # instâncias que quer varrer",
+			"",
+			"def buscar_nos_dados(instancia, termo):",
+			"    print(f\"\\n🔍 Buscando dado '{termo}' em {instancia}...\\n\")",
+			"    ",
+			"    try:",
+			"        conn = pyodbc.connect(",
+			"            f'DRIVER={{ODBC Driver 17 for SQL Server}};'",
+			"            f'SERVER=localhost\\\\{instancia};'",
+			"            'Trusted_Connection=yes;'",
+			"        )",
+			"        cursor = conn.cursor()",
+			"        ",
+			"        cursor.execute(\"SELECT name FROM sys.databases WHERE database_id > 4\")",
+			"        bancos = [b.name for b in cursor.fetchall()]",
+			"        ",
+			"        encontrado = False",
+			"        ",
+			"        for banco in bancos:",
+			"            cursor.execute(f\"USE [{banco}]\")",
+			"            ",
+			"            # Pega tabelas e colunas que são texto (varchar, nvarchar)",
+			"            cursor.execute(\"\"\"",
+			"                SELECT ",
+			"                    t.name AS tabela,",
+			"                    c.name AS coluna",
+			"                FROM sys.tables t",
+			"                JOIN sys.columns c ON t.object_id = c.object_id",
+			"                WHERE c.system_type_id IN (167, 231, 239)  -- varchar, nvarchar, varchar(max)",
+			"            \"\"\")",
+			"            ",
+			"            tabelas_colunas = cursor.fetchall()",
+			"            ",
+			"            for tc in tabelas_colunas:",
+			"                try:",
+			"                    query = f\"\"\"",
+			"                        SELECT TOP 1 * ",
+			"                        FROM [{banco}].[dbo].[{tc.tabela}]",
+			"                        WHERE [{tc.coluna}] LIKE ?",
+			"                    \"\"\"",
+			"                    cursor.execute(query, (f'%{termo}%',))",
+			"                    resultado = cursor.fetchone()",
+			"                    ",
+			"                    if resultado:",
+			"                        print(f\"   🎯 ENCONTRADO: {banco}.dbo.{tc.tabela}.{tc.coluna}\")",
+			"                        encontrado = True",
+			"                except:",
+			"                    pass",
+			"        ",
+			"        if not encontrado:",
+			"            print(f\"   ❌ Nada encontrado para '{termo}'\")",
+			"        ",
+			"        cursor.close()",
+			"        conn.close()",
+			"        ",
+			"    except Exception as e:",
+			"        print(f\"   ⚠️ Erro: {e}\")",
+			"",
+			"for inst in instancias:",
+			"    buscar_nos_dados(inst, termo)",
+			""
 		],
-		"description": "MUDAR_CARACTER_POR_OUTRO"
-	},
-
-	//EXTRAI_TRECHO_DE_STRING
-	"EXTRAI_TRECHO_DE_STRING": {
-		"scope": "sql",
-		"prefix": "ZDDEXTR",
-		"body": [
-			"SUBSTRING(${1:COLUNA}, ${2:1}, ${3:3}) AS ${4:EXTRATOR}",
-		],
-		"description": "EXTRAI_TRECHO_DE_STRING"
-	},
-
-	//TRANSFORMAR_NUMERO_EM_STRING
-	"TRANSFORMAR_NUMERO_EM_STRING": {
-		"scope": "sql",
-		"prefix": "ZDDNUM2STR",
-		"body": [
-			"STR(185.476, 6, 2)",
-		],
-		"description": "TRANSFORMAR_NUMERO_EM_STRING"
-	},
-
-	//DELETA_E_ACRESCENTA
-	"DELETA_E_ACRESCENTA": {
-		"scope": "sql",
-		"prefix": "ZDDDEL_ACRES",
-		"body": [
-			"STUFF('SQL Tutorial', 1, 3, 'HTML') -- COMEÇA DA POSIÇÃO CATRACTER 1, APAGA 3 CARACTERES A PARTIR DE 1 E ACRESCENTA HTML",
-		],
-		"description": "DELETA_E_ACRESCENTA"
-	},
-
-	//TRANSFORMAR_EM_MAIUSCULA
-	"TRANSFORMAR_EM_MAIUSCULA": {
-		"scope": "sql",
-		"prefix": "ZDDUPPER",
-		"body": [
-			"UPPER(${1:COLUNA})",
-		],
-		"description": "TRANSFORMAR_EM_MAIUSCULA"
-	},
-
-	//MÓDULO_DO_NUMERO
-	"MÓDULO_DO_NUMERO": {
-		"scope": "sql",
-		"prefix": "ZMOD",
-		"body": [
-			"Abs(-243.5) AS MODULO",
-		],
-		"description": "MÓDULO_DO_NUMERO"
-	},
-
-	//MEDIA
-	"MEDIA": {
-		"scope": "sql",
-		"prefix": "ZMED",
-		"body": [
-			"AVG(${1:COLUNA}) AS MEDIA",
-		],
-		"description": "MÉDIA"
-	},
-
-	//MAIOR
-	"MAIOR": {
-		"scope": "sql",
-		"prefix": "ZMAX",
-		"body": [
-			"MAX(${1:COLUNA}) AS MAIOR_VALOR",
-		],
-		"description": "MAIOR"
-	},
-
-	//MENOR
-	"MENOR": {
-		"scope": "sql",
-		"prefix": "ZMIN",
-		"body": [
-			"MIN(${1:COLUNA}) AS MENOR_VALOR",
-		],
-		"description": "MENOR"
-	},
-
-	//ARREDONDAR
-	"ARREDONDAR": {
-		"scope": "sql",
-		"prefix": "ZARRED",
-		"body": [
-			"ROUND(235.415, 0) AS ARREDONDADO",
-		],
-		"description": "ARREDONDAR"
-	},
-
-	//SOMAR
-	"SOMAR": {
-		"scope": "sql",
-		"prefix": "ZSUM",
-		"body": [
-			"SUM(${1:COLUNA}) AS SOMA",
-		],
-		"description": "SOMAR"
-	},
-
-	//DATA_ATUAL
-	"DATA_ATUAL": {
-		"scope": "sql",
-		"prefix": "ZDTATUAL",
-		"body": [
-			"CURRENT_TIMESTAMP",
-		],
-		"description": "DATA_ATUAL"
-	},
-
-	//EXTRAIR_DATA
-	"EXTRAIR_DATA": {
-		"scope": "sql",
-		"prefix": "ZDDEXTRDATA",
-		"body": [
-			"DATENAME(YEAR, '2017/08/25') AS DATE -- YEAR, MONTH, DAY",
-		],
-		"description": "EXTRAIR_DATA"
-	},
-	
-	//CONVERTER
-	"CONVERTER": {
-		"scope": "sql",
-		"prefix": "ZDDCONVERT",
-		"body": [
-			"CONVERT(int, 25.65)",
-		],
-		"description": "CONVERTER"
-	},
-	
-	//IF
-	"IF": {
-		"scope": "sql",
-		"prefix": "ZIF",
-		"body": [
-			"IIF(${1:COLUNA}>1, 'YES', 'NO') -- =, <>, !=, >, <", 
-		],
-		"description": "IF"
-	},
-
-	// CASE_WHEN
-  "CASE_WHEN": {
-    "scope": "sql",
-    "prefix": "ZCASE",
-    "body": [
-      "CASE",
-      "   WHEN ${1:SITUACAO1} THEN ${2:SITUACAO2}",
-      "   ${3:WHEN ${4:SITUACAO1} THEN ${5:SITUACAO2}}",
-      "   ELSE ${6:SITUACAO3}",
-      "END AS ${7:COLUNA}"
-    ],
-    "description": "CASE_WHEN"
-  },
-
-  // JOIN
-  "JOIN": {
-    "scope": "sql",
-    "prefix": "ZJOIN",
-    "body": [
-      "${1:LEFT} JOIN ${2:Tabela} ${3:B} ON ${4:A}.${5:coluna} = ${6:B}.${7:coluna}"
-    ],
-    "description": "JOIN"
-  },
-
-  // TRATAMENTO_DE_DADOS
-  "TRATAMENTO_DE_DADOS": {
-    "scope": "sql",
-    "prefix": "ZDDTRAT",
-    "body": [
-	  "${1:CASE}",
-	  "      WHEN ${2:COLUNA} ${3:IS NOT NULL} THEN REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(NOMEUA_COMPLETO, 'Á', 'A'), 'Ã', 'A'), 'À', 'A'), 'Â', 'A'), 'É', 'E'), 'Ê', 'E'), 'Ó', 'O'), 'Õ', 'O'), 'Ú', 'U'), 'Ü', 'U'), 'Ç', 'C'), 'Ñ', 'N')",
-	  "     ${1:ELSE COLUNA}",
-	  "${1:END AS COLUNA}"
-    ],
-    "description": "TRATAR DADOS RETIRANDO CARACTERES ESPECÍFICOS"
-  },
-
-  // COMPARAR_DADOS_DE_TABELAS_DIFERENTES
-  "COMPARAR_DADOS_DE_TABELAS_DIFERENTES": {
-    "scope": "sql",
-    "prefix": "ZDDCOMPTABLE",
-    "body": [
-	  "SELECT",
-      "     CPF",
-	  "FROM #BASE1 A",
-	  "WHERE EXISTS (  -- ou NOT EXISTS",
-	  "SELECT",
-      "     CPF",
-	  "FROM #BASE2 B",
-	  "WHERE A.CPF = B.CPF)"
-    ],
-    "description": "COMPARAR_DADOS_DE_TABELAS_DIFERENTES"
-  },
-
-  // INSERIR_DADOS_EM_TEMPORARIA
-  "INSERIR_DADOS_EM_TEMPORARIA": {
-    "scope": "sql",
-    "prefix": "ZDDINSTEMP",
-    "body": [
-	  "DROP TABLE IF EXISTS #${1:BASE_TEMP}",
-    "CREATE TABLE #${1:BASE_TEMP} (",
-	  "    ${2:COLUNA} ${3:VARCHAR}(${4:100})",
-    "    )",
-	  "INSERT INTO #${1:BASE_TEMP} (${2:COLUNA}) VALUES",
-	  "${5:('DADO1'),}",
-    "${5:('DADO2'),}",
-	  "${5:('ETC...'),}"
-    ],
-    "description": "INSERIR_DADOS_EM_TEMPORARIA"
-  },
-
-	// UNION_SEM_DUPLICATAS
-  "UNION_SEM_DUPLICATAS": {
-    "scope": "sql",
-    "prefix": "ZUNION",
-    "body": [
-	  "${7:DROP TABLE IF EXISTS ${1:#BASE}_UNION}",
-      "SELECT",
-	  "${2:COLUNA1}",
-	  "${3:COLUNA2}",
-	  "${4:COLUNA2}",
-	  "INTO ${1:#BASE}_UNION",
-	  "FROM ${5:#BASE1}",
-	  "UNION",
-	  "SELECT",
-	  "${2:COLUNA1}",
-	  "${3:COLUNA2}",
-	  "${4:COLUNA2}",
-	  "FROM ${6:#BASE2} -- SE QUISER, COPIE MAIS UM 'UNION ATÉ FROM'" 
-    ],
-    "description": "UNION_SEM_DUPLICATAS"
-  },
-
-	// UNION_ALL_SEM_DUPLICATAS
-  "UNION_ALL_SEM_DUPLICATAS": {
-    "scope": "sql",
-    "prefix": "ZUNIONALL",
-    "body": [
-	  "${7:DROP TABLE IF EXISTS ${1:#BASE__UNIDA_ALL}}",
-      "SELECT",
-	  "${2:COLUNA1}",
-	  "${3:COLUNA2}",
-	  "${4:COLUNA2}",
-	  "INTO ${1:#BASE__UNIDA_ALL}",
-	  "FROM ${5#BASE1}",
-	  "UNION ALL",
-	  "SELECT",
-	  "${2:COLUNA1}",
-	  "${3:COLUNA2}",
-	  "${4:COLUNA2}",
-	  "FROM ${6#BASE2} -- SE QUISER, COPIE MAIS UM 'UNION ATÉ FROM'" 
-    ],
-    "description": "UNION_ALL_SEM_DUPLICATAS"
-  },
-
-  // REGIAO_ARQDEUA
-  "REGIAO_ARQDEUA": {
-    "scope": "sql",
-    "prefix": "ZREGARQ",
-    "body": [
-	  "      A.REGIAO                      ,",
-    "      A.NOMEDE AS URE               ,",
-	  "LEFT JOIN ARQDEUA0326 A ON B.COLUNA_UA = A.UA"
-    ],
-    "description": "REGIAO E URE DE ARQDEUA"
-  },
-
-  // ORDER_BY
-  "ORDER_BY": {
-    "scope": "sql",
-    "prefix": "ZORDER",
-    "body": [
-	  "ORDER BY REGIAO, URE, NOME",
-    ],
-    "description": "ORDER BY"
-  },
-
-  // CPF_CEPEA
-  "CPF_CEPEA": {
-      "scope": "sql",
-      "prefix": "ZCPFCEPEA",
-      "body": [
-          "DROP TABLE IF EXISTS #CPF_CEPEA",
-          "CREATE TABLE #CPF_CEPEA (",
-          "    CPF VARCHAR(11)",
-          "    )",
-          "INSERT INTO #CPF_CEPEA (CPF) VALUES",
-          "('11890095877'),",
-          "('05141351823'),",
-          "('35868577809'),",
-          "('39545399856'),",
-          "('02832580807'),",
-          "('06642460448'),",
-          "('35146922896'),",
-          "('36988698884'),",
-          "('52020927845')"
-      ],
-      "description": "CPF_CEPEA"
-  },
-
-  // TIRAR_ZEROS_ESQUERDA_CPF
-  "TIRAR_ZEROS_ESQUERDA_CPF": {
-    "scope": "sql",
-    "prefix": "ZCPFZERO",
-    "body": [
-	  "DROP TABLE IF EXISTS #CPF_${1:NOME}_SEM_0",
-    "SELECT ",
-    "CAST(CPF AS BIGINT) AS CPF",
-    "INTO #CPF_${1:NOME}_SEM_0",
-    "FROM ${2:BASE}",
-    ],
-    "description": "TIRAR_ZEROS_ESQUERDA_CPF"
-  },
-
-  // SAS_PAPUA_022026
-"SAS_PAPUA_022026": {
-    "scope": "sql",
-    "prefix": "ZSASPAPUA",
-    "body": [
-        "SELECT ",
-        "    COD_ORGAO                ,",
-        "    COD_UNID_ORCAM           ,",
-        "    COD_UNID_DESP            ,",
-        "    COD_UNID_ADM             ,",
-        "    COD_UNID_VINC            ,",
-        "    COD_TIPO_UNID_ADM        ,",
-        "    COD_MUN                  ,",
-        "    COD_UNID_ADM_FREQ        ,",
-        "    DATA_INIC_VALID_REG      ,",
-        "    NOME_UNID_ADM            ,",
-        "    NOME_ABREV               ,",
-        "    COD_GRAU_CLASSIF_INSTITUC,",
-        "    COD_VERIF_UNID_ADM       ,",
-        "    FALG_EXTINT              ,",
-        "    CONTROLE                 ,",
-        "    DATA_FIM_VALID_REG       ,",
-        "    FL_ATIVO_EDUCACAO        ,",
-        "    DS_EMAIL                 ,",
-        "    COD_ORGAO_DEP            ,",
-        "    COD_UCD_SETOR            ,",
-        "    COD_UCD_SUBSET           ,",
-        "    COD_UNID_ADM_VINC_EDUC   ,",
-        "    COD_REG_ADM              ,",
-        "    CD_NIVEL                 ,",
-        "    TP_ORGAO                 ,",
-        "    DS_HIERARQUIA            ,",
-        "    COD_UNID_ADM_VINC_MRT    ,",
-        "    COD_UGE                  ,",
-        "    DS_HIERARQUIA_EDUC        ",
-        "FROM SAS.[${1:02}2026].pap_ua ",
-        ""
-    ],
-    "description": "SAS_PAPUA"
+		"description": "Procurar Termo nos DADOS das Tabelas (NÃO BD/TABELAS) PESADO"
 },
 
-// SAS_TB_UA_ALOCACAO_022026
-"SAS_TB_UA_ALOCACAO_022026": {
-    "scope": "sql",
-    "prefix": "ZSASTBUALOC",
-    "body": [
-        "SELECT ",
-        "    NR_CPF             ,",
-        "    NR_DI              ,",
-        "    CONCAT(NR_CPF, NR_DI) AS CPF_DI,",
-        "    CD_UA              ,",
-        "    CD_CARGO           ,",
-        "    FL_RESPONSAVEL     ,",
-        "    DT_INI_VIG         ,",
-        "    DT_FIM_VIG         ,",
-        "    ID_USU_EXCLUSAO    ,",
-        "    DT_EXCLUSAO        ,",
-        "    ID_USU_INCLUSAO    ,",
-        "    DT_INCLUSAO        ,",
-        "    DT_CARGA           ,",
-        "    ID_USU_ALTERACAO   ,",
-        "    DT_ALTERACAO       ,",
-        "    FL_SITUACAO        , -- A (EFETIVO) E (ESTÁVEIS) I (INATIVOS)",
-        "    DS_OBSERVACAO      ,",
-        "    updated            ,",
-        "    fl_alter           ,",
-        "    CD_IDENT_SIT_VINC  , -- C (COMISSIONADOS) D (DESIGNADOS) T (TITULARES)",
-        "    ID_PCNP            ,",
-        "    COD_DISCIPLINA_PCNP",
-        "FROM SAS.[${1:03}2026].[TB_UA_ALOCACAO]",
-        "WHERE FL_SITUACAO = 'A'"
-    ],
-    "description": "SAS_TB_UA_ALOCACAO"
-},
-
-// SAS_TB_TURMA_022026
-"SAS_TB_TURMA_022026": {
-    "scope": "sql",
-    "prefix": "ZSASTBTUR",
-    "body": [
-        "SELECT ",
-        "    CD_TURMA                                  ,",
-        "    DT_ANO_LETIVO                             ,",
-        "    CD_ESCOLA                                 ,",
-        "    CD_TIPO_ENSINO                            ,",
-        "    NR_SERIE                                  ,",
-        "    ID_SEMESTRE                               ,",
-        "    CD_TURNO                                  ,",
-        "    ID_TURMA                                  ,",
-        "    DT_HORARIO_INCIO                          ,",
-        "    DT_HORARIO_FIM                            ,",
-        "    NR_CLASSE                                 ,",
-        "    NR_GRAU                                   ,",
-        "    TP_REDE_ENSINO                            ,",
-        "    CD_UNIDADE                                ,",
-        "    NR_SALA                                   ,",
-        "    CD_HABILITACAO                            ,",
-        "    CD_TIPO_CLASSE                            ,",
-        "    CD_DURACAO                                ,",
-        "    DT_INI_VIG                                ,",
-        "    DT_FIM_VIG                                ,",
-        "    QTD_DIAS_SEMANA                           ,",
-        "    FL_SEGUNDA                                ,",
-        "    FL_TERCA                                  ,",
-        "    FL_QUARTA                                 ,",
-        "    FL_QUINTA                                 ,",
-        "    FL_SEXTA                                  ,",
-        "    FL_SABADO                                 ,",
-        "    FL_DOMINGO                                ,",
-        "    CD_SITUACAO                               ,",
-        "    CD_CATEG                                  ,",
-        "    CD_MODAL                                  ,",
-        "    DT_INIC_AULA                              ,",
-        "    DT_FIM_AULA                               ,",
-        "    DS_SALA_AULA_1                            ,",
-        "    DS_SALA_AULA_2                            ,",
-        "    DS_SALA_AULA_3                            ,",
-        "    DS_SALA_AULA_4                            ,",
-        "    DIA_AULA_1                                ,",
-        "    DIA_AULA_2                                ,",
-        "    DIA_AULA_3                                ,",
-        "    DIA_AULA_4                                ,",
-        "    FLAG_AULA_ATRIB                           ,",
-        "    FLAG_DISCIPL_CENSO                        ,",
-        "    HR_INIC_AULA_1                            ,",
-        "    HR_INIC_AULA_2                            ,",
-        "    HR_INIC_AULA_3                            ,",
-        "    HR_INIC_AULA_4                            ,",
-        "    HR_FINAL_AULA_1                           ,",
-        "    HR_FINAL_AULA_2                           ,",
-        "    HR_FINAL_AULA_3                           ,",
-        "    HR_FINAL_AULA_4                           ,",
-        "    IDENT_GENERO                              ,",
-        "    IDENT_TIPO_CLASS                          ,",
-        "    DT_INCL                                   ,",
-        "    QTD_ALUNO_CESS                            ,",
-        "    QTD_ALUNO_DIGIT                           ,",
-        "    QTD_ALUNO_EVAD_CLASSE                     ,",
-        "    QTD_ALUNO_INFORM                          ,",
-        "    QTD_ALUNO_OUTR                            ,",
-        "    QTD_ALUNO_REMANEJ                         ,",
-        "    QTD_ALUNO_TRANSF_CLASSE                   ,",
-        "    NUM_DELEG                                 ,",
-        "    FL_LOTE_CONSIST                           ,",
-        "    ID_CAPA_FISICA_MAX                        ,",
-        "    QTD_APROV                                 ,",
-        "    QTD_APROV_PARCIAL                         ,",
-        "    QTD_RET_FREQ                              ,",
-        "    QTD_RET_REND                              ,",
-        "    QTD_RET_PARCIAL                           ,",
-        "    DT_ULT_REND                               ,",
-        "    TP_CLASSE_EDUC_ESPEC                      ,",
-        "    FL_ELETIVA                                ,",
-        "    DIA_AULA_5                                ,",
-        "    HR_INIC_AULA_5                            ,",
-        "    HR_FINAL_AULA_5                           ,",
-        "    HR_INIC_AULA_6                            ,",
-        "    HR_FINAL_AULA_6                           ,",
-        "    HR_INIC_AULA_7                            ,",
-        "    HR_FINAL_AULA_7                           ,",
-        "    DS_TURMA                                  ,",
-        "    QTD_ALUNO_FALEC_CLASSE                    ,",
-        "    FL_PARTICIP_PROG_EDUC                     ,",
-        "    QTD_ALUNO_NAO_FREQ_CLASSE                 ,",
-        "    QTD_REMAN_CONVER_ABAND                    ,",
-        "    QTD_TRANSF_CONVER_ABAND                   ,",
-        "    QTD_ALUNO_RECLAS_CLASSE                   ,",
-        "    CD_CICLO                                  ,",
-        "    FL_CURSO_F                                ,",
-        "    FL_CONVENIO_EEE                           ,",
-        "    DIA_AULA_6                                ,",
-        "    DIA_AULA_7                                ,",
-        "    FL_BRASIL_ALFAB                           ,",
-        "    LOGIN_INCL                                ,",
-        "    DT_ALTER                                  ,",
-        "    LOGIN_ALTER                               ,",
-        "    DT_EXCL                                   ,",
-        "    LOGIN_EXCL                                ,",
-        "    MACHINE_INCL                              ,",
-        "    USER_INCL                                 ,",
-        "    MACHINE_ALTER                             ,",
-        "    USER_ALTER                                ,",
-        "    MACHINE_EXCL                              ,",
-        "    USER_EXCL                                 ,",
-        "    LOGIN_REND                                ,",
-        "    DT_CONCLUINTE                             ,",
-        "    QTD_ALUNO_ATIVO                           ,",
-        "    QTD_BAIXA_TRANSFERENCIA                   ,",
-        "    CD_MOTIVO_CESSAO                          ,",
-        "    CD_TIPO_ENSINO_EQUIVALENTE                ,",
-        "    NR_SERIE_EQUIVALENTE                      ,",
-        "    QTD_ALUNO_DEFINIDO_ANO_SEGUINTE           ,",
-        "    CD_QUADRO_RESUMO                          ,",
-        "    CD_DEPENDENCIA                            ,",
-        "    CD_TIPO_TURNO_HORARIO                     ,",
-        "    CD_DIA_AULA                               ,",
-        "    CD_HABILITACAO_SED                        ,",
-        "    CD_TIPO_ENSINO_TURNO                      ,",
-        "    QTD_PRE_MATRICULA_ONLINE                  ,",
-        "    CD_TIPO_ENSINO_CAPACIDADE_FISICA          ,",
-        "    CD_TIPO_ENSINO_CAPACIDADE_FISICA_MUNICIPIO,",
-        "    CD_TIPO_ENSINO_PROGRAMA_GOVERNO           ,",
-        "    CD_TIPO_ATENDIMENTO_CENSO                 ,",
-        "    QTD_ALUNO_RECUO_CLASSE                    ,",
-        "    QTDE_VAGAS_DISPONIVEIS                    ,",
-        "    DESCR_OBS                                 ,",
-        "    CD_ETAPA_ENSINO_CENSO                     ,",
-        "    CD_UNIDADECURRICULAR                      ,",
-        "    CD_APROFUNDAMENTOCURRICULAR               ,",
-        "    CD_TURMA_MAE                              ,",
-        "    CD_ITINERARIO                             ,",
-        "    CD_CATEGORIA_PROFISSIONAL                 ,",
-        "    CD_TIPO_CURSO                             ,",
-        "    FL_TURMA_VINCULO_DIURNO                   ,",
-        "    CD_SERIE_TIPO_ENSINO                      ,",
-        "    CD_ASPECTO_TURMA_CLASSE                   ,",
-        "    CD_TP_DEFICIENCIA",
-        "FROM SAS.[${1:03}2026].TB_TURMA",
-        "WHERE DT_ANO_LETIVO = 2026 ",
-        " AND CD_SITUACAO = 0 ",
-        " AND TP_REDE_ENSINO = 1 ",
-        " AND QTD_ALUNO_ATIVO > 0",
-        " AND CD_DURACAO <> 2 -- Exclusao de Classes de EJA e Itinerario Formativo do 2 Semestre - Verificar sempre no inicio do semestre"
-    ],
-    "description": "SAS_TB_TURMA"
-},
-
-// SAS_TB_ESCOLAS
-"SAS_TB_ESCOLAS": {
-    "scope": "sql",
-    "prefix": "ZSASTBESCOLAS",
-    "body": [
-        "SELECT",
-        "      CD_ESCOLA AS CIE              ,",
-        "      CD_UNIDADE_ADMIN AS UA        ,",
-        "      CD_INEP AS INEP               ,",
-        "      CD_DIRETORIA  AS URE          ,",
-        "      NM_COMPLETO_ESCOLA            ,",
-        "      NM_ABREVIADO                  ,",
-        "      CD_SITUACAO AS SITUACAO       ,",
-        "      CD_ESCOLA_VINCULADA           ,",
-        "      ANO_MUNICIPALIZADA            ,",
-        "      CD_MUNICIPIO_VINCULADO        ,",
-        "      COD_ESCOLA_MUNICIPALIZADA     ,",
-        "      CD_REDE_ENSINO                ,",
-        "      CD_TP_IDENTIFICADOR AS TIPO_ENSINO,",
-        "      CD_LOCALIZACAO                ,",
-        "      CNPJ_DA_APM                   ,",
-        "      CNPJ_DA_APM_OLD               ,",
-        "      NM_APM                        ,",
-        "      NM_APM_OLD                    ,",
-        "      NM_GESTOR_ESCOLA              ,",
-        "      NR_CPF                        ,",
-        "      CD_CARGO                      ,",
-        "      DS_EMAIL_GESTOR               ,",
-        "      NR_CONVE_FDE_APM              ,",
-        "      CD_UE                      ",
-        "FROM SAS.[${1:03}2026].TB_ESCOLA",
-        "WHERE CD_SITUACAO = '1' -- ATIVAS",
-        "AND CD_REDE_ENSINO = '1' -- ESTADUAIS"
-    ],
-    "description": "SAS_TB_ESCOLA"
-},
-
-// SAS_TB_FUNCIONAL
-"SAS_TB_FUNCIONAL": {
-    "scope": "sql",
-    "prefix": "ZSASTBFUNC",
-    "body": [
-        "SELECT",
-        "      NR_CPF AS CPF               ,",
-        "      NR_DI AS DI                 ,",
-        "      CONCAT(NR_CPF, NR_DI) AS CPF_DI,",
-        "      NR_RG AS RG                 ,",
-        "      CD_SIT_REG AS SITUACAO, -- A = ATIVO, E = EXCLUÍDO , F = falecido, 0 = erro, P CATEGORIA P, I = INATIVO, B = BLOQUEADO     ,",
-        "      DT_SIT                      ,",
-        "      NR_QUIN_ADIC_TS             ,",
-        "      DT_VIG_ULT_QUIN_ATS         ,",
-        "      CD_INDIC_SEXTAPARTE         ,",
-        "      DT_VIG_SEXTAPARTE           ,",
-        "      CD_CARGO_FUNC_TIT           ,",
-        "      CD_IDENT_CAT_FUNC_TIT AS CATEG_E,",
-        "      DT_POSSE_TIT                ,",
-        "      DT_INIC_EXERC_TIT           ,",
-        "      CD_CLASSE_DISC_TIT AS CLDISC,",
-        "      CD_IDENT_SIT_ESPEC_TIT AS SIT_ESP,",
-        "      DT_INIC_SIT_ESPEC_TIT AS DT_SIT_ESP,",
-        "      CD_IDENT_REF_FAIXA_TIT AS REF_FAIXA,",
-        "      CD_IDENT_GRAU_NIV_TIT AS GRAU_NIV,",
-        "      CD_JORNADA_TIT AS JORNADA   ,",
-        "      CD_UNID_ESC_CLASS_TIT AS CIE_C,",
-        "      CD_UNID_ADM_CLASS_TIT AS UA_C,",
-        "      CD_UNID_ESC_EXERC_TIT AS CIE_E,",
-        "      CD_UNID_ADM_EXERC_TIT AS UA_E,",
-        "      CD_TIP_INTERRUP_CESS_TIT AS INTERRUP,",
-        "      CD_MOT_INTERRUP_CESS_TIT AS MOT_INTERRUP,",
-        "      DT_INIC_INTERRUP_CESS_TIT AS DTI_INTERRUP,",
-        "      DT_FIM_INTERRUP_CESS_TIT AS DTF_INTERRUP,",
-        "      CD_MOT_AFAST_TIT AS MOTIAFAS,",
-        "      DT_INIC_AFAST_TIT AS DTI_MOTIAFAS,",
-        "      DT_FIM_AFAST_TIT AS DTF_MOTIAFAS,",
-        "      CD_MOT_LIC_TIT AS MOTILICE  ,",
-        "      DT_INIC_LIC_TIT AS DTI_MOTILICE,",
-        "      DT_FIM_LIC_TIT AS DTF_MOTICE,",
-        "      CD_TIP_PROV_COMIS           ,",
-        "      CD_CARGO_FUNCAO_COMIS AS CARGO_COMIS,",
-        "      CD_IDENT_CAT_FUNC_COMIS AS CATEG_COMIS,",
-        "      DT_POSSE_COMIS              ,",
-        "      DT_INIC_EXERC_COMIS         ,",
-        "      DT_INIC_SIT_ESP_COMIS AS SIT_ESP_COMIS,",
-        "      CD_IDENT_GRAU_NIV_COMIS     ,",
-        "      CD_UNID_ESC_CLASS_COMIS AS UE_C_COMIS,",
-        "      CD_UNID_ADM_CLASS_COMIS AS UA_C_COMIS,",
-        "      CD_UNID_ESC_EXER_COMIS AS UE_E_COMIS,",
-        "      CD_UNID_ADM_EXER_COMIS AS UA_E_COMIS,",
-        "      CD_TIP_INTERRUP_CESS_COMIS AS INTERRUP_COMIS,",
-        "      CD_MOT_INTERRUP_CESS_COMIS AS MOT_INTERRUP_COMIS,",
-        "      DT_INIC_INTERRUP_CESS_COMIS AS DTI_INTERRUP_COMIS,",
-        "      DT_FIM_INTERRUP_CESS_COMIS AS DTF_INTERRUP_COMIS,",
-        "      CD_MOT_AFAST_COMIS AS MOTIAFAS_COMIS,",
-        "      DT_INIC_MOT_AFAST_COMIS AS DTI_MOTIAFAS_COMIS,",
-        "      DT_FIM_MOT_AFAST_COMIS AS DTF_MOTIAFAS_COMIS,",
-        "      CD_MOT_LIC_COMIS AS MOTILICE_COMIS,",
-        "      DT_INIC_LIC_COMIS AS DTI_MOTILICE_COMIS,",
-        "      DT_FIM_LIC_COMIS AS DTF_MOTILICE_COMIS,",
-        "      CD_CARGO_FUNCAO_DESIGN AS CARGO_DESIGN,",
-        "      DT_INIC_DESIGN              ,",
-        "      CD_IDENT_REF_FAIXA_DESIGN AS REF_FAIXA_DESIGN,",
-        "      CD_IDENT_GRAU_NIV_DESIGN AS NIV_DESIGN,",
-        "      CD_UNID_ESC_CLASS_DESIGN AS UE_C_DESIGN,",
-        "      CD_UNID_ADM_CLASS_DESIGN AS UA_C_DESIGN,",
-        "      CD_MOT_SUBST_DESIGN         ,",
-        "      CD_TIP_INTERRUP_CESS_DESIGN ,",
-        "      CD_MOT_INTERRUP_CESS_DESIGN ,",
-        "      DT_INIC_INTERRUP_CESS_DESIGN,",
-        "      DT_FIM_INTERRUP_CESS_DESIGN ,",
-        "      CD_MOT_AFAST_DESIGN         ,",
-        "      DT_INIC_AFAST_DESIGN        ,",
-        "      DT_FIM_AFAST_DESIGN         ,",
-        "      CD_MOT_LIC_DESIGN           ,",
-        "      DT_INIC_LIC_DESIGN          ,",
-        "      DT_FIM_LIC_DESIGN           ,",
-        "      CD_IDENT_GRAU_NIV           ,",
-        "      CD_DIR_ENSI_ORG_CENTRAL     ,",
-        "      COD_CARGO                   ,",
-        "      COD_UNID_ADM                ",
-        "FROM SAS.[${1:03}2026].TB_FUNCIONAL",
-        "WHERE CD_SIT_REG = 'A' -- A = ATIVO, E = EXCLUÍDO , F = falecido, 0 = erro, P CATEGORIA P, I = INATIVO, B = BLOQUEADO"
-    ],
-    "description": "SAS_TB_FUNCIONAL"
-},
-
-// SAS_EDUCA_PESSOAL
-"SAS_EDUCA_PESSOAL": {
-    "scope": "sql",
-    "prefix": "ZSASEDUCAPES",
-    "body": [
-        "DROP TABLE IF EXISTS #CPFPESSOAL",
-        "SELECT",
-        "   NOME,",
-        "   RS,",
-        "   PV,",
-        "   CONCAT(RS, PV) AS RSPV,",
-        "   DTNASC AS NASCIMENTO,",
-        "   CPF,",
-        "   CPFDV AS DI,",
-        "   RIGHT(CPF, 9) AS CPF_9",
-        "INTO #CPFPESSOAL",
-        "FROM SAS.[${1:03}2026].EDUCA_PESSOAL",
-        "DROP TABLE IF EXISTS #CPF_COMPL",
-        "SELECT",
-        "   NOME,",
-        "   RS,",
-        "   PV,",
-        "   RSPV,",
-        "   NASCIMENTO,",
-        "   CPF,",
-        "   DI,",
-        "   CPF_9,",        
-        "   CONCAT(CPF_9, DI) AS CPF_DI",
-        "INTO #CPF_COMPL",
-        "FROM #CPFPESSOAL",
-        "SELECT *",
-        "FROM #CPF_COMPL",
-        "ORDER BY CPF_DI"
-    ],
-    "description": "SAS_EDUCA_PESSOAL"
-},
-
-// SAS_TB_ATRIB_ASSOCIACAO
-"SAS_TB_ATRIB_ASSOCIACAO": {
-    "scope": "sql",
-    "prefix": "ZSASTBATRIB",
-    "body": [
-        "SELECT",
-        "      CD_ATRIBUICAO      ,",
-        "      NM_PESSOA          ,",
-        "      NR_RG AS RG        ,",
-        "      NR_CPF AS CPF      ,",
-        "      NR_DI AS DI        ,",
-        "      CONCAT(NR_CPF, NR_DI) AS CPF_DI,",
-        "      TP_ATRIB           ,",
-        "      TIPO_ATRIB AS DESC_TP_ATRIB,",
-        "      COD_ESCOLA AS CIE  ,",
-        "      NOME_COMPL_ESCOLA AS NOMEESC,",
-        "      CD_DIRETORIA AS CD_URE,",
-        "      NOME_DIRET AS NM_URE,",
-        "      FASE_ATRIB         ,",
-        "      CD_TIPO_ENSINO     ,",
-        "      NM_TIPO_ENSINO     ,",
-        "      CD_TURMA           ,",
-        "      DS_TURMA           ,",
-        "      NR_SERIE           ,",
-        "      NM_TERMO           ,",
-        "      ID_TURMA           ,",
-        "      CD_TURNO           ,",
-        "      DESCR_TURNO        ,",
-        "      CD_DISCIPLINA AS CLDISC,",
-        "      DEN_MATERIA        ,",
-        "      QTDE_AULAS_ATRIB_QA,",
-        "      DT_INI_VIG         ,",
-        "      DT_FIM_VIG         ,",
-        "      DT_EXCL            ,",
-        "      FL_ATRIB_ATIVO     ,",
-        "      AULA_SUBST         ,",
-        "      FL_ARTIGO_22       ,",
-        "      dt_incl            ,",
-        "      NR_GRAU            ,",
-        "      NR_GRAU_OLD        ",
-        "FROM SAS.[${1:03}2026].TB_ATRIB_ASSOCIACAO",
-        "ORDER BY NR_CPF"
-    ],
-    "description": "SAS_TB_ATRIB_ASSOCIACAO"
-},
-
-// SAS_TB_AFASTAMENTO
-"SAS_TB_AFASTAMENTO": {
-    "scope": "sql",
-    "prefix": "ZSASTBAFAST",
-    "body": [
-        "SELECT",
-        "      NR_CPF               ,",
-        "      NR_DI                ,",
-        "      CONCAT(NR_CPF, NR_DI) AS CPF_DI,",
-        "      NR_RG                ,",
-        "      CD_TIP_EVE           ,",
-        "      CD_MOTIV_EVE         ,",
-        "      CD_EVE               ,",
-        "      TP_FORM_AFAST        ,",
-        "      TP_ALTER_HIST        ,",
-        "      FL_SIT_HIST          ,",
-        "      FL_ATU               ,",
-        "      TP_LOCAL             ,",
-        "      CD_LOCAL             ,",
-        "      CD_CARGO_FUNCAO      ,",
-        "      CD_CATEG             ,",
-        "      FL_VENCTO            ,",
-        "      QT_HORA_CARGA_SUPL   ,",
-        "      CD_JORNADA           ,",
-        "      DT_INI               ,",
-        "      DT_FIM               ,",
-        "      TP_ATO_OFIC          ,",
-        "      CD_ORGAO_ATO_OFICIAL ,",
-        "      NR_ATO_OFIC          ,",
-        "      NR_ANO_ATO_OFIC      ,",
-        "      DT_PUBL_ATO_OFIC     ,",
-        "      DT_ASSIN_ATO_OFIC    ,",
-        "      CD_OPCAO             ,",
-        "      CD_TERM              ,",
-        "      CD_OPER              ,",
-        "      DT_ALTER             ,",
-        "      HR_INI_ALTER         ,",
-        "      HR_FIM_ALTER         ,",
-        "      NM_OPER              ,",
-        "      CD_MOTIV_EXC         ,",
-        "      TP_SIT_ART22         ,",
-        "      FL_LAUDA             ,",
-        "      CD_CICLO             ,",
-        "      CD_ASSIST            ,",
-        "      TP_ASSIST            ,",
-        "      TP_ATUA              ,",
-        "      CD_DISCIPL_ATUA      ,",
-        "      NR_RG_SUBST          ,",
-        "      CD_MOTIVO_SUBST      ,",
-        "      NR_DI_SUBST          ,",
-        "      CD_MOTIVO_AFAST      ,",
-        "      CD_MOTIVO_AFAST_SUBST,",
-        "      DT_ALTER_ATUA        ,",
-        "      DT_ULT_ATUALIZ       ,",
-        "      CALC_CD_CARGO_FUNCAO ,",
-        "      DS_FUNDAMENTO_LEGAL  ",
-        "FROM SAS.[${1:03}2026].TB_AFASTAMENTO",
-        "ORDER BY NR_CPF"
-    ],
-    "description": "SAS_TB_AFASTAMENTO"
-},
-
-// SAS_TB_ESCOLARIDADE
-"SAS_TB_ESCOLARIDADE": {
-    "scope": "sql",
-    "prefix": "ZSASTBESCOL",
-    "body": [
-        "SELECT",
-        "      ID_ESCOLARIDADE       ,",
-        "      NR_CPF                ,",
-        "      NR_RG                 ,",
-        "      CD_VERIF_RG           ,",
-        "      SG_UF_RG              ,",
-        "      FL_APROVEITAMENTO     ,",
-        "      NR_QUANT_SEMESTRE     ,",
-        "      NR_IDENT_SEMESTR_ATUAL,",
-        "      NR_DIPLOMA            ,",
-        "      DT_REG_DIPLOMA        ,",
-        "      CD_ORGAO_ANOT_APOST   ,",
-        "      ID_ORGAO_DIPLOMA      ,",
-        "      ID_INSTITUICAO        ,",
-        "      DT_ANOTACAO_APOST     ,",
-        "      DT_INICIO_CURSO       ,",
-        "      ID_CURSO              ,",
-        "      DT_FIM_CURSO          ,",
-        "      DT_CONFERENCIA        ,",
-        "      FL_ATIVO              ,",
-        "      ID_ESCOLA             ,",
-        "      DT_FIM_PREV_CURSO     ,",
-        "      DT_ULT_ALT_CARGA      ,",
-        "      DT_INATIV             ,",
-        "      ID_INSTITUICAO_MIN    ,",
-        "      FL_MODALIDADE_CURSO   ,",
-        "      FL_ENVIADO_ALTA       ,",
-        "      DT_ENVIADO_ALTA       ,",
-        "      DS_STRING_ENVIO       ,",
-        "      ID_INSTITUICAO_CAMPUS ,",
-        "      FL_OUTRAS_INSTITUICOES,",
-        "      ID_USER_INATIV        ,",
-        "      DT_INCL               ,",
-        "      ID_USER_INCL          ,",
-        "      DT_ALTER              ,",
-        "      ID_USER_ALTER         ,",
-        "      CD_ENFASE             ",
-        "FROM SAS.[${1:03}2026].TB_ESCOLARIDADE",
-        "ORDER BY NR_CPF"
-    ],
-    "description": "SAS_TB_ESCOLARIDADE"
-},
-
-// SAS_TB_CURSO
-"SAS_TB_CURSO": {
-    "scope": "sql",
-    "prefix": "ZSASTBCURSO",
-    "body": [
-        "SELECT",
-        "     CD_CURSO                ,",
-        "     NM_CURSO                ,",
-        "     FL_ATIVO -- A = ATIVO, E = EXCLUIDO, I = INATIVO",
-        "FROM SAS.[${1:03}2026].TB_CURSO",
-        "WHERE FL_ATIVO = 'A'",
-        "ORDER BY NM_CURSO"
-    ],
-    "description": "SAS_TB_CURSO"
-},
-
-// SAS_TB_TIPO_NIVEL_CURSO
-"SAS_TB_TIPO_NIVEL_CURSO": {
-    "scope": "sql",
-    "prefix": "ZSASTBTIPONIVCURSO",
-    "body": [
-        "SELECT",
-        "     CD_TIPO_NIVEL_CURSO,",
-        "     NM_TIPO_NIVEL_CURSO,",
-        "     DT_VIGENCIA_INICIAL,",
-        "     FL_ATIVO           ,",
-        "     NR_HORAS           ,",
-        "     FL_ITEM_INVENT     ",
-        "FROM SAS.[072020].TB_TIPO_NIVEL_CURSO"
-    ],
-    "description": "SAS_TB_TIPO_NIVEL_CURSO"
-},
-
-// SAS_TB_FREQUENCIA_FALTA
-"SAS_TB_FREQUENCIA_FALTA": {
-    "scope": "sql",
-    "prefix": "ZSASTBFREQFALT",
-    "body": [
-        "SELECT",
-        "     NR_CPF          ,",
-        "     NR_DI           ,",
-        "     CONCAT(NR_CPF, NR_DI) AS CPF_DI,",
-        "     ANO_REF         ,",
-        "     MES_REF         ,",
-        "     CD_DIA          ,",
-        "     NR_PROV         ,",
-        "     CD_UNID_ADM_FREQ,",
-        "     CD_CARGO_FUNCAO ,",
-        "     CD_CATEG_SERV   ,",
-        "     CD_FREQ         ,",
-        "     CD_FREQ_AFAST   ,",
-        "     FLG_TIPO        ,",
-        "     DT_INCL         ,",
-        "     DT_PUBLI_DOE    ,",
-        "     CD_LOCAL        ,",
-        "     CD_TIP_LOCAL    ,",
-        "     DT_ULT_ATUALIZ  ,",
-        "     FL_PROF_PRES    ",
-        "FROM SAS.[${1:03}2026].TB_FREQUENCIA_FALTA"
-    ],
-    "description": "SAS_TB_FREQUENCIA_FALTA"
-},
-
-// SAS_TB_FREQUENCIA
-"SAS_TB_FREQUENCIA": {
-    "scope": "sql",
-    "prefix": "ZSASTBFREQGERAL",
-    "body": [
-        "SELECT",
-        "     NR_CPF             ,",
-        "     NR_DI              ,",
-        "     CONCAT(NR_CPF, NR_DI) AS CPF_DI,",
-        "     ANO_REF            ,",
-        "     MES_REF            ,",
-        "     NR_RG              ,",
-        "     NR_REG_SIST        ,",
-        "     NR_PROV            ,",
-        "     CD_CATEG_SERV      ,",
-        "     CD_IND_CARGO_FUNCAO,",
-        "     CD_CARGO_FUNCAO    ,",
-        "     CD_UNID_ADM_FREQ   ,",
-        "     CD_FL_INCL         ,",
-        "     CD_FL_NORMAL       ,",
-        "     CD_UNID_ORCAM      ,",
-        "     CD_UNID_DESP       ,",
-        "     CD_JORN            ,",
-        "     CD_SIT_ESPEC_1     ,",
-        "     DT_INIC_1          ,",
-        "     DT_FIM_1           ,",
-        "     CD_SIT_ESPEC_2     ,",
-        "     DT_INIC_2          ,",
-        "     DT_FIM_2           ,",
-        "     DT_INCL            ",
-        "FROM SAS.[${1:03}2026].TB_FREQUENCIA"
-    ],
-    "description": "SAS_TB_FREQUENCIA"
-},
-
-
-// SAS_TB_CAD_FREQUENCIA
-"SAS_BFE": {
-    "scope": "sql",
-    "prefix": "ZSASBFE",
-    "body": [
-        "SELECT",
-        "     CD_FREQ,",
-        "     DS_FREQ",
-        "FROM CONTAGEH..TB_CAD_FREQUENCIA"
-    ],
-    "description": "CONTAGEH_TB_CAD_FREQUENCIA"
-},
-
-// SAS_TB_CURSO_HABILITACAO
-"SAS_TB_CURSO_HABILITACAO": {
-    "scope": "sql",
-    "prefix": "ZSASTBCURSHAB",
-    "body": [
-        "SELECT *",
-        "FROM QUALIFICACAO..TB_CURSO_HABILITACAO"
-    ],
-    "description": "QUALIFICACAO_TB_CURSO_HABILITACAO"
-},
-
-// DESENV_DISCIPLINA
-"DESENV_DISCIPLINA": {
-    "scope": "sql",
-    "prefix": "ZSASDESDISC",
-    "body": [
-        "SELECT",
-        "    COD_DISCIPLINA AS CLDISC      ,",
-        "    NOME_DISCIPLINA      ,",
-        "    NOME_ABREV_DISCIPLINA,",
-        "    DISCIPLINA_PARENTE   ,",
-        "    ANO_INI_VIGEN        ,",
-        "    ANO_FIM_VIGEN        ,",
-        "    IDENT_CARGA_HORA     ,",
-        "    COD_ATUACAO          ,",
-        "    CD_CATEG             ,",
-        "    CD_MODAL             ,",
-        "    IDENT_GENERO         ,",
-        "    FL_CEEJA             ",
-        "FROM DESENV.DBO.DISCIPLINA",
-        "WHERE NR_CPF IN (",
-        "SELECT *          ",
-        "FROM #CPF",
-        ")"
-    ],
-    "description": "DESENV_DISCIPLINA"
-},
-
-// CGRH_APOIO_BASE_SERVIDORES_ATIVOS_FINAL
-"CGRH_APOIO_BASE_SERVIDORES_ATIVOS_FINAL": {
-    "scope": "sql",
-    "prefix": "ZSASCGRHSERV",
-    "body": [
-        "SELECT",
-        "    POLO_C                 ,",
-        "    REGIAO_C               ,",
-        "    NOMEDE_C               ,",
-        "    UAC                    ,",
-        "    NOMEUA_C               ,",
-        "    MUNICIPIO_C            ,",
-        "    DI                     ,",
-        "    SEXO                   ,",
-        "    DATA_NASCIMENTO        ,",
-        "    IDADE                  ,",
-        "    CARGO_C                ,",
-        "    NOMECAR_C              ,",
-        "    QUADRO_C               ,",
-        "    CATEG_C                ,",
-        "    DT_INICIO_EXERCICIO_C  ,",
-        "    ANOS_TRAB_CARGO_C      ,",
-        "    DTPOSSE_C              ,",
-        "    DISC_CONCURSO          ,",
-        "    POLO_E                 ,",
-        "    REGIAO_E               ,",
-        "    NOMEDE_E               ,",
-        "    UA_E                   ,",
-        "    LOCAL_UA               ,",
-        "    NOMEUA_E               ,",
-        "    MUNICIPIO_E            ,",
-        "    CARGO_E                ,",
-        "    NOMECAR_E              ,",
-        "    QUADRO_E               ,",
-        "    CATEG_E                ,",
-        "    DATA_INICIO_EXERCICIO_E,",
-        "    DTPOSSE_E              ,",
-        "    QTDE_ATS               ,",
-        "    JORNADA                ,",
-        "    TIPO_DEF               ,",
-        "    ID_COR                 ,",
-        "    ID_INTERNO             ",
-        "FROM CGRH_APOIO.DBO.BASE_SERVIDORES_ATIVOS_FINAL_0326"
-    ],
-    "description": "CGRH_APOIO_BASE_SERVIDORES_ATIVOS_FINAL"
-},
-
-// CEPEA_CTG
-"CEPEA_CTG": {
-    "scope": "sql",
-    "prefix": "ZCEPEACTG",
-    "body": [
-        "SELECT",
-        "     CPF          ,",
-        "     DI           ,",
-        "     CONCAT(CPF, DI) AS CPF_DI,",
-        "     RG           ,",
-        "     RG12         ,",
-        "     RG11         ,",
-        "     RS           ,",
-        "     PV           ,",
-        "     NOME         ,",
-        "     CODUA_C      ,",
-        "     CARGO_C      ,",
-        "     CATEG_C      ,",
-        "     FAIXA_C      ,",
-        "     NIVEL_C      ,",
-        "     FAIXA_NIVEL_C,",
-        "     FAIXA_E      ,",
-        "     NIVEL_E      ,",
-        "     FAIXA_NIVEL_E,",
-        "     DTIEXER_C    ,",
-        "     ANOSTRAB_C   ,",
-        "     CODUA_E      ,",
-        "     CARGO_E      ,",
-        "     CATEG_E      ,",
-        "     DTIEXER_E    ,",
-        "     ANOSTRAB_E   ,",
-        "     CARFUNCO     ,",
-        "     DT_SITREG    ,",
-        "     DTPOSSE_C    ,",
-        "     DTPOSSE_E    ,",
-        "     DTISESP      ,",
-        "     DTIINTE      ,",
-        "     DTFINTE      ,",
-        "     DTIAFAS      ,",
-        "     DTFAFAS      ,",
-        "     DTILICE      ,",
-        "     DTFLICE      ,",
-        "     DTIEXCO      ,",
-        "     DTIDESIG     ,",
-        "     SITREG       ,",
-        "     QTQUINQ      ,",
-        "     DTQUINQ      ,",
-        "     QUALIF       ,",
-        "     CLDISC       ,",
-        "     SITVINC      ,",
-        "     SITVINCO     ,",
-        "     SITVINDE     ,",
-        "     SITESP       ,",
-        "     MOTIAFAS     ,",
-        "     MOTIVO       ,",
-        "     MOTLICE      ,",
-        "     COD_BANCO    ,",
-        "     COD_AGENCIA  ,",
-        "     TP_CONTA     ,",
-        "     NUM_CONTA    ,",
-        "     CD_VERIF     ,",
-        "     TIPO_DESIG   ,",
-        "     JORNADA      ,",
-        "     EMAIL        ,",
-        "     EMAIL_INST1  ,",
-        "     EMAIL_INST2  ,",
-        "     SEXO         ,",
-        "     DTNASC       ,",
-        "     IDADE        ,",
-        "     GRAUESCO     ,",
-        "     SITESCO      ,",
-        "     ESTCIVIL     ,",
-        "     UFRG         ,",
-        "     TIPODEF      ,",
-        "     ALDEADO      ,",
-        "     ANOPRIEM     ,",
-        "     DTINICSP     ,",
-        "     IDENTCOR     ,",
-        "     TOTBRU       ,",
-        "     TOTMES       ,",
-        "     TOTLIQ       ,",
-        "     OPVCTOEX     ,",
-        "     TIPOEX       ,",
-        "     TIPOPROV     ,",
-        "     ID_COR_DESC  ,",
-        "     CATEG_E_DESC ,",
-        "     CATEG_C_DESC ,",
-        "     TIPODEF_DESC          ",
-        "FROM CTG${1:03}26"
-    ],
-    "description": "CEPEA_CTG0"
-},
-// CEPEA_ARQDEUA
-"CEPEA_ARQDEUA": {
-    "scope": "sql",
-    "prefix": "ZCEPEAARQDEUA",
-    "body": [
-        "SELECT",
-        "     UA             ,",
-        "     UO             ,",
-        "     UD             ,",
-        "     ORGAO          ,",
-        "     NOMEUA         ,",
-        "     NOMEUA_COMPLETO,",
-        "     NOMEDE         ,",
-        "     REGIAO         ,",
-        "     LOCAL          ,",
-        "     MUN            ,",
-        "     NOMEMUN        ",
-        "FROM ARQDEUA${1:03}26"
-    ],
-    "description": "CEPEA_ARQDEUA"
-},
-
-// CEPEA_BFE
-"CEPEA_BFE": {
-    "scope": "sql",
-    "prefix": "ZCEPEABFE",
-    "body": [
-        "SELECT",
-        "     CPF           ,",
-        "     DI            ,",
-        "     CONCAT(CPF, DI) AS CPF_DI,",
-        "     RG            ,",
-        "     ANO           ,",
-        "     MES           ,",
-        "     CARGO         ,",
-        "     UAFREQ        ,",
-        "     RS            ,",
-        "     PV            ,",
-        "     CATEG         ,",
-        "     DIA           ,",
-        "     CODBFE        ,",
-        "     DT_ULT_ATUALIZ,",
-        "     CD_AFAST      ",
-        "FROM BFE${1:03}26"
-    ],
-    "description": "CEPEA_BFE"
-},
-
-// CEPEA_CHOR_SALA_AULA
-"CEPEA_CHOR_SALA_AULA": {
-    "scope": "sql",
-    "prefix": "ZCEPEACHORSALA",
-    "body": [
-        "SELECT",
-        "     REGIAO             ,",
-        "     CD_DIRETORIA AS CD_URE,",
-        "     NOMEDE  AS URE     ,",
-        "     CD_INEP  AS INEP   ,",
-        "     DZ_ZONA            ,",
-        "     CATESC             ,",
-        "     TPESC              ,",
-        "     OBS1               ,",
-        "     CODESC             ,",
-        "     UA                 ,",
-        "     NOMEESC            ,",
-        "     COD_MUN            ,",
-        "     NOMEMUN            ,",
-        "     MODAL              ,",
-        "     CD_DISTRITO        ,",
-        "     NM_DISTRITO        ,",
-        "     ESCFAM             ,",
-        "     NOME               ,",
-        "     CPF                ,",
-        "     DI                 ,",
-        "     CONCAT(CPF, DI) AS CPF_DI,",
-        "     RG                 ,",
-        "     RS                 ,",
-        "     PV                 ,",
-        "     SEXO               ,",
-        "     DT_NASC            ,",
-        "     IDADE              ,",
-        "     CARGO_C            ,",
-        "     NOME_CARGO_C       ,",
-        "     CATEG_C            ,",
-        "     DTIEXER_C          ,",
-        "     CARGO_E            ,",
-        "     NOME_CARGO_E       ,",
-        "     CATEG_E            ,",
-        "     DTIEXER_E          ,",
-        "     SITESP             ,",
-        "     CL_DISC            ,",
-        "     DEN_CLDISC         ,",
-        "     FAIXA_NIVEL_E      ,",
-        "     JORNADA            ,",
-        "     TOTMES             ,",
-        "     TIPO_ATRIB         ,",
-        "     TP_ATRIB           ,",
-        "     FASE_ATRIB         ,",
-        "     TIPODEF            ,",
-        "     IDENTCOR           ,",
-        "     CD_TIPO_ENSINO     ,",
-        "     NM_TIPO_ENSINO     ,",
-        "     CD_ATRIBUICAO      ,",
-        "     COD_TURMA          ,",
-        "     SERIE              ,",
-        "     TURMA              ,",
-        "     DEN_TURMA          ,",
-        "     NM_TERMO           ,",
-        "     TURNO              ,",
-        "     DEN_TURNO          ,",
-        "     MATERIA            ,",
-        "     DEN_MATERIA        ,",
-        "     CODMAE             ,",
-        "     DEN_CODMAE         ,",
-        "     QTDE_AULAS_ATRIB_QA,",
-        "     NR_GRAU_OLD        ,",
-        "     DEN_CICLO          ,",
-        "     AULA_SUBST         ,",
-        "     TT_AULAS_LIVRES    ,",
-        "     TT_AULAS_SUBST     ,",
-        "     TT_AULAS_LIVRES_NOT,",
-        "     TT_AULAS_SUBST_NOT ,",
-        "     FL_ARTIGO_22       ,",
-        "     MOTIAFAS           ,",
-        "     DESCR_AFAS         ,",
-        "     DT_INIC_AFAS       ,",
-        "     ATUACAO_PEI        ,",
-        "     MOTILICE           ,",
-        "     DESCR_LICE         ,",
-        "     DT_INIC_LICE       ,",
-        "     DT_INI_VIG         ,",
-        "     DT_FIM_VIG         ,",
-        "     DT_EXCL            ,",
-        "     FL_ATRIB_ATIVO     ,",
-        "     TOT_AULAS_G        ,",
-        "     ANEXO              ,",
-        "     TT_HORAS_SEM       ,",
-        "     TT_HORAS_MES       ,",
-        "     ID_COR_DESC        ,",
-        "     CATEG_E_DESC       ,",
-        "     CATEG_C_DESC       ,",
-        "     TIPODEF_DESC       ",
-        "FROM CHOR_SALA_AULA${1:03}26"
-    ],
-    "description": "CEPEA_CHOR_SALA_AULA"
-},
-
-// CEPEA_ESCOLAS
-"CEPEA_ESCOLAS": {
-    "scope": "sql",
-    "prefix": "ZCEPEAESCOLAS",
-    "body": [
-        "SELECT",
-        "     POLO              ,",
-        "     REGIAO            ,",
-        "     NOMEDE            ,",
-        "     DELEG             ,",
-        "     ESCVINC           ,",
-        "     CODESC            ,",
-        "     CD_INEP           ,",
-        "     UA                ,",
-        "     NOMEESC           ,",
-        "     TPESC             ,",
-        "     OBS1              ,",
-        "     MODAL             ,",
-        "     TURNOS            ,",
-        "     CH1               ,",
-        "     ANO1              ,",
-        "     INICIO1           ,",
-        "     CATESC            ,",
-        "     DZ_ZONA           ,",
-        "     DS_TIPO_LOGRADOURO,",
-        "     RUA               ,",
-        "     NUM               ,",
-        "     BAIRRO            ,",
-        "     MUN               ,",
-        "     NOMEMUN           ,",
-        "     CEP               ,",
-        "     CD_DISTRITO       ,",
-        "     NM_DISTRITO       ,",
-        "     DDD               ,",
-        "     TELEFONE          ,",
-        "     NR_AREA_CONSTRUCAO,",
-        "     LIMPEZA           ,",
-        "     MERENDA           ,",
-        "     ESCFAM            ,",
-        "     ALE               ,",
-        "     VULN_QM           ,",
-        "     UBV_QM            ,",
-        "     FATOR_QM          ,",
-        "     VALOR_QM          ,",
-        "     VULN_QAE          ,",
-        "     UBV_QAE           ,",
-        "     FATOR_QAE         ,",
-        "     VALOR_QAE         ,",
-        "     TTCLASSEMAN       ,",
-        "     TTALUNOMAN        ,",
-        "     TTCLASSEITE       ,",
-        "     TTALUNOITE        ,",
-        "     TTCLASSETAR       ,",
-        "     TTALUNOTAR        ,",
-        "     TTCLASSEVES       ,",
-        "     TTALUNOVES        ,",
-        "     TTCLASSENOT       ,",
-        "     TTALUNONOT        ,",
-        "     TTCLASSEINTIN     ,",
-        "     TTALUNOINTIN      ,",
-        "     TTCLASSEINTFI     ,",
-        "     TTALUNOINTFI      ,",
-        "     TTCLASSEINTEM     ,",
-        "     TTALUNOINTEM      ,",
-        "     TTCLASSEINT       ,",
-        "     TTALUNOINT        ,",
-        "     MODALPEI          ,",
-        "     TTCLASSECEL       ,",
-        "     TTALUNOCEL        ,",
-        "     TTCLASSEITI       ,",
-        "     TTALUNOITI        ,",
-        "     TTCLASSEREC       ,",
-        "     TTALUNOREC        ,",
-        "     TTCLASSETEC       ,",
-        "     TTALUNOTEC        ,",
-        "     TTCLASSEHIB       ,",
-        "     TTALUNOHIB        ,",
-        "     TTCLASSEIF        ,",
-        "     TTALUNOIF         ,",
-        "     TTCLASSEEXP       ,",
-        "     TTALUNOEXP        ,",
-        "     TTCLASSEEJA       ,",
-        "     TTALUNOEJA        ,",
-        "     TTCLASSEEJAT      ,",
-        "     TTALUNOEJAT       ,",
-        "     TTCLASSEQPTEC     ,",
-        "     TTALUNOQPTEC      ,",
-        "     TTCLASSEPEC       ,",
-        "     TTALUNOPEC        ,",
-        "     TTCLASSEEI        ,",
-        "     TTALUNOEI         ,",
-        "     TTCLASSEIN        ,",
-        "     TTALUNOIN         ,",
-        "     TTCLASSEFI        ,",
-        "     TTALUNOFI         ,",
-        "     TTCLASSEEM        ,",
-        "     TTALUNOEM         ,",
-        "     TTCLASSEG         ,",
-        "     TTALUNOG          ",
-        "FROM ESCOLAS${1:03}26"
-    ],
-    "description": "CEPEA_ESCOLAS"
-},
-
-// CEPEA_NIVEL_FORMACAO
-"CEPEA_NIVEL_FORMACAO": {
-    "scope": "sql",
-    "prefix": "ZCEPEANIVELFORM",
-    "body": [
-        "SELECT",
-        "     NOME          ,",
-        "     RG            ,",
-        "     CPF           ,",
-        "     DI            ,",
-        "     CONCAT(CPF, DI) AS CPF_DI,",
-        "     CURSO1        ,",
-        "     CURSO2        ,",
-        "     CURSO3        ,",
-        "     CURSO4        ,",
-        "     CURSO5        ,",
-        "     CURSO6        ,",
-        "     CURSO7        ,",
-        "     CURSO8        ,",
-        "     CURSO9        ,",
-        "     CURSO10       ,",
-        "     CURSO11       ,",
-        "     CURSO12       ,",
-        "     CURSO13       ,",
-        "     CURSO14       ,",
-        "     CURSO15       ,",
-        "     CURSO16       ,",
-        "     CURSO17       ,",
-        "     CURSO18       ,",
-        "     CURSO19       ,",
-        "     CURSO20       ,",
-        "     CURSO21       ,",
-        "     CURSO22       ,",
-        "     CURSO23       ,",
-        "     CURSO24       ,",
-        "     CURSO25       ,",
-        "     CURSO26       ,",
-        "     CURSO27       ,",
-        "     CURSO28       ,",
-        "     CURSO29       ,",
-        "     CURSO30       ,",
-        "     CURSO31       ,",
-        "     CURSO32       ,",
-        "     CURSO33       ,",
-        "     CURSO34       ,",
-        "     CURSO35       ,",
-        "     CURSO36       ,",
-        "     CURSO37       ,",
-        "     CURSO38       ,",
-        "     CURSO39       ,",
-        "     CURSO40       ,",
-        "     CURSO41       ,",
-        "     CURSO42       ,",
-        "     CURSO43       ,",
-        "     CURSO44       ,",
-        "     CURSO45       ,",
-        "     CURSO46       ,",
-        "     CURSO47       ,",
-        "     CURSO48       ,",
-        "     CURSO49       ,",
-        "     CURSO50       ,",
-        "     FORMACAO      ,",
-        "     NIVEL_FORMACAO    ",
-        "FROM NIVEL_FORMACAO${1:03}26"
-    ],
-    "description": "CEPEA_NIVEL_FORMACAO"
-},
-
-// CEPEA_QUALIF
-"CEPEA_QUALIF": {
-    "scope": "sql",
-    "prefix": "ZCEPEAQUALIF",
-    "body": [
-        "SELECT",
-        "     CPF                 ,",
-        "     RG12                ,",
-        "     TIPOENTI            ,",
-        "     NM_ENTI             ,",
-        "     NM_INSTITU          ,",
-        "     CODCURSO            ,",
-        "     NM_CURSO            ,",
-        "     DT_INI_CURSO        ,",
-        "     DT_FIM_CURSO        ,",
-        "     CD_DISCIPLINA       ,",
-        "     ID_TIPO_NIVEL_CURSO ,",
-        "     LICENCIA            ,",
-        "     NM_TIPO_NIVEL_CURSO ,",
-        "     COD_HABILITACAO_TRAB,",
-        "     NM_HABILITACAO_TRAB ,         ",
-        "FROM QUALIF${1:03}26"
-    ],
-    "description": "CEPEA_QUALIF"
-},
-
-// CEPEA_TAB_CARGO
-"CEPEA_TAB_CARGO": {
-    "scope": "sql",
-    "prefix": "ZCEPEATABCARGO",
-    "body": [
-        "SELECT",
-        "     CD_CARGO  ,",
-        "     NM_CARGO  ,",
-        "     NM_QUADRO ,",
-        "     DT_FIM_VIG   ",
-        "FROM TAB_CARGO${1:03}26",
-        "ORDER BY CD_CARGO"
-    ],
-    "description": "CEPEA_TAB_CARGO"
-},
-
-// CEPEA_TAB_CODBFE
-"CEPEA_TAB_CODBFE": {
-    "scope": "sql",
-    "prefix": "ZCEPEABFE",
-    "body": [
-        "SELECT",
-        "     COD       ,",
-        "     EVENTO    ,",
-        "     [COD-EVENTO]   ",
-        "FROM TAB_CODBFE"
-    ],
-    "description": "CEPEA_TAB_CODBFE"
-},
-
-// CEPEA_TAB_GRUPO_NIVEL_CURSO
-"CEPEA_TAB_GRUPO_NIVEL_CURSO": {
-    "scope": "sql",
-    "prefix": "ZCEPEANIVELCURSO",
-    "body": [
-        "SELECT",
-        "     ID_TIPO_NIVEL_CURSO,",
-        "     CD_TIPO_NIVEL_CURSO,",
-        "     NM_TIPO_NIVEL_CURSO,",
-        "     GRUPO              ,",
-        "     NM_GRUPO           ",
-        "FROM TAB_GRUPO_NIVEL_CURSO${1:03}26"
-    ],
-    "description": "CEPEA_TAB_GRUPO_NIVEL_CURSO"
-},
-
-// CEPEA_TB_ID_INTERNO_SERV
-"CEPEA_TB_ID_INTERNO_SERV": {
-    "scope": "sql",
-    "prefix": "ZCEPEAID",
-    "body": [
-        "SELECT",
-        "     ID,",
-        "     CPF         ",
-        "FROM TB_ID_INTERNO_SERV",
-        "ORDER BY ID"
-    ],
-    "description": "CEPEA_TB_ID_INTERNO_SERV"
-},
-
-// 00_DISCIPLINA
-"00_DISCIPLINA": {
-    "scope": "sql",
-    "prefix": "Z00DISC",
-    "body": [
-        "SELECT",
-        "     CODMAE,",
-        "     DEN_CODMAE       ",
-        "FROM [dbo].[00_DISCIPLINA]"
-    ],
-    "description": "00_DISCIPLINA"
-},
-
-// 00_LOCALIZACAO
-"00_LOCALIZACAO": {
-    "scope": "sql",
-    "prefix": "Z00LOC",
-    "body": [
-        "SELECT",
-        "    CD_LOCALIZACAO,",
-        "    LOCALIZACAO         ",
-        "FROM [00_LOCALIZACAO]"
-    ],
-    "description": "00_LOCALIZACAO"
-},
-
-// 00_NIVEL_CURSO
-"00_NIVEL_CURSO": {
-    "scope": "sql",
-    "prefix": "Z00NIVCURSO",
-    "body": [
-        "SELECT",
-        "    CD_TIPO_NIVEL_CURSO,",
-        "    NM_TIPO_NIVEL_CURSO        ",
-        "FROM [dbo].[00_NIVEL_CURSO]"
-    ],
-    "description": "00_NIVEL_CURSO"
-},
-
-// 00_PROGRAMA
-"00_PROGRAMA": {
-    "scope": "sql",
-    "prefix": "Z00PROG",
-    "body": [
-        "SELECT",
-        "    CD_TP_PROGRAMA,",
-        "    DS_PROGRAMA        ",
-        "FROM [dbo].[00_PROGRAMA]"
-    ],
-    "description": "00_PROGRAMA"
-},
-
-// 00_TIPO_ENSINO
-"00_TIPO_ENSINO": {
-    "scope": "sql",
-    "prefix": "Z00TIPENS",
-    "body": [
-        "SELECT",
-        "    CD_TIPO_ENSINO,",
-        "    NM_TIPO_ENSINO        ",
-        "FROM [dbo].[00_TIPO_ENSINO]"
-    ],
-    "description": "00_TIPO_ENSINO"
-},
-
-// 00_UA
-"00_UA": {
-	"scope": "sql",
-	"prefix": "Z00_UA",
+	// cabecalho_explorador
+"cabecalho_explorador": {
+	"prefix": "pyexplorasite",
 	"body": [
-		"SELECT           ",
-		"   ID                ,",
-		"   REGIAO            ,",
-		"   URE               ,",
-		"   UA                ,",
-		"   NOMEUA            ,",
-		"   CIE               ,",
-		"   NOMEUE            ,",
-		"   REGIAO_B          ,",
-		"   SEGMENTO          ,",
-		"   MUN               ,",
-		"   NOMEMUN           ,",
-		"   SITUACAO          ,",
-		"   POLO              ,",
-		"   UO                ,",
-		"   UD                ,",
-		"   ORGAO             ,",
-		"   CD_INEP           ,",
-		"   CATESC            ,",
-		"   CIE_VINCULADORA   ,",
-		"   NOME_APM          ,",
-		"   CNPJ_APM          ,",
-		"   TPESC             ,",
-		"   OBS1              ,",
-		"   MODAL             ,",
-		"   TURNOS            ,",
-		"   CH1               ,",
-		"   ANO1              ,",
-		"   INICIO1           ,",
-		"   DZ_ZONA           ,",
-		"   DS_TIPO_LOGRADOURO,",
-		"   RUA               ,",
-		"   NUM               ,",
-		"   BAIRRO            ,",
-		"   CEP               ,",
-		"   CD_DISTRITO       ,",
-		"   NM_DISTRITO       ,",
-		"   DDD               ,",
-		"   TELEFONE          ,",
-		"   NR_AREA_CONSTRUCAO,",
-		"   LIMPEZA           ,",
-		"   MERENDA           ,",
-		"   ESCFAM            ,",
-		"   ALE               ,",
-		"   VULN_QM           ,",
-		"   UBV_QM            ,",
-		"   FATOR_QM          ,",
-		"   VALOR_QM          ,",
-		"   VULN_QAE          ,",
-		"   UBV_QAE           ,",
-		"   FATOR_QAE         ,",
-		"   VALOR_QAE         ,",
-		"   TTCLASSEMAN       ,",
-		"   TTALUNOMAN        ,",
-		"   TTCLASSEITE       ,",
-		"   TTALUNOITE        ,",
-		"   TTCLASSETAR       ,",
-		"   TTALUNOTAR        ,",
-		"   TTCLASSEVES       ,",
-		"   TTALUNOVES        ,",
-		"   TTCLASSENOT       ,",
-		"   TTALUNONOT        ,",
-		"   TTCLASSEINTIN     ,",
-		"   TTALUNOINTIN      ,",
-		"   TTCLASSEINTFI     ,",
-		"   TTALUNOINTFI      ,",
-		"   TTCLASSEINTEM     ,",
-		"   TTALUNOINTEM      ,",
-		"   TTCLASSEINT       ,",
-		"   TTALUNOINT        ,",
-		"   MODALPEI          ,",
-		"   TTCLASSECEL       ,",
-		"   TTALUNOCEL        ,",
-		"   TTCLASSEITI       ,",
-		"   TTALUNOITI        ,",
-		"   TTCLASSEREC       ,",
-		"   TTALUNOREC        ,",
-		"   TTCLASSETEC       ,",
-		"   TTALUNOTEC        ,",
-		"   TTCLASSEHIB       ,",
-		"   TTALUNOHIB        ,",
-		"   TTCLASSEIF        ,",
-		"   TTALUNOIF         ,",
-		"   TTCLASSEEXP       ,",
-		"   TTALUNOEXP        ,",
-		"   TTCLASSEEJA       ,",
-		"   TTALUNOEJA        ,",
-		"   TTCLASSEEJAT      ,",
-		"   TTALUNOEJAT       ,",
-		"   TTCLASSEQPTEC     ,",
-		"   TTALUNOQPTEC      ,",
-		"   TTCLASSEPEC       ,",
-		"   TTALUNOPEC        ,",
-		"   TTCLASSEEI        ,",
-		"   TTALUNOEI         ,",
-		"   TTCLASSEIN        ,",
-		"   TTALUNOIN         ,",
-		"   TTCLASSEFI        ,",
-		"   TTALUNOFI         ,",
-		"   TTCLASSEEM        ,",
-		"   TTALUNOEM         ,",
-		"   TTCLASSEG         ,",
-		"   TTALUNOG          ,",
-		"   NM_GESTOR_ESCOLA  ,",
-		"   CPF               ,",
-		"   CODUA_C           ,",
-		"   CARGO_C           ,",
-		"   CATEG_C_DESC      ,",
-		"   CODUA_E           ,",
-		"   CARGO_E           ,",
-		"   CATEG_E_DESC      ,",
-		"   EMAIL             ,",
-		"   EMAIL_INST1       ,",
-		"   EMAIL_INST2       ",
-		"FROM [00_UA]",
-		"ORDER BY ID"
+		"# usar outro interpretador de python / digite Ctrl+Shift+P / procure por \"Python: Select Interpreter\" / Escolha o Python 3.12",
+		"# execute o comando zcmd para abrir o navegador em modo debug (ex: zcmd + enter)",
+		"# EXPLORADOR COMPLETO DE SITES - Descobre elementos automaticamente"
 	],
-	"description": "TABELA COMPLETA DE 00_UA"
+	"description": "Cabecalho de explorador de sites com Selenium"
 },
 
-// CRIA_00_UA
-// Z00UACRIAR
-"Z00UACRIAR": {
-	"scope": "sql",
-	"prefix": "Z00UACRIAR",
+	// abrir_navegador_por_debug_pelo_cmd
+"abrir_navegador_por_debug_pelo_cmd": {
+	"prefix": "pynavegadordebug",
 	"body": [
-		"/*",
-		"",
-		"BD:",
-		"CEPEA_SAS",
-		"SAS",
-		"",
-		"TABELAS:",
-		"[00_UA_SCRAPING]",
-		"[00_UA]",
-		"[00_TIPO_ENSINO]",
-		"ARQDEUA${1:04}26",
-		"ESCOLAS${2:04}26",
-		"SAS.[${3:04}2026].TB_ESCOLA",
-		"CTG${4:04}26",
-		"",
-		"*/",
-		"",
-		"---------------------------------------------------- ACRESCENTAR ID ----------------------------------------------------",
-		"USE CEPEA_SAS",
-		"",
-		"ALTER TABLE [00_UA_SCRAPING]",
-		"ADD ID INT IDENTITY(1,1) PRIMARY KEY",
-		"",
-		"---------------------------------------------------- RETIRAR .0 DOS NÚMEROS ----------------------------------------------------",
-		"",
-		"UPDATE [00_UA_SCRAPING]",
-		"SET UA = REPLACE(UA, '.0', '')",
-		"WHERE UA LIKE '%.0'",
-		"UPDATE [00_UA_SCRAPING]",
-		"SET CIE = REPLACE(CIE, '.0', '')",
-		"WHERE CIE LIKE '%.0'",
-		"UPDATE [00_UA_SCRAPING]",
-		"SET CIE_VINCULADORA = REPLACE(CIE_VINCULADORA, '.0', '')",
-		"WHERE CIE_VINCULADORA LIKE '%.0'",
-		"UPDATE [00_UA_SCRAPING]",
-		"SET CNPJ_APM = REPLACE(CNPJ_APM, '.0', '')",
-		"WHERE CNPJ_APM LIKE '%.0'",
-		"",
-		"---------------------------------------------------- ALTERAR TIPOS DE DADOS ----------------------------------------------------",
-		"",
-		"ALTER TABLE [00_UA_SCRAPING] ALTER COLUMN UA int NULL",
-		"ALTER TABLE [00_UA_SCRAPING] ALTER COLUMN CIE int NULL",
-		"ALTER TABLE [00_UA_SCRAPING] ALTER COLUMN CIE_VINCULADORA int NULL",
-		"ALTER TABLE [00_UA_SCRAPING] ALTER COLUMN CNPJ_APM bigint NULL",
-		"",
-		"---------------------------------------------------- #JOIN_CEPEA ----------------------------------------------------",
-		"",
-		"DROP TABLE IF EXISTS #JOIN_CEPEA",
-		"SELECT",
-		"    A.ID             ,",
-		"    COALESCE(B.REGIAO, C.REGIAO, A.REGIAO, 'O_CENTRAL') AS REGIAO,",
-		"    COALESCE(A.NOMEUA, B.NOMEDE, C.NOMEDE) AS URE ,",
-		"    COALESCE(A.UA, C.UA, B.UA) AS UA,",
-		"    COALESCE(A.NOMEUA, B.NOMEUA, C.NOMEESC) AS NOMEUA,",
-		"    COALESCE(TRY_CAST(TRY_CAST(A.CIE AS FLOAT) AS INT), '0') AS CIE,",
-		"    COALESCE(A.NOMEUE, '') AS NOMEUE,",
-		"    COALESCE(A.REGIAO, B.REGIAO, 'O_CENTRAL') AS REGIAO_B,",
-		"    CASE",
-		"      WHEN A.NOMEUA IS NULL THEN 'ESCOLA'",
-		"      ELSE A.SEGMENTO",
-		"    END AS SEGMENTO,",
-		"    COALESCE(B.MUN, C.MUN, '0') AS MUN            ,",
-		"    COALESCE(B.NOMEMUN, C.NOMEMUN, '') AS NOMEMUN,",
-		"    CASE",
-		"       WHEN A.SITUACAO IS NULL THEN 'ATIVA'",
-		"       ELSE A.SITUACAO",
-		"    END AS SITUACAO,",
-		"   COALESCE(C.POLO, '') AS POLO,",
-		"   COALESCE(CAST(B.UO AS INT), '') AS UO,",
-		"   COALESCE(CAST(B.UD AS NVARCHAR(MAX)), '0') AS UD,",
-		"   COALESCE(CAST(B.ORGAO AS NVARCHAR(MAX)), '0') AS ORGAO,",
-		"   COALESCE(CAST(C.CD_INEP AS NVARCHAR(MAX)), '0') AS CD_INEP,    ",
-		"   COALESCE(A.CATESC, A.SEGMENTO) AS CATESC,",
-		"   COALESCE(",
-		"   TRY_CAST(TRY_CAST(A.CIE_VINCULADORA AS FLOAT) AS INT), ''",
-		"   ) AS CIE_VINCULADORA,",
-		"   COALESCE(A.NOME_APM, '') AS NOME_APM,",
-		"   COALESCE(",
-		"   REPLACE(A.CNPJ_APM, '.0', ''), ''",
-		"   ) AS CNPJ_APM,      ",
-		"   COALESCE(CAST(C.TPESC AS NVARCHAR(MAX)), '') AS TPESC,",
-		"   COALESCE(CAST(C.OBS1 AS NVARCHAR(MAX)), '') AS OBS1,        ",
-		"   COALESCE(CAST(C.MODAL AS NVARCHAR(MAX)), '') AS MODAL,",
-		"   COALESCE(CAST(C.TURNOS AS NVARCHAR(MAX)), '') AS TURNOS,",
-		"   COALESCE(CAST(C.CH1 AS NVARCHAR(MAX)), '') AS CH1,",
-		"   COALESCE(CAST(C.ANO1 AS NVARCHAR(MAX)), '') AS ANO1,",
-		"   COALESCE(CAST(C.INICIO1 AS NVARCHAR(MAX)), '') AS INICIO1,",
-		"   COALESCE(CAST(C.DZ_ZONA AS NVARCHAR(MAX)), '') AS DZ_ZONA,",
-		"   COALESCE(CAST(C.DS_TIPO_LOGRADOURO AS NVARCHAR(MAX)), '') AS DS_TIPO_LOGRADOURO,",
-		"   COALESCE(CAST(C.RUA AS NVARCHAR(MAX)), '') AS RUA,",
-		"   COALESCE(CAST(C.NUM AS NVARCHAR(MAX)), '') AS NUM,",
-		"   COALESCE(CAST(C.BAIRRO AS NVARCHAR(MAX)), '') AS BAIRRO,",
-		"   COALESCE(CAST(C.CEP AS NVARCHAR(MAX)), '') AS CEP,",
-		"   COALESCE(CAST(C.CD_DISTRITO AS NVARCHAR(MAX)), '') AS CD_DISTRITO,",
-		"   COALESCE(CAST(C.NM_DISTRITO AS NVARCHAR(MAX)), '') AS NM_DISTRITO,",
-		"   COALESCE(CAST(C.DDD AS NVARCHAR(MAX)), '') AS DDD,",
-		"   COALESCE(CAST(C.TELEFONE AS NVARCHAR(MAX)), '') AS TELEFONE,",
-		"   COALESCE(CAST(C.NR_AREA_CONSTRUCAO AS NVARCHAR(MAX)), '') AS NR_AREA_CONSTRUCAO,",
-		"   COALESCE(CAST(C.LIMPEZA AS NVARCHAR(MAX)), '') AS LIMPEZA,",
-		"   COALESCE(CAST(C.MERENDA AS NVARCHAR(MAX)), '') AS MERENDA,",
-		"   COALESCE(CAST(C.ESCFAM AS NVARCHAR(MAX)), '') AS ESCFAM,",
-		"   COALESCE(CAST(C.ALE AS NVARCHAR(MAX)), '') AS ALE,",
-		"   COALESCE(CAST(C.VULN_QM AS NVARCHAR(MAX)), '') AS VULN_QM,",
-		"   COALESCE(CAST(C.UBV_QM AS NVARCHAR(MAX)), '') AS UBV_QM,",
-		"   COALESCE(CAST(C.FATOR_QM AS NVARCHAR(MAX)), '') AS FATOR_QM,",
-		"   COALESCE(CAST(C.VALOR_QM AS NVARCHAR(MAX)), '') AS VALOR_QM,",
-		"   COALESCE(CAST(C.VULN_QAE AS NVARCHAR(MAX)), '') AS VULN_QAE,",
-		"   COALESCE(CAST(C.UBV_QAE AS NVARCHAR(MAX)), '') AS UBV_QAE,",
-		"   COALESCE(CAST(C.FATOR_QAE AS NVARCHAR(MAX)), '') AS FATOR_QAE,",
-		"   COALESCE(CAST(C.VALOR_QAE AS NVARCHAR(MAX)), '') AS VALOR_QAE,",
-		"   COALESCE(CAST(C.TTCLASSEMAN AS NVARCHAR(MAX)), '') AS TTCLASSEMAN,",
-		"   COALESCE(CAST(C.TTALUNOMAN AS NVARCHAR(MAX)), '') AS TTALUNOMAN,",
-		"   COALESCE(CAST(C.TTCLASSEITE AS NVARCHAR(MAX)), '') AS TTCLASSEITE,",
-		"   COALESCE(CAST(C.TTALUNOITE AS NVARCHAR(MAX)), '') AS TTALUNOITE,",
-		"   COALESCE(CAST(C.TTCLASSETAR AS NVARCHAR(MAX)), '') AS TTCLASSETAR,",
-		"   COALESCE(CAST(C.TTALUNOTAR AS NVARCHAR(MAX)), '') AS TTALUNOTAR,",
-		"   COALESCE(CAST(C.TTCLASSEVES AS NVARCHAR(MAX)), '') AS TTCLASSEVES,",
-		"   COALESCE(CAST(C.TTALUNOVES AS NVARCHAR(MAX)), '') AS TTALUNOVES,",
-		"   COALESCE(CAST(C.TTCLASSENOT AS NVARCHAR(MAX)), '') AS TTCLASSENOT,",
-		"   COALESCE(CAST(C.TTALUNONOT AS NVARCHAR(MAX)), '') AS TTALUNONOT,",
-		"   COALESCE(CAST(C.TTCLASSEINTIN AS NVARCHAR(MAX)), '') AS TTCLASSEINTIN,",
-		"   COALESCE(CAST(C.TTALUNOINTIN AS NVARCHAR(MAX)), '') AS TTALUNOINTIN,",
-		"   COALESCE(CAST(C.TTCLASSEINTFI AS NVARCHAR(MAX)), '') AS TTCLASSEINTFI,",
-		"   COALESCE(CAST(C.TTALUNOINTFI AS NVARCHAR(MAX)), '') AS TTALUNOINTFI,",
-		"   COALESCE(CAST(C.TTCLASSEINTEM AS NVARCHAR(MAX)), '') AS TTCLASSEINTEM,",
-		"   COALESCE(CAST(C.TTALUNOINTEM AS NVARCHAR(MAX)), '') AS TTALUNOINTEM,",
-		"   COALESCE(CAST(C.TTCLASSEINT AS NVARCHAR(MAX)), '') AS TTCLASSEINT,",
-		"   COALESCE(CAST(C.TTALUNOINT AS NVARCHAR(MAX)), '') AS TTALUNOINT,",
-		"   COALESCE(CAST(C.MODALPEI AS NVARCHAR(MAX)), '') AS MODALPEI,",
-		"   COALESCE(CAST(C.TTCLASSECEL AS NVARCHAR(MAX)), '') AS TTCLASSECEL,",
-		"   COALESCE(CAST(C.TTALUNOCEL AS NVARCHAR(MAX)), '') AS TTALUNOCEL,",
-		"   COALESCE(CAST(C.TTCLASSEITI AS NVARCHAR(MAX)), '') AS TTCLASSEITI,",
-		"   COALESCE(CAST(C.TTALUNOITI AS NVARCHAR(MAX)), '') AS TTALUNOITI,",
-		"   COALESCE(CAST(C.TTCLASSEREC AS NVARCHAR(MAX)), '') AS TTCLASSEREC,",
-		"   COALESCE(CAST(C.TTALUNOREC AS NVARCHAR(MAX)), '') AS TTALUNOREC,",
-		"   COALESCE(CAST(C.TTCLASSETEC AS NVARCHAR(MAX)), '') AS TTCLASSETEC,",
-		"   COALESCE(CAST(C.TTALUNOTEC AS NVARCHAR(MAX)), '') AS TTALUNOTEC,",
-		"   COALESCE(CAST(C.TTCLASSEHIB AS NVARCHAR(MAX)), '') AS TTCLASSEHIB,",
-		"   COALESCE(CAST(C.TTALUNOHIB AS NVARCHAR(MAX)), '') AS TTALUNOHIB,",
-		"   COALESCE(CAST(C.TTCLASSEIF AS NVARCHAR(MAX)), '') AS TTCLASSEIF,",
-		"   COALESCE(CAST(C.TTALUNOIF AS NVARCHAR(MAX)), '') AS TTALUNOIF,",
-		"   COALESCE(CAST(C.TTCLASSEEXP AS NVARCHAR(MAX)), '') AS TTCLASSEEXP,",
-		"   COALESCE(CAST(C.TTALUNOEXP AS NVARCHAR(MAX)), '') AS TTALUNOEXP,",
-		"   COALESCE(CAST(C.TTCLASSEEJA AS NVARCHAR(MAX)), '') AS TTCLASSEEJA,",
-		"   COALESCE(CAST(C.TTALUNOEJA AS NVARCHAR(MAX)), '') AS TTALUNOEJA,",
-		"   COALESCE(CAST(C.TTCLASSEEJAT AS NVARCHAR(MAX)), '') AS TTCLASSEEJAT,",
-		"   COALESCE(CAST(C.TTALUNOEJAT AS NVARCHAR(MAX)), '') AS TTALUNOEJAT,",
-		"   COALESCE(CAST(C.TTCLASSEQPTEC AS NVARCHAR(MAX)), '') AS TTCLASSEQPTEC,",
-		"   COALESCE(CAST(C.TTALUNOQPTEC AS NVARCHAR(MAX)), '') AS TTALUNOQPTEC,",
-		"   COALESCE(CAST(C.TTCLASSEPEC AS NVARCHAR(MAX)), '') AS TTCLASSEPEC,",
-		"   COALESCE(CAST(C.TTALUNOPEC AS NVARCHAR(MAX)), '') AS TTALUNOPEC,",
-		"   COALESCE(CAST(C.TTCLASSEEI AS NVARCHAR(MAX)), '') AS TTCLASSEEI,",
-		"   COALESCE(CAST(C.TTALUNOEI AS NVARCHAR(MAX)), '') AS TTALUNOEI,",
-		"   COALESCE(CAST(C.TTCLASSEIN AS NVARCHAR(MAX)), '') AS TTCLASSEIN,",
-		"   COALESCE(CAST(C.TTALUNOIN AS NVARCHAR(MAX)), '') AS TTALUNOIN,",
-		"   COALESCE(CAST(C.TTCLASSEFI AS NVARCHAR(MAX)), '') AS TTCLASSEFI,",
-		"   COALESCE(CAST(C.TTALUNOFI AS NVARCHAR(MAX)), '') AS TTALUNOFI,",
-		"   COALESCE(CAST(C.TTCLASSEEM AS NVARCHAR(MAX)), '') AS TTCLASSEEM,",
-		"   COALESCE(CAST(C.TTALUNOEM AS NVARCHAR(MAX)), '') AS TTALUNOEM,",
-		"   COALESCE(CAST(C.TTCLASSEG AS NVARCHAR(MAX)), '') AS TTCLASSEG,",
-		"   COALESCE(CAST(C.TTALUNOG AS NVARCHAR(MAX)), '') AS TTALUNOG",
-		"INTO #JOIN_CEPEA",
-		"FROM [dbo].[00_UA_SCRAPING]  A",
-		"LEFT JOIN ARQDEUA${1:04}26 B ON A.UA = TRY_CAST(B.UA AS INT)",
-		"LEFT JOIN ESCOLAS${2:04}26 C ON A.CIE = TRY_CAST(C.CODESC AS INT)",
-		"ORDER BY A.ID",
-		"-- (7665 linhas afetadas)",
-		"",
-		"---------------------------------------------------- #JOIN_SAS ----------------------------------------------------",
-		"",
-		"DROP TABLE IF EXISTS #JOIN_SAS",
-		"USE CEPEA_SAS",
-		"SELECT DISTINCT",
-		"   A.ID,",
-		"   A.REGIAO,",
-		"   A.URE,",
-		"   A.UA,",
-		"   A.NOMEUA,",
-		"   A.CIE,",
-		"   A.NOMEUE,",
-		"   A.REGIAO_B,",
-		"   A.SEGMENTO,",
-		"   A.MUN,",
-		"   A.NOMEMUN,",
-		"   A.SITUACAO,",
-		"   A.POLO,",
-		"   CASE",
-		"      WHEN A.UO = '0' THEN B.UO",
-		"      ELSE A.UO",
-		"   END AS UO,",
-		"   CASE",
-		"      WHEN A.UD = '0' THEN B.UD",
-		"      ELSE A.UD",
-		"   END AS UD,",
-		"   CASE",
-		"      WHEN A.ORGAO = '0' THEN B.ORGAO",
-		"      ELSE A.ORGAO",
-		"   END AS ORGAO,",
-		"   A.CD_INEP,",
-		"   A.CATESC,",
-		"   A.CIE_VINCULADORA,",
-		"   A.NOME_APM,",
-		"   A.CNPJ_APM,",
-		"   A.TPESC,",
-		"   COALESCE(D.NM_TIPO_ENSINO, '') AS OBS1,",
-		"   A.MODAL,",
-		"   A.TURNOS,",
-		"   A.CH1,",
-		"   A.ANO1,",
-		"   A.INICIO1,",
-		"   A.DZ_ZONA,",
-		"   A.DS_TIPO_LOGRADOURO,",
-		"   A.RUA,",
-		"   A.NUM,",
-		"   A.BAIRRO,",
-		"   A.CEP,",
-		"   A.CD_DISTRITO,",
-		"   A.NM_DISTRITO,",
-		"   A.DDD,",
-		"   A.TELEFONE,",
-		"   A.NR_AREA_CONSTRUCAO,",
-		"   A.LIMPEZA,",
-		"   A.MERENDA,",
-		"   A.ESCFAM,",
-		"   A.ALE,",
-		"   A.VULN_QM,",
-		"   A.UBV_QM,",
-		"   A.FATOR_QM,",
-		"   A.VALOR_QM,",
-		"   A.VULN_QAE,",
-		"   A.UBV_QAE,",
-		"   A.FATOR_QAE,",
-		"   A.VALOR_QAE,",
-		"   A.TTCLASSEMAN,",
-		"   A.TTALUNOMAN,",
-		"   A.TTCLASSEITE,",
-		"   A.TTALUNOITE,",
-		"   A.TTCLASSETAR,",
-		"   A.TTALUNOTAR,",
-		"   A.TTCLASSEVES,",
-		"   A.TTALUNOVES,",
-		"   A.TTCLASSENOT,",
-		"   A.TTALUNONOT,",
-		"   A.TTCLASSEINTIN,",
-		"   A.TTALUNOINTIN,",
-		"   A.TTCLASSEINTFI,",
-		"   A.TTALUNOINTFI,",
-		"   A.TTCLASSEINTEM,",
-		"   A.TTALUNOINTEM,",
-		"   A.TTCLASSEINT,",
-		"   A.TTALUNOINT,",
-		"   A.MODALPEI,",
-		"   A.TTCLASSECEL,",
-		"   A.TTALUNOCEL,",
-		"   A.TTCLASSEITI,",
-		"   A.TTALUNOITI,",
-		"   A.TTCLASSEREC,",
-		"   A.TTALUNOREC,",
-		"   A.TTCLASSETEC,",
-		"   A.TTALUNOTEC,",
-		"   A.TTCLASSEHIB,",
-		"   A.TTALUNOHIB,",
-		"   A.TTCLASSEIF,",
-		"   A.TTALUNOIF,",
-		"   A.TTCLASSEEXP,",
-		"   A.TTALUNOEXP,",
-		"   A.TTCLASSEEJA,",
-		"   A.TTALUNOEJA,",
-		"   A.TTCLASSEEJAT,",
-		"   A.TTALUNOEJAT,",
-		"   A.TTCLASSEQPTEC,",
-		"   A.TTALUNOQPTEC,",
-		"   A.TTCLASSEPEC,",
-		"   A.TTALUNOPEC,",
-		"   A.TTCLASSEEI,",
-		"   A.TTALUNOEI,",
-		"   A.TTCLASSEIN,",
-		"   A.TTALUNOIN,",
-		"   A.TTCLASSEFI,",
-		"   A.TTALUNOFI,",
-		"   A.TTCLASSEEM,",
-		"   A.TTALUNOEM,",
-		"   A.TTCLASSEG,",
-		"   A.TTALUNOG ,",
-		"   COALESCE(C.NM_GESTOR_ESCOLA, '') AS NM_GESTOR_ESCOLA,              ",
-		"   REPLACE(REPLACE(COALESCE(C.NR_CPF, ''), '.', ''), '-', '') AS CPF,  ",
-		"   COALESCE(E.CODUA_C, '0') AS CODUA_C,",
-		"   COALESCE(E.CARGO_C, '0') AS CARGO_C,",
-		"   COALESCE(E.CATEG_C_DESC, '') AS CATEG_C_DESC,",
-		"   COALESCE(E.CODUA_E, '0') AS CODUA_E,",
-		"   COALESCE(E.CARGO_E, '0') AS CARGO_E,",
-		"   COALESCE(E.CATEG_E_DESC, '') AS CATEG_E_DESC,",
-		"   COALESCE(E.EMAIL, '') AS EMAIL,",
-		"   COALESCE(E.EMAIL_INST1, '') AS EMAIL_INST1,",
-		"   COALESCE(E.EMAIL_INST2, '') AS EMAIL_INST2",
-		"INTO #JOIN_SAS",
-		"FROM #JOIN_CEPEA A",
-		"LEFT JOIN ARQDEUA0426 B ON A.UA = B.UA",
-		"LEFT JOIN SAS.[${3:04}2026].TB_ESCOLA C ON A.UA = C.CD_UNIDADE_ADMIN",
-		"LEFT JOIN [00_TIPO_ENSINO] D ON A.TPESC = D.CD_TIPO_ENSINO",
-		"LEFT JOIN CTG${4:04}26 E ON E.CPF = C.NR_CPF",
-		"ORDER BY ID",
-		"-- (8001 linhas afetadas)",
-		"",
-		"---------------------------------------------------- CRIAR 00_UA ----------------------------------------------------",
-		"",
-		"SELECT *",
-		"INTO [00_UA]",
-		"FROM #JOIN_SAS",
-		"-- (8001 linhas afetadas)"
+		"# porta padrão 9222, mas pode ser qualquer porta disponível entre 1024 e 65535",
+		"# host padrão para qualquer máquina: 127.0.0.1 ou localhost",
+		"# debug edge: ${1:start msedge --remote-debugging-port=9222 --user-data-dir=C:\\temp\\edge_debug}",
+		"# debug chrome: ${2:\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" --remote-debugging-port=9222 --user-data-dir=C:\\temp\\chrome_debug}",
+		"# debug firefox: ${3:\"C:\\Program Files\\Mozilla Firefox\\firefox.exe\" --remote-debugging-port 9222}"
 	],
-	"description": "CRIAR A TABELA 00_UA"
+	"description": "Abre o Site via CMD ADM para usar com Selenium via Debug"
 },
 
-// TB_FUNCIONAL_CONTAGEH
-"TB_FUNCIONAL_CONTAGEH": {
-    "scope": "sql",
-    "prefix": "ZCONTTBFUNC",
-    "body": [
-        "SELECT",
-        "      NR_CPF AS CPF               ,",
-        "      NR_DI AS DI                 ,",
-        "      CONCAT(NR_CPF, NR_DI) AS CPF_DI,",
-        "      NR_RG AS RG                 ,",
-        "      CD_SIT_REG AS SITUACAO      ,",
-        "      DT_SIT                      ,",
-        "      NR_QUIN_ADIC_TS             ,",
-        "      DT_VIG_ULT_QUIN_ATS         ,",
-        "      CD_INDIC_SEXTAPARTE         ,",
-        "      DT_VIG_SEXTAPARTE           ,",
-        "      CD_CARGO_FUNC_TIT           ,",
-        "      DT_POSSE_TIT                ,",
-        "      DT_INIC_EXERC_TIT           ,",
-        "      CD_CLASSE_DISC_TIT AS CLDISC,",
-        "      CD_IDENT_SIT_ESPEC_TIT AS SIT_ESP,",
-        "      DT_INIC_SIT_ESPEC_TIT AS DT_SIT_ESP,",
-        "      CD_IDENT_REF_FAIXA_TIT AS REF_FAIXA,",
-        "      CD_IDENT_GRAU_NIV_TIT AS GRAU_NIV,",
-        "      CD_JORNADA_TIT AS JORNADA   ,",
-        "      CD_UNID_ESC_CLASS_TIT AS CIE_C,",
-        "      CD_UNID_ADM_CLASS_TIT AS UA_C,",
-        "      CD_UNID_ESC_EXERC_TIT AS CIE_E,",
-        "      CD_UNID_ADM_EXERC_TIT AS UA_E,",
-        "      CD_TIP_INTERRUP_CESS_TIT AS INTERRUP,",
-        "      CD_MOT_INTERRUP_CESS_TIT AS MOT_INTERRUP,",
-        "      DT_INIC_INTERRUP_CESS_TIT AS DTI_INTERRUP,",
-        "      DT_FIM_INTERRUP_CESS_TIT AS DTF_INTERRUP,",
-        "      CD_MOT_AFAST_TIT AS MOTIAFAS,",
-        "      DT_INIC_AFAST_TIT AS DTI_MOTIAFAS,",
-        "      DT_FIM_AFAST_TIT AS DTF_MOTIAFAS,",
-        "      CD_MOT_LIC_TIT AS MOTILICE  ,",
-        "      DT_INIC_LIC_TIT AS DTI_MOTILICE,",
-        "      DT_FIM_LIC_TIT AS DTF_MOTICE,",
-        "      CD_TIP_PROV_COMIS           ,",
-        "      CD_CARGO_FUNCAO_COMIS AS CARGO_COMIS,",
-        "      DT_POSSE_COMIS              ,",
-        "      DT_INIC_EXERC_COMIS         ,",
-        "      DT_INIC_SIT_ESP_COMIS AS SIT_ESP_COMIS,",
-        "      CD_IDENT_GRAU_NIV_COMIS     ,",
-        "      CD_UNID_ESC_CLASS_COMIS AS UE_C_COMIS,",
-        "      CD_UNID_ADM_CLASS_COMIS AS UA_C_COMIS,",
-        "      CD_UNID_ESC_EXER_COMIS AS UE_E_COMIS,",
-        "      CD_UNID_ADM_EXER_COMIS AS UA_E_COMIS,",
-        "      CD_TIP_INTERRUP_CESS_COMIS AS INTERRUP_COMIS,",
-        "      CD_MOT_INTERRUP_CESS_COMIS AS MOT_INTERRUP_COMIS,",
-        "      DT_INIC_INTERRUP_CESS_COMIS AS DTI_INTERRUP_COMIS,",
-        "      DT_FIM_INTERRUP_CESS_COMIS AS DTF_INTERRUP_COMIS,",
-        "      CD_MOT_AFAST_COMIS AS MOTIAFAS_COMIS,",
-        "      DT_INIC_MOT_AFAST_COMIS AS DTI_MOTIAFAS_COMIS,",
-        "      DT_FIM_MOT_AFAST_COMIS AS DTF_MOTIAFAS_COMIS,",
-        "      CD_MOT_LIC_COMIS AS MOTILICE_COMIS,",
-        "      DT_INIC_LIC_COMIS AS DTI_MOTILICE_COMIS,",
-        "      DT_FIM_LIC_COMIS AS DTF_MOTILICE_COMIS,",
-        "      CD_CARGO_FUNCAO_DESIGN AS CARGO_DESIGN,",
-        "      DT_INIC_DESIGN              ,",
-        "      CD_IDENT_REF_FAIXA_DESIGN AS REF_FAIXA_DESIGN,",
-        "      CD_IDENT_GRAU_NIV_DESIGN AS NIV_DESIGN,",
-        "      CD_UNID_ESC_CLASS_DESIGN AS UE_C_DESIGN,",
-        "      CD_UNID_ADM_CLASS_DESIGN AS UA_C_DESIGN,",
-        "      CD_MOT_SUBST_DESIGN         ,",
-        "      CD_TIP_INTERRUP_CESS_DESIGN ,",
-        "      CD_MOT_INTERRUP_CESS_DESIGN ,",
-        "      DT_INIC_INTERRUP_CESS_DESIGN,",
-        "      DT_FIM_INTERRUP_CESS_DESIGN ,",
-        "      CD_MOT_AFAST_DESIGN         ,",
-        "      DT_INIC_AFAST_DESIGN        ,",
-        "      DT_FIM_AFAST_DESIGN         ,",
-        "      CD_MOT_LIC_DESIGN           ,",
-        "      DT_INIC_LIC_DESIGN          ,",
-        "      DT_FIM_LIC_DESIGN           ,",
-        "      CD_IDENT_GRAU_NIV           ,",
-        "      CD_DIR_ENSI_ORG_CENTRAL     ,",
-        "      COD_CARGO                   ,",
-        "      COD_UNID_ADM                ",
-        "FROM CONTAGEH..TB_FUNCIONAL",
-        "WHERE CD_SIT_REG = 'A' -- A = ATIVO, E = EXCLUÍDO, F = falecido, 0 = erro, P CATEGORIA P, I = INATIVO, B = BLOQUEADO"
-    ],
-    "description": "TB_FUNCIONAL_CONTAGEH"
+// modulo_principal_webdriver
+"modulo_principal_webdriver": {
+	"prefix": "pymoduloprinc",
+	"body": [
+		"from selenium import webdriver     # Núcleo: controla o navegador (abrir, fechar, navegar)"
+	],
+	"description": "Módulo Principal de exploracao de sites com o webdriver do Selenium"
 },
 
-// COD_FOLHA_DE_PAGAMENTO_CONTAGEH
-"COD_FOLHA_DE_PAGAMENTO_CONTAGEH": {
-    "scope": "sql",
-    "prefix": "ZCONTFOLHA",
-    "body": [
-        "SELECT",
-        "  cod      ,",
-        "  ds       ,",
-        "  cod_folha      ",
-        "FROM CONTAGEH.[dbo].[Cod_retorno_folha]"
-    ],
-    "description": "COD_FOLHA_DE_PAGAMENTO_CONTAGEH"
-},
-
-// TB_AFASTAMENTO_CONTAGEH
-"TB_AFASTAMENTO_CONTAGEH": {
-    "scope": "sql",
-    "prefix": "ZCONTAFAST",
-    "body": [
-        "SELECT",
-        "    NR_CPF AS CPF              ,",
-        "    NR_DI AS DI               ,",
-        "    CONCAT(NR_CPF, NR_DI) AS CPF_DI,",
-        "    CD_TIP_EVE           ,",
-        "    CD_MOTIV_EVE         ,",
-        "    CD_EVE               ,",
-        "    TP_FORM_AFAST        ,",
-        "    TP_ALTER_HIST        ,",
-        "    FL_ATU               ,",
-        "    CD_CARGO_FUNCAO AS CARGO     ,",
-        "    CD_CATEG AS CATEG            ,",
-        "    CD_JORNADA           ,",
-        "    DT_INI               ,",
-        "    DT_FIM               ",
-        "FROM CONTAGEH.[dbo].[TB_AFASTAMENTO]"
-    ],
-    "description": "TB_AFASTAMENTO_CONTAGEH"
-},
-
-// TB_FREQUENCIA_FALTA_CONTAGEH
-"TB_FREQUENCIA_FALTA_CONTAGEH": {
-    "scope": "sql",
-    "prefix": "ZCONTFREQFALTA",
-    "body": [
-        "SELECT",
-        "    NR_CPF          ,",
-        "    NR_DI           ,",
-        "    CONCAT(NR_CPF, NR_DI) AS CPF_DI,",
-        "    CD_DIA          ,",
-        "    MES_REF         ,",
-        "    ANO_REF         ,",
-        "    CD_UNID_ADM_FREQ,",
-        "    CD_CARGO_FUNCAO ,",
-        "    CD_CATEG_SERV   ,",
-        "    CD_FREQ         ,",
-        "    CD_FREQ_AFAST   ,",
-        "    NR_PROV         ,",
-        "    FLG_TIPO        ,",
-        "    DT_INCL         ,",
-        "    DT_ULT_ATUALIZ  ,",
-        "    ID_USU_INCL     ,",
-        "    DT_PUBLI_DOE    ,",
-        "    CD_LOCAL        ,",
-        "    CD_TIP_LOCAL    ,",
-        "    FL_PROF_PRES    ",
-        "FROM CONTAGEH.[dbo].[TB_FREQUENCIA_FALTA]",
-        "WHERE NR_CPF IN (",
-        "SELECT *          ",
-        "FROM #CPF",
-        ") ",
-        "ORDER BY NR_CPF, ANO_REF DESC, MES_REF DESC, CD_DIA DESC"
-    ],
-    "description": "TB_FREQUENCIA_FALTA_CONTAGEH"
-},
-
-// TB_FUNCIONAL_CONTAGEH
-"TB_FUNCIONAL_CONTAGEH": {
-    "scope": "sql",
-    "prefix": "ZCONTFUNC",
-    "body": [
-        "SELECT",
-        "    NR_CPF                      ,",
-        "    NR_DI                       ,",
-        "    CONCAT(NR_CPF, NR_DI) AS CPF_DI,",
-        "    DT_VIG_DI                   ,",
-        "    NR_RG                       ,",
-        "    CD_SIT_REG                  ,",
-        "    DT_SIT                      ,",
-        "    NR_QUIN_ADIC_TS             ,",
-        "    DT_VIG_ULT_QUIN_ATS         ,",
-        "    CD_INDIC_SEXTAPARTE         ,",
-        "    DT_VIG_SEXTAPARTE           ,",
-        "    CD_OPCAO_FUN_GAR            ,",
-        "    DT_VIG_FUN_GAR              ,",
-        "    CD_IDENT_CARGO_FUNC_TIT     ,",
-        "    CD_IDENT_CAT_FUNC_TIT       ,",
-        "    CD_ORIG_CARGO_FUNC_TIT      ,",
-        "    CD_TIP_PROV_TIT             ,",
-        "    CD_CARGO_FUNC_TIT           ,",
-        "    DT_POSSE_TIT                ,",
-        "    DT_INIC_EXERC_TIT           ,",
-        "    CD_CLASSE_DISC_TIT          ,",
-        "    CD_IDENT_SIT_VINC_TIT       ,",
-        "    DT_SIT_VINC_TIT             ,",
-        "    CD_IDENT_SIT_ESPEC_TIT      ,",
-        "    DT_INIC_SIT_ESPEC_TIT       ,",
-        "    CD_REG_CONTRIB_TIT          ,",
-        "    CD_ESC_VENC_TIT             ,",
-        "    CD_TAB_VENC_TIT             ,",
-        "    DT_VIG_REG_RETRIB_TIT       ,",
-        "    CD_IDENT_REF_FAIXA_TIT      ,",
-        "    CD_IDENT_GRAU_NIV_TIT       ,",
-        "    CD_JORNADA_TIT              ,",
-        "    CD_IDENT_UNID_CLASS_TIT     ,",
-        "    CD_UNID_ESC_CLASS_TIT       ,",
-        "    CD_UNID_ADM_CLASS_TIT       ,",
-        "    FL_BL_ENQUADR_TIT           ,",
-        "    CD_UNID_ESC_EXERC_TIT       ,",
-        "    CD_UNID_ADM_EXERC_TIT       ,",
-        "    CD_TIP_INTERRUP_CESS_TIT    ,",
-        "    CD_MOT_INTERRUP_CESS_TIT    ,",
-        "    DT_INIC_INTERRUP_CESS_TIT   ,",
-        "    DT_FIM_INTERRUP_CESS_TIT    ,",
-        "    CD_MOT_AFAST_TIT            ,",
-        "    DT_INIC_AFAST_TIT           ,",
-        "    DT_FIM_AFAST_TIT            ,",
-        "    CD_MOT_LIC_TIT              ,",
-        "    DT_INIC_LIC_TIT             ,",
-        "    DT_FIM_LIC_TIT              ,",
-        "    NR_VAL_ART_24_25_TIT        ,",
-        "    NR_VAL_PROGRES1_TIT         ,",
-        "    NR_VAL_PROGRES2_TIT         ,",
-        "    NR_VAL_PROGRES3_TIT         ,",
-        "    NR_VAL_PROMO_MEREC_TIT      ,",
-        "    NR_VAL_ADIC_MAGIS_TIT       ,",
-        "    NR_VAL_SUPL_ENQUAD_TIT      ,",
-        "    FL_BL_OPCAO_RDPE_TIT        ,",
-        "    DT_ULT_CONCES_RDPE_TIT      ,",
-        "    DT_ULT_CES_RDPE_TIT         ,",
-        "    DT_RET_RDPE_TIT             ,",
-        "    CD_IDENT_CARGO_FUNC_COMIS   ,",
-        "    CD_IDENT_CAT_FUNC_COMIS     ,",
-        "    CD_TIP_PROV_COMIS           ,",
-        "    CD_CARGO_FUNCAO_COMIS       ,",
-        "    DT_POSSE_COMIS              ,",
-        "    DT_INIC_EXERC_COMIS         ,",
-        "    CD_IDENT_SIT_VINC_COMIS     ,",
-        "    DT_SIT_VINC_COMIS           ,",
-        "    CD_IDENT_SIT_ESP_COMIS      ,",
-        "    DT_INIC_SIT_ESP_COMIS       ,",
-        "    CD_REG_RETRIB_COMIS         ,",
-        "    CD_ESCALA_VENC_COMIS        ,",
-        "    CD_TAB_VENC_COMIS           ,",
-        "    DT_VIG_REG_RETRIB_COMIS     ,",
-        "    CD_IDENT_REF_FAIXA_COMIS    ,",
-        "    CD_IDENT_GRAU_NIV_COMIS     ,",
-        "    CD_IDENT_UNID_CLASS_COMIS   ,",
-        "    CD_UNID_ESC_CLASS_COMIS     ,",
-        "    CD_UNID_ADM_CLASS_COMIS     ,",
-        "    FL_BL_ENQUADR_COMIS         ,",
-        "    CD_UNID_ESC_EXER_COMIS      ,",
-        "    CD_UNID_ADM_EXER_COMIS      ,",
-        "    CD_TIP_INTERRUP_CESS_COMIS  ,",
-        "    CD_MOT_INTERRUP_CESS_COMIS  ,",
-        "    DT_INIC_INTERRUP_CESS_COMIS ,",
-        "    DT_FIM_INTERRUP_CESS_COMIS  ,",
-        "    CD_MOT_AFAST_COMIS          ,",
-        "    DT_INIC_MOT_AFAST_COMIS     ,",
-        "    DT_FIM_MOT_AFAST_COMIS      ,",
-        "    CD_MOT_LIC_COMIS            ,",
-        "    DT_INIC_LIC_COMIS           ,",
-        "    DT_FIM_LIC_COMIS            ,",
-        "    NR_VAL_ART_24_25_COMIS      ,",
-        "    NR_VAL_PROGRES1_COMIS       ,",
-        "    NR_VAL_PROGRES2_COMIS       ,",
-        "    NR_VAL_PROGRES3_COMIS       ,",
-        "    NR_VAL_PROMO_MEREC_COMIS    ,",
-        "    NR_VAL_ADIC_MAGIS_COMIS     ,",
-        "    NR_VAL_SUP_ENQUAD_COMIS     ,",
-        "    FL_BL_OPCAO_RDPE_COMIS      ,",
-        "    DT_ULT_CONCES_RDPE_COMIS    ,",
-        "    DT_ULT_CES_RDPE_COMISS      ,",
-        "    DT_RET_RDPE_COMIS           ,",
-        "    CD_IDENT_CARGO_FUNC_DESIGN  ,",
-        "    CD_TIP_DESIGN               ,",
-        "    CD_CARGO_FUNCAO_DESIGN      ,",
-        "    DT_INIC_DESIGN              ,",
-        "    CD_IDENT_SIT_VINC_DESIGN    ,",
-        "    DT_SIT_VINC_DESIGN          ,",
-        "    CD_REG_RETRIB_DESIGN        ,",
-        "    CD_ESCALA_VENC_DESIGN       ,",
-        "    CD_TAB_VENC_DESIGN          ,",
-        "    DT_VIG_REG_RETRIB_DESIGN    ,",
-        "    CD_IDENT_REF_FAIXA_DESIGN   ,",
-        "    CD_IDENT_GRAU_NIV_DESIGN    ,",
-        "    CD_IDENT_UNID_CLASS_DESIGN  ,",
-        "    CD_UNID_ESC_CLASS_DESIGN    ,",
-        "    CD_UNID_ADM_CLASS_DESIGN    ,",
-        "    FL_BL_PROLAB_DESIGN         ,",
-        "    NR_RG_SUBSTO_DESIGN         ,",
-        "    CD_MOT_SUBST_DESIGN         ,",
-        "    CD_TIP_INTERRUP_CESS_DESIGN ,",
-        "    CD_MOT_INTERRUP_CESS_DESIGN ,",
-        "    DT_INIC_INTERRUP_CESS_DESIGN,",
-        "    DT_FIM_INTERRUP_CESS_DESIGN ,",
-        "    CD_MOT_AFAST_DESIGN         ,",
-        "    DT_INIC_AFAST_DESIGN        ,",
-        "    DT_FIM_AFAST_DESIGN         ,",
-        "    CD_MOT_LIC_DESIGN           ,",
-        "    DT_INIC_LIC_DESIGN          ,",
-        "    DT_FIM_LIC_DESIGN           ,",
-        "    NR_VAL_ART_24_25_DESIGN     ,",
-        "    NR_VAL_PROGRES1             ,",
-        "    NR_VAL_PROGRES2             ,",
-        "    NR_VAL_PROGRES3             ,",
-        "    NR_VAL_PROM_MEREC_DESIGN    ,",
-        "    NR_ADIC_MAGIST_DESIGN       ,",
-        "    NR_VAL_SUPLEM_ENQUAD_DESIGN ,",
-        "    FL_BL_OPCAO_RDPE_DESIGN     ,",
-        "    DT_ULT_CONCES_RDPE_DESIGN   ,",
-        "    DT_ULT_CESS_RDPE_DESIGN     ,",
-        "    DT_RET_RDPE_DESIGN          ,",
-        "    FL_BL_STATUS_FUNC           ,",
-        "    DT_EMIS_LAUDA               ,",
-        "    DT_PUBLIC_ATO_OFIC          ,",
-        "    DT_ASSIN_ATO_OFIC           ,",
-        "    DT_FOLHA_EVOL               ,",
-        "    CD_IDENT_GRAU_NIV           ,",
-        "    CD_DIR_ENSI_ORG_CENTRAL     ,",
-        "    FL_BL_COMP_COD_ORG_CENTRAL  ,",
-        "    CD_STATUS_COLET             ,",
-        "    FL_BL_CONT_TEMPO            ,",
-        "    CD_BANCO_TITUL              ,",
-        "    CD_AGEN_TITUL               ,",
-        "    TP_CONTA_TITUL              ,",
-        "    NR_CONTA_TITUL              ,",
-        "    CD_VERIF_CONT_TITUL         ,",
-        "    CD_BANCO_COMIS              ,",
-        "    CD_AGEN_COMIS               ,",
-        "    TP_CONTA_COMIS              ,",
-        "    NR_CONTA_COMIS              ,",
-        "    CD_VERIF_CONT_COMIS         ,",
-        "    CD_BANCO_DESIG              ,",
-        "    CD_AGEN_DESIG               ,",
-        "    TP_CONTA_DESIG              ,",
-        "    NR_CONTA_DESIG              ,",
-        "    CD_VERIF_CONT_DESIG         ,",
-        "    DT_ULT_ATUALIZ              ,",
-        "    CD_SIT_REG_BK               ,",
-        "    COD_CARGO                   ,",
-        "    COD_UNID_ADM                ,",
-        "    NR_DIG_AGENCIA_TIT          ,",
-        "    NR_DIG_AGENCIA_COMIS        ,",
-        "    NR_DIG_AGENCIA_DESIG        ,",
-        "    FL_EXCLUIR                  ",
-        "FROM CONTAGEH.[dbo].[TB_FUNCIONAL]"
-    ],
-    "description": "TB_FUNCIONAL_CONTAGEH"
-},
-
-// TB_FUNCIONARIO_CONTAGEH
-"TB_FUNCIONARIO_CONTAGEH": {
-    "scope": "sql",
-    "prefix": "ZCONTFUNCIONARIO",
-    "body": [
-        "SELECT",
-        "    NR_CPF            ,",
-        "    NR_DI             ,",
-        "    CONCAT(NR_CPF, NR_DI) AS CPF_DI,",
-        "    NR_RG             ,",
-        "    NM_PESSOA         ,",
-        "    CD_CATEGORIA      ,",
-        "    NM_EMAIL          ,",
-        "    CD_SIT_REG        ,",
-        "    CD_CARGO_TITULAR  ,",
-        "    DS_CARGO_TITULAR  ,",
-        "    CD_UA_TITULAR     ,",
-        "    DS_UA_TITULAR     ,",
-        "    CD_TIPO_EXERCICIO ,",
-        "    CD_CARGO_EXERCICIO,",
-        "    DS_CARGO_EXERCICIO,",
-        "    CD_UA_EXERCICIO   ,",
-        "    DS_UA_EXERCICIO   ,",
-        "    FL_AFASTAMENTO    ,",
-        "    FL_PEI_AFASTAMENTO,",
-        "    DS_AFASTAMENTO    ,",
-        "    DT_INI_AFASTAMENTO,",
-        "    DT_FIM_AFASTAMENTO,",
-        "    FL_LICENCA        ,",
-        "    DS_LICENCA        ,",
-        "    DT_INI_LICENCA    ,",
-        "    DT_FIM_LICENCA    ,",
-        "    FL_READAPTADO     ,",
-        "    DT_INI_READAPTADO ,",
-        "    DT_FIM_READAPTADO ,",
-        "    FL_INTERRUPCAO    ,",
-        "    DT_INI_INTERRUPCAO,",
-        "    DT_FIM_INTERRUPCAO,",
-        "    DT_ALTER          ",
-        "FROM CONTAGEH.[dbo].[TB_FUNCIONARIO]"
-    ],
-    "description": "TB_FUNCIONARIO_CONTAGEH"
+// FUNCAO_NAVEGADOR
+"FUNCAO_NAVEGADOR": {
+	"prefix": "pynav",
+	"body": [
+		"${1:# Após zcmd}",
+		"${2:from selenium import webdriver}",
+		"from selenium.webdriver.${3:edge}.options import Options  # ou chrome ou firefox",
+		"from selenium.webdriver.common.by import By",
+		"from selenium.webdriver.support.ui import Select",
+		"",
+		"def conectar():",
+		"    print(\"🔌 Conectando ao ${4:Edge}...\")  # ou Chrome ou Firefox",
+		"    options = Options()",
+		"    options.add_experimental_option(\"debuggerAddress\", \"127.0.0.1:9222\")",
+		"    driver = webdriver.${5:Edge}(options=options)  # ou Chrome ou Firefox",
+		"    print(\"✅ Conectado!\")",
+		"    return driver",
+		"driver = conectar()",
+	],
+	"description": "Navegadores após uso do cmd adm navegador debugado (Edge, Chrome ou Firefox)"
 }
 
 }
