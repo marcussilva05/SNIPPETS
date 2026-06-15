@@ -561,7 +561,7 @@
       "),",
       "RANK${2:1} AS (",
       "   SELECT *,",
-      "      ROW_NUMBER() OVER (PARTITION BY ${3:CPF_DI} ORDER BY (SELECT NULL)) AS ROW${4:1}",
+      "      ROW_NUMBER() OVER (PARTITION BY ${3:CPF_DI} ORDER BY (SELECT NULL)) AS ROW${4:1} -- OU ORDER BY coluna1 DESC",
       "   FROM BASE_RANK${1:1}",
       ")",
       "SELECT *",
@@ -3866,7 +3866,7 @@
         "    FL_DEFICIENCIA_MULTIPLA,",
         "    FL_ALDEADO,",
         "    NM_PESSOA_SOCIAL          ",
-        "FROM [dbo].[00_FUNCIONAL]"
+        "FROM [dbo].[00_FUNCIONAL${1:0526}]"
     ],
     "description": "00_FUNCIONAL_CONSULTA"
 },
