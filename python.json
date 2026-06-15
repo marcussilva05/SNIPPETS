@@ -577,9 +577,29 @@
 	"body": [
 		"# porta padrão 9222, mas pode ser qualquer porta disponível entre 1024 e 65535",
 		"# host padrão para qualquer máquina: 127.0.0.1 ou localhost",
-		"# debug edge: Start-Process msedge -ArgumentList \"--remote-debugging-port=9222\", \"--user-data-dir=C:\\temp\\edge_debug\"",
-		"# debug chrome: Start-Process chrome -ArgumentList \"--remote-debugging-port=9222\", \"--user-data-dir=C:\\temp\\chrome_debug\"",
-		"# debug chrome: Start-Process firefox -ArgumentList \"-start-debugger-server", "9222\", \"-no-remote", "-profile", "C:\\temp\\firefox_debug_profile\""
+		"",
+		"# Abrir Edge em modo debug",
+		"subprocess.Popen([",
+		"   r\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\",",
+		"   \"--remote-debugging-port=9222\",",
+		"\"--user-data-dir=C:\\temp\\edge_debug\"",
+		"])",
+		"",
+		"# Abrir Chrome em modo debug",
+		"subprocess.Popen([",
+		"   r\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\",",
+		"   \"--remote-debugging-port=9222\",",
+		"   \"--user-data-dir=C:\\temp\\chrome_debug\"",
+		"])",
+		"",
+		"time.sleep(5)",
+		"options = Options()",
+		"options.add_experimental_option(\"debuggerAddress\", \"localhost:9222\")",
+		"driver = webdriver.Edge(options=options)",
+		"driver = webdriver.Chrome(options=options)",
+		"",
+		"site = \"${1:https://sed.educacao.sp.gov.br/Funcional/Consulta/Index}\"",
+		"driver.get(site)"
 	],
 	"description": "Abre o Site via CMD ADM para usar com Selenium via Debug"
 },
@@ -596,13 +616,15 @@
         "",
         "from selenium import webdriver",
         "from selenium.webdriver.edge.options import Options",
+		"from selenium.webdriver.chrome.options import Options",
         "from selenium.webdriver.common.by import By",
         "from selenium.webdriver.support.ui import Select, WebDriverWait",
         "from selenium.webdriver.support import expected_conditions as EC",
         "import time",
         "import csv",
         "import os",
-        "from datetime import datetime"
+        "from datetime import datetime",
+		"import subprocess"
     ],
     "description": "Cabecalho extrator para CADASTRO = EVENTO (motivos 3a coluna)"
 },
@@ -748,7 +770,7 @@
         "    ",
         "    return linhas",
         "",
-        "# ===== Exemplo de uso =====",
+        "# ===== Uso da Fução =====",
         "dados = ${2:ler_linhas}(caminho,",
         "                        ignorar_vazias=${3:True},",
         "                        remover_acentos=${4:False},",
@@ -766,8 +788,9 @@
         "                        validar_cpf=${16:False},",
         "                        validar_email=${17:False})",
         "print(f\"Foram lidos {len(dados)} registro(s).\")",
-        "for i, item in enumerate(dados[:5], 1):",
-        "    print(f\"{i}: {item}\")"
+        "for i, item in enumerate(dados[${18::1000000}], 1):",
+        "    print(f\"{i}: {item}\")",
+		"print(f\"\\n\\n \\033[1;34m Foram lidas {len(dados)} linhas no total. \\033[0m \\n\\n\")"
     ],
     "description": "Função completa para leitura de arquivos com inúmeras opções (ordem corrigida)"
 },
@@ -819,7 +842,10 @@
         "print(f\"\\n\\n \\033[1m NEGRITO \\033[0m \\n\\n\")",
         "print(f\"\\n\\n \\033[4m SUBLINHADO \\033[0m \\n\\n\")",
         "print(f\"\\n\\n \\033[7m FUNDO E TEXTO INVERTIDOS \\033[0m \\n\\n\")",
-        "print(f\"\\n\\n \\033[0m RESET TOTAL \\033[0m \\n\\n\")"
+        "print(f\"\\n\\n \\033[0m RESET TOTAL \\033[0m \\n\\n\")",
+        "",
+        "# Exemplos combinados",
+        "print(f\"\\033[1;34mTexto azul em negrito\\033[0m\") # Negrito e azul e fundo branco"
     ],
     "description": "Exibe todas as cores ANSI (texto e fundo) no terminal"
 }
