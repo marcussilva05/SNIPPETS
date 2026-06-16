@@ -2598,7 +2598,7 @@
 // CEPEA_TAB_CODBFE
 "CEPEA_TAB_CODBFE": {
     "scope": "sql",
-    "prefix": "ZCEPEABFE",
+    "prefix": "ZCEPEABFETAB",
     "body": [
         "SELECT",
         "     COD       ,",
@@ -4422,31 +4422,6 @@
         "ORDER BY DT_CRIACAO DESC, DT_ULT_ALTERACAO DESC, CATALOGO, ESQUEMA, TABELA"
     ],
     "description": "MAPEAMENTO_DATABRICKS_CONSULTAR"
-},
-
-// 00_BRICKS
-"00_BRICKS": {
-    "scope": "sql",
-    "prefix": "Z00BRICKS",
-    "body": [
-        "USE CEPEA_SAS",
-        "",
-        "SELECT ",
-        "    DT_CRIACAO,",
-        "    DT_ULT_ALTERACAO,",
-        "    CATALOGO,",
-        "    ESQUEMA,",
-        "    TABELA,",
-        "    COLUNAS,",
-        "    NOME_DAS_COLUNAS,",
-        "    PROPRIETARIO,",
-        "    ENDERECO         ",
-        "FROM [00_BRICKS]",
-        "-- WHERE ENDERECO LIKE '%ALOC%'",
-        "-- OR NOME_DAS_COLUNAS LIKE '%ALOC%'",
-        "ORDER BY DT_CRIACAO DESC, DT_ULT_ALTERACAO DESC, CATALOGO, ESQUEMA, TABELA"
-    ],
-    "description": "00_BRICKS"
 },
 
 // TB_SALDO_AULAS_META
