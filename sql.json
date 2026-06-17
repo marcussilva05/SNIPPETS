@@ -1073,7 +1073,7 @@
   //COLA_DATA
 	"COLA_DATA": {
 		"scope": "sql",
-		"prefix": "ZDTCOLA",
+		"prefix": "ZCOLADATA",
 		"body": [
 			"/*",
       "101 = mm/dd/yyyy",
@@ -1245,20 +1245,20 @@
     "description": "ORDER BY"
   },
   
-  // CARGOS_DE_PROFESSORES
-  "CARGOS_DE_PROFESSORES": {
+  // COLA_CARGOS_PROF_5774_A_6409
+  "COLA_CARGOS_PROF_5774_A_6409": {
     "scope": "sql",
-    "prefix": "ZPROF",
+    "prefix": "ZCOLAPROF",
     "body": [
 	  "'5774','5776','6407','6408','6409'",
     ],
-    "description": "ORDER BY"
+    "description": "COLA_CARGOS_PROF_5774_A_6409"
   },
 
-  // JORNADA_DESC_CASE
-  "JORNADA_DESC_CASE": {
+  // COLA_JORNADA
+  "COLA_JORNADA": {
       "scope": "sql",
-      "prefix": "ZJOR",
+      "prefix": "ZCOLAJOR",
       "body": [
           "COALESCE(",
           "      CASE",
@@ -1273,13 +1273,13 @@
           "      ''",
           "       ) AS ${2:NOME_COLUNA} ,"
       ],
-      "description": "JORNADAS A, B, C, L, I, R"
+      "description": "COLA_JORNADA"
   },
 
-    // COR_DESC_CASE
-  "COR_DESC_CASE": {
+    // COLA_COR_AUTODECLARACAO
+  "COLA_COR_AUTODECLARACAO": {
       "scope": "sql",
-      "prefix": "ZCOR",
+      "prefix": "ZCOLACOR",
       "body": [
           "COALESCE(",
           "      CASE",
@@ -1293,7 +1293,7 @@
           "      ''",
           "       ) AS ${2:NOME_COLUNA} ,"
       ],
-      "description": "COR A, B, I, N, P"
+      "description": "COLA_COR_AUTODECLARACAO"
   },
 
   // CPF_CEPEA
@@ -1352,6 +1352,152 @@
       ],
       "description": "Soma total das contagens por grupo DO COUNT"
   },
+
+  // COLA_CATEGORIAS
+  "COLA_CATEGORIAS": {
+      "scope": "sql",
+      "prefix": "ZCOLACATEG",
+      "body": [
+          "CASE",
+          "   WHEN ${1:COLUNA} = 'A' THEN 'A - EFETIVO'",
+          "   WHEN ${1:COLUNA} = 'C' THEN 'C - COMISSIONADO'",
+          "   WHEN ${1:COLUNA} = 'D' THEN 'D - DESIGNADO'",
+          "   WHEN ${1:COLUNA} = 'F' THEN 'F - ESTÁVEL'",
+          "   WHEN ${1:COLUNA} = 'N' THEN 'N - CLT'",
+          "   WHEN ${1:COLUNA} = 'O' THEN 'O - TEMPORÁRIO'",
+          "   WHEN ${1:COLUNA} = 'P' THEN 'P - ESTÁVEL'",
+          "   WHEN ${1:COLUNA} = '8' THEN '8 - COMISSIONADO'",
+          "   WHEN ${1:COLUNA} = '9' THEN '9 - COMISSIONADO'",
+          "   ELSE ${1:COLUNA}",
+          "END AS ${2:NOVA_COLUNA}"
+      ],
+      "description": "COLA_CATEGORIAS"
+  },
+
+  // COLA_DISCIPLINAS
+  "COLA_DISCIPLINAS": {
+      "scope": "sql",
+      "prefix": "ZCOLADISC",
+      "body": [
+          "SELECT DISTINCT",
+          "     CL_DISC            ,",
+          "     DEN_CLDISC         ",
+          "FROM CHOR_SALA_AULA${1:05}26",
+          "ORDER BY CL_DISC"
+      ],
+      "description": "COLA_DISCIPLINAS"
+  },
+
+  // COLA_MATERIA
+  "COLA_MATERIA": {
+      "scope": "sql",
+      "prefix": "ZCOLAMATERIA",
+      "body": [
+          "SELECT DISTINCT",
+          "     MATERIA            ,",
+          "     DEN_MATERIA        ",
+          "FROM CHOR_SALA_AULA${1:05}26",
+          "ORDER BY MATERIA"
+      ],
+      "description": "COLA_MATERIA"
+  },
+
+// COLA_LOCALIZACAO
+"COLA_LOCALIZACAO": {
+    "scope": "sql",
+    "prefix": "ZCOLALOCALIZ",
+    "body": [
+        "CASE",
+        "   CD_LOCALIZACAO        LOCALIZACAO     ",
+        "",
+        "   1                     ASSENTAMENTO    ",
+        "   2                     QUILOMBOLA    ",
+        "   3                     INDIGENA    ",
+        "   7                     URBANA    ",
+        "   8                     CAICARA    "
+    ],
+    "description": "COLA_LOCALIZACAO"
+},
+
+// COLA_ENSINO
+"COLA_ENSINO": {
+    "scope": "sql",
+    "prefix": "ZCOLAENSINO",
+    "body": [
+        "   CD_TP_PROGRAMA        DS_PROGRAMA                     ",
+        "",
+        "   1                     ENSINO A DISTANCIA              ",
+        "   2                     PROGRAMA VENCE - ENSINO MÉDIO ARTICULADO",
+        "   3                     ENSINO INOVADOR                 ",
+        "   4                     PRONATEC                        ",
+        "   5                     ETI ESCOLA DE TEMPO INTEGRAL    ",
+        "   6                     ENSINO MEDIO ARTICULADO         ",
+        "   7                     CEL                             ",
+        "   8                     INGLES EARLY BIRD               ",
+        "   9                     EJA EF CAPITAL                  ",
+        "   10                    EJA TECNICO INTEGRADO           ",
+        "   11                    CALENDARIO AMERICANO/EUROPEU    ",
+        "   12                    CONVENIADA                      ",
+        "   13                    ALFABETIZAÇÃO SOLIDÁRIA         ",
+        "   14                    PROGRAMA ACESSA ESCOLA          ",
+        "   15                    PROGRAMA COMUNIDADE SOLIDÁRIA (BOLSÕES DE POBREZA)",
+        "   16                    PROGRAMA NACIONAL DE TRANSPORTE ESCOLAR - PNTE/MEC",
+        "   17                    PROGRAMA NACIONAL DO LIVRO DIDÁTICO - PNLD/MEC",
+        "   18                    PROGRAMA NACIONAL DE SAÚDE NA ESCOLA - PNSE",
+        "   19                    PROINFO/MEC                     ",
+        "   20                    PROGRAMA ESTADUAL DE INFORMÁTICA",
+        "   21                    PROGRAMA MUNICIPAL DE INFORMÁTICA",
+        "   22                    TV ESCOLA/MEC                   ",
+        "   23                    PEI PROGRAMA DE ENSINO INTEGRAL ",
+        "   24                    OUTRO PROGRAMA DE TV EDUCATIVA  ",
+        "   25                    OUTROS PROGRAMAS ESTADUAIS      ",
+        "   26                    OUTROS PROGRAMAS MUNICIPAIS     ",
+        "   27                    PARÂMETRO EM AÇÃO               ",
+        "   28                    PROGRAMA RENDA MÍNIMA/BOLSA ESCOLA",
+        "   29                    PROGRAMA ESCOLA DA FAMÍLIA      ",
+        "   30                    PROGRAMA NACIONAL DE ALIMENTAÇÃO ESCOLAR-PNAE/MEC",
+        "   31                    MAIS EDUCAÇÃO - PDE INTERATIVO - ME",
+        "   120                   PROGRAMA DE NOTA FISCAL PAULISTA",
+        "   121                   PROGRAMA DINHEIRO DIRETO NA ESCOLA - PDDE",
+        "   122                   PROEMI - PROGRAMA ENSINO MÉDIO INOVADOR",
+        "   123                   PROGRAMA MAIS ALFABETIZAÇÃO     ",
+        "   124                   SANDOVALINA MAIS EDUCAÇÃO - PSME",
+        "   125                   PROJETO EDUCA MAIS LEME         ",
+        "   126                   COMUNIDADE APRENDIZAGEM (INSTITUTO NATURA)",
+        "   127                   PROJETO LER E ESCREVER          ",
+        "   128                   PNAIC - PACTO NACIONAL PELA ALFABETIZAÇÃO NA IDADE CERTA",
+        "   129                   PROGRAMA BRASIL CARINHOSO       ",
+        "   130                   MTEC                            ",
+        "   131                   PROGRAMA NOVO MAIS EDUCAÇÃO     ",
+        "   132                   PROGRAMA DE INOVAÇÃO EDUCAÇÃO CONECTADA",
+        "   133                   BANDA LARGA                     ",
+        "   134                   PDDE BÁSICO                     ",
+        "   135                   NOVOTEC                         ",
+        "   136                   EJA PRESENCIAL FLEXÍVEL         ",
+        "   137                   CIVÍCO-MILITAR                  ",
+        "   138                   PROGRAMA ESCOLA EM TEMPO INTEGRAL - SIMEC",
+        "   139                   EJA EAD                         ",
+        "   140                   ESCOLA CÍVICO MILITAR - ECM     ",
+        "   141                   ESCOLA + INCLUSIVA              ",
+        "   142                   EPF - PRESENÇA FLEXÍVEL         "
+    ],
+    "description": "COLA_ENSINO"
+},
+
+// COLA_QUADRO
+"COLA_QUADRO": {
+    "scope": "sql",
+    "prefix": "ZCOLAQUADRO",
+    "body": [
+        "CASE",
+        "   QUADRO               QUADRO_DESC                     ",
+        "",
+        "   QM                   QM - QUADRO DO MAGISTERIO      ",
+        "   QAE                  QAE - QUADRO DE APOIO ESCOLAR  ",
+        "   QSE                  QSE - QUADRO DA SECRETARIA DA EDUCACAO"
+    ],
+    "description": "COLA_QUADRO"
+},
 
   // SAS_PAPUA_022026
 "SAS_PAPUA_022026": {
@@ -2687,19 +2833,6 @@
     "description": "CEPEA_TB_ID_INTERNO_SERV"
 },
 
-// 00_DISCIPLINA
-"00_DISCIPLINA": {
-    "scope": "sql",
-    "prefix": "Z00DISC",
-    "body": [
-        "SELECT",
-        "     CODMAE,",
-        "     DEN_CODMAE       ",
-        "FROM [dbo].[00_DISCIPLINA]"
-    ],
-    "description": "00_DISCIPLINA"
-},
-
 // 00_LOCALIZACAO
 "00_LOCALIZACAO": {
     "scope": "sql",
@@ -3917,19 +4050,6 @@
         "FROM [dbo].[00_FUNCIONAL${1:0526}]"
     ],
     "description": "00_FUNCIONAL_CONSULTA"
-},
-
-// 00_CATEG
-"00_CATEG": {
-    "scope": "sql",
-    "prefix": "Z00CATEG",
-    "body": [
-        "SELECT ",
-        "    CATEG       ,",
-        "    CATEG_DESC  ",
-        "FROM [00_CATEG]"
-    ],
-    "description": "00_CATEG"
 },
 
 // 00_QUADRO
