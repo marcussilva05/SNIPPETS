@@ -2245,7 +2245,7 @@
         "     UD             ,",
         "     ORGAO          ,",
         "     NOMEUA         ,",
-        "     NOMEUA_COMPLETO,",
+        "     -- NOMEUA_COMPLETO,",
         "     NOMEDE         ,",
         "     REGIAO         ,",
         "     LOCAL          ,",

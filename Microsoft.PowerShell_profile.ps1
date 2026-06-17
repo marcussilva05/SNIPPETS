@@ -114,6 +114,48 @@ function z {
 		"sys_som" { Get-WmiObject Win32_SoundDevice | Format-Table Caption }
 		"sys_usb" { Get-WmiObject Win32_PnPSignedDriver | Format-Table DeviceName }
 		"sys_usuarios" { Get-LocalUser | Format-Table Name, Enabled }
+		"sys_wifi" {
+			Write-Host "`n=== DIAGNOSTICO COMPLETO WIFI ===" -ForegroundColor Cyan
+			
+			# 1. Verificacao rapida (SIM / NAO)
+			Write-Host "`n1. Verificacao de existencia da placa:" -ForegroundColor Yellow
+			if (Get-NetAdapter -IncludeHidden | Where-Object {$_.InterfaceDescription -match "Wireless|Wi-Fi|WLAN|802.11"}) {
+				Write-Host "✅ SIM, o computador possui placa de Wi-Fi." -ForegroundColor Green
+			} else {
+				Write-Host "❌ NÃO, nenhuma placa de Wi-Fi foi encontrada." -ForegroundColor Red
+			}
+			
+			# 2. Adaptadores de rede Wi-Fi (detalhados)
+			Write-Host "`n2. Adaptadores de rede Wi-Fi detectados (incluindo desativados):" -ForegroundColor Yellow
+			$wifiAdapters = Get-NetAdapter -IncludeHidden | Where-Object {$_.InterfaceDescription -match "Wireless|Wi-Fi|WLAN|802.11"}
+			if ($wifiAdapters) {
+				$wifiAdapters | Format-Table Name, InterfaceDescription, Status, LinkSpeed -AutoSize
+			} else {
+				Write-Host "NENHUM adaptador Wi-Fi encontrado nesta categoria!" -ForegroundColor Red
+			}
+			
+			# 3. Interfaces ativas e conexao atual
+			Write-Host "`n3. Interface Wi-Fi ativa e rede conectada (netsh):" -ForegroundColor Yellow
+			$wlanInterface = netsh wlan show interfaces
+			if ($wlanInterface -match "Nenhuma interface sem fio") {
+				Write-Host "NENHUMA interface Wi-Fi esta ativa ou conectada no momento." -ForegroundColor Red
+			} else {
+				# Exibe apenas as linhas relevantes (SSID, estado, sinal)
+				netsh wlan show interfaces | Select-String -Pattern "Nome|SSID|Estado|Rede|Sinal" | ForEach-Object { Write-Host $_ }
+			}
+			
+			# 4. Hardware fisico via WMI (ignorando erros de driver)
+			Write-Host "`n4. Dispositivos fisicos Wi-Fi no barramento (WMI):" -ForegroundColor Yellow
+			$hwDevices = Get-CimInstance -ClassName Win32_PnPEntity | Where-Object {$_.Name -match "Wireless|Wi-Fi|WLAN|802.11" -and $_.ConfigManagerErrorCode -ne 22}
+			if ($hwDevices) {
+				$hwDevices | Format-Table Name, Status, ConfigManagerErrorCode -AutoSize
+			} else {
+				Write-Host "NENHUM dispositivo fisico Wi-Fi encontrado (ou todos com erro grave)." -ForegroundColor Red
+			}
+			
+			Write-Host "`n=== FIM DIAGNOSTICO ===" -ForegroundColor Cyan
+			Write-Host "`nSe nao apareceu NENHUM adaptador na sessao 2 e nem na sessao 4, seu PC nao tem hardware Wi-Fi." -ForegroundColor Magenta
+		}
 
 # ===========================================================
 # EXTENSÕES DO VS CODE POR LINGUAGEM/FERRAMENTA
@@ -1026,7 +1068,7 @@ Register-ArgumentCompleter -CommandName z -ParameterName comando -ScriptBlock {
 		"sys_discos","sys_edge_modo_debug","sys_edge_encerar_processos","sys_edge_ouvindo_porta","sys_edge_verificacao","sys_gpu","sys_impressoras",
 		"sys_ip","sys_ip_geral","sys_memoria_slots","sys_memorias","sys_modelo_pc","sys_particoes","sys_pio_upload","sys_placa_mae","sys_porta_com",
 		"sys_programas_instalados","sys_rede","sys_sistema_operacional","sys_som","sys_usb","sys_usuarios","sys_abre_snippet_notepad", 
-		"sys_abre_snippet_vscode","sys_atualizar_snippet",
+		"sys_abre_snippet_vscode","sys_atualizar_snippet","sys_wifi",
 		# Extensões
 		"exten_git","exten_c","exten_python","exten_sql","exten_rust","exten_geral","exten_todas",
 		# Colas
