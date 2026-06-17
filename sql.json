@@ -1033,21 +1033,69 @@
 	//EXTRAIR_DATA
 	"EXTRAIR_DATA": {
 		"scope": "sql",
-		"prefix": "ZDDEXTRDATA",
+		"prefix": "ZDTEXTRAIR",
 		"body": [
-			"DATENAME(YEAR, '2017/08/25') AS DATE -- YEAR, MONTH, DAY",
+			"DATENAME(YEAR, '2017/08/25') AS DATE -- YEAR, MONTH, DAY"
 		],
 		"description": "EXTRAIR_DATA"
 	},
+
+  //SOMAR_DATA
+  "SOMAR_DATA": {
+      "scope": "sql",
+      "prefix": "ZDTSOMAR",
+      "body": [
+          "${1:DATEADD(${3:YEAR, MONTH, DAY}, ${4:QTD}, TRY_CAST(${5:COLUNA} AS DATE)) AS ${6:NOVO_NOME} -- SOMA DATA + QTD}"
+      ],
+      "description": "SOMAR DATA OU CALCULAR DIFERENÇA"
+  }, 
+
+  //SUBTRAIR_DATA
+	"SUBTRAIR_DATA": {
+		"scope": "sql",
+		"prefix": "ZDTSUBTRAIR",
+		"body": [
+			"DATEDIFF(${1:YEAR, MONTH, DAY}, TRY_CAST(${2:COLUNA1} AS DATE), TRY_CAST(${3:COLUNA2} AS DATE)) AS ${4:NOVA_COLUNA}"
+		],
+		"description": "SUBTRAIR_DATA"
+	},
+
+	//CONVERTER_DATA
+	"CONVERTER_DATA": {
+		"scope": "sql",
+		"prefix": "ZDTCONVERT",
+		"body": [
+			"CONVERT(VARCHAR(10), TRY_CAST(${1:COLUNA} AS DATE), ${2:103}) -- 101 = mm/dd/yyyy; 102 = yyyy.mm.dd; 103 = dd/mm/yyyy; 104 = dd.mm.yyyy; 105 = dd-mm-yyyy; 120 = yyyy-mm-dd hh:mi:ss; 126 = yyyy-mm-ddThh:mi:ss.mmm ",
+		],
+		"description": "CONVERTER_DATA"
+	},
+
+  //COLA_DATA
+	"COLA_DATA": {
+		"scope": "sql",
+		"prefix": "ZDTCOLA",
+		"body": [
+			"/*",
+      "101 = mm/dd/yyyy",
+      "102 = yyyy.mm.dd",
+      "103 = dd/mm/yyyy",
+      "104 = dd.mm.yyyy",
+      "105 = dd-mm-yyyy",
+      "120 = yyyy-mm-dd hh:mi:ss",
+      "126 = yyyy-mm-ddThh:mi:ss.mmm ",
+			"/*"
+		],
+		"description": "COLA_DATA"
+	},
 	
-	//CONVERTER
-	"CONVERTER": {
+	//CONVERTER_TIPO_DE_DADOS
+	"CONVERTER_TIPO_DE_DADOS": {
 		"scope": "sql",
 		"prefix": "ZDDCONVERT",
 		"body": [
-			"CONVERT(${1:BIGINT}, A.${2:CPF}) AS ${2:CPF}   ",
+			"CONVERT(${1:BIGINT}, A.${2:CPF}) AS ${2:CPF}   "
 		],
-		"description": "CONVERTER"
+		"description": "CONVERTER_TIPO_DE_DADOS"
 	},
 	
 	//IF
@@ -1055,7 +1103,7 @@
 		"scope": "sql",
 		"prefix": "ZIF",
 		"body": [
-			"IIF(${1:COLUNA}>1, 'YES', 'NO') -- =, <>, !=, >, <", 
+			"IIF(${1:COLUNA}>1, 'YES', 'NO') -- =, <>, !=, >, <"
 		],
 		"description": "IF"
 	},
@@ -1178,11 +1226,11 @@
   // REGIAO_ARQDEUA
   "REGIAO_ARQDEUA": {
     "scope": "sql",
-    "prefix": "ZREGARQ",
+    "prefix": "ZARQ_CABECALHO",
     "body": [
-	  "      A.REGIAO                      ,",
-    "      A.NOMEDE AS URE               ,",
-	  "LEFT JOIN ARQDEUA0326 A ON B.COLUNA_UA = A.UA"
+	  "      B.REGIAO                      ,",
+    "      B.NOMEDE AS URE               ,",
+	  "LEFT JOIN ARQDEUA0326 A ON A.UA = B.UA"
     ],
     "description": "REGIAO E URE DE ARQDEUA"
   },
@@ -2251,7 +2299,7 @@
         "     LOCAL          ,",
         "     MUN            ,",
         "     NOMEMUN        ",
-        "FROM ARQDEUA${1:03}26"
+        "FROM ARQDEUA${1:05}26"
     ],
     "description": "CEPEA_ARQDEUA"
 },
