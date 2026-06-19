@@ -1360,18 +1360,19 @@
       "scope": "sql",
       "prefix": "ZCOLACATEG",
       "body": [
-          "CASE",
-          "   WHEN ${1:COLUNA} = 'A' THEN 'A - EFETIVO'",
-          "   WHEN ${1:COLUNA} = 'C' THEN 'C - COMISSIONADO'",
-          "   WHEN ${1:COLUNA} = 'D' THEN 'D - DESIGNADO'",
-          "   WHEN ${1:COLUNA} = 'F' THEN 'F - ESTÁVEL'",
-          "   WHEN ${1:COLUNA} = 'N' THEN 'N - CLT'",
-          "   WHEN ${1:COLUNA} = 'O' THEN 'O - TEMPORÁRIO'",
-          "   WHEN ${1:COLUNA} = 'P' THEN 'P - ESTÁVEL'",
-          "   WHEN ${1:COLUNA} = '8' THEN '8 - COMISSIONADO'",
-          "   WHEN ${1:COLUNA} = '9' THEN '9 - COMISSIONADO'",
-          "   ELSE ${1:COLUNA}",
-          "END AS ${2:NOVA_COLUNA}"
+          "COALESCE(",
+          "   CASE",
+          "      WHEN ${1:COLUNA} = 'A' THEN 'A - EFETIVO'",
+          "      WHEN ${1:COLUNA} = 'C' THEN 'C - COMISSIONADO'",
+          "      WHEN ${1:COLUNA} = 'D' THEN 'D - DESIGNADO'",
+          "      WHEN ${1:COLUNA} = 'F' THEN 'F - ESTÁVEL'",
+          "      WHEN ${1:COLUNA} = 'N' THEN 'N - CLT'",
+          "      WHEN ${1:COLUNA} = 'O' THEN 'O - TEMPORÁRIO'",
+          "      WHEN ${1:COLUNA} = 'P' THEN 'P - ESTÁVEL'",
+          "      WHEN ${1:COLUNA} = '8' THEN '8 - COMISSIONADO'",
+          "      WHEN ${1:COLUNA} = '9' THEN '9 - COMISSIONADO'",
+          "      ELSE ${1:COLUNA}",
+          "   END AS ${2:NOVA_COLUNA} ,"
       ],
       "description": "COLA_CATEGORIAS"
   },
@@ -1409,14 +1410,15 @@
     "scope": "sql",
     "prefix": "ZCOLALOCALIZ",
     "body": [
-        "CASE",
-        "   CD_LOCALIZACAO        LOCALIZACAO     ",
-        "",
-        "   1                     ASSENTAMENTO    ",
-        "   2                     QUILOMBOLA    ",
-        "   3                     INDIGENA    ",
-        "   7                     URBANA    ",
-        "   8                     CAICARA    "
+        "COALESCE(",
+        "   CASE",
+        "      WHEN ${1:COLUNA} = '1' THEN '1 - ASSENTAMENTO'    ",
+        "      WHEN ${1:COLUNA} = '2' THEN '2 - QUILOMBOLA'    ",
+        "      WHEN ${1:COLUNA} = '3' THEN '3 - INDIGENA'    ",
+        "      WHEN ${1:COLUNA} = '7' THEN '7 - URBANA'    ",
+        "      WHEN ${1:COLUNA} = '8' THEN '8 - CAICARA'    ",
+        "      ELSE ${1:COLUNA}",
+        "   END AS ${2:NOVA_COLUNA} ,",
     ],
     "description": "COLA_LOCALIZACAO"
 },
@@ -1491,12 +1493,13 @@
     "scope": "sql",
     "prefix": "ZCOLAQUADRO",
     "body": [
-        "CASE",
-        "   QUADRO               QUADRO_DESC                     ",
-        "",
-        "   QM                   QM - QUADRO DO MAGISTERIO      ",
-        "   QAE                  QAE - QUADRO DE APOIO ESCOLAR  ",
-        "   QSE                  QSE - QUADRO DA SECRETARIA DA EDUCACAO"
+        "COALESCE(",
+        "   CASE",
+        "      WHEN ${1:COLUNA} = 'QM'  THEN 'QM  - QUADRO DO MAGISTERIO'    ",
+        "      WHEN ${1:COLUNA} = 'QAE' THEN 'QAE - QUADRO DE APOIO ESCOLAR'    ",
+        "      WHEN ${1:COLUNA} = 'QSE' THEN 'QSE - QUADRO DA SECRETARIA DA EDUCACAO'    ",
+        "      ELSE ${1:COLUNA}",
+        "   END AS ${2:NOVA_COLUNA} ,",
     ],
     "description": "COLA_QUADRO"
 },
@@ -2243,20 +2246,6 @@
     "description": "SAS_TB_FREQUENCIA"
 },
 
-
-// SAS_TB_CAD_FREQUENCIA
-"SAS_BFE": {
-    "scope": "sql",
-    "prefix": "ZSASBFE",
-    "body": [
-        "SELECT",
-        "     CD_FREQ,",
-        "     DS_FREQ",
-        "FROM CONTAGEH..TB_CAD_FREQUENCIA"
-    ],
-    "description": "CONTAGEH_TB_CAD_FREQUENCIA"
-},
-
 // SAS_TB_CURSO_HABILITACAO
 "SAS_TB_CURSO_HABILITACAO": {
     "scope": "sql",
@@ -2835,8 +2824,21 @@
     "description": "CEPEA_TB_ID_INTERNO_SERV"
 },
 
-// TB_FUNCIONAL_CONTAGEH
-"TB_FUNCIONAL_CONTAGEH": {
+// CONTAGEH_TB_CAD_FREQUENCIA
+"CONTAGEH_TB_CAD_FREQUENCIA": {
+    "scope": "sql",
+    "prefix": "ZCONTBFE",
+    "body": [
+        "SELECT",
+        "     CD_FREQ,",
+        "     DS_FREQ",
+        "FROM CONTAGEH..TB_CAD_FREQUENCIA"
+    ],
+    "description": "CONTAGEH_TB_CAD_FREQUENCIA"
+},
+
+// CONTAGEH_TB_FUNCIONAL 
+"CONTAGEH_TB_FUNCIONAL": {
     "scope": "sql",
     "prefix": "ZCONTTBFUNC",
     "body": [
@@ -2918,11 +2920,11 @@
         "FROM CONTAGEH..TB_FUNCIONAL",
         "WHERE CD_SIT_REG = 'A' -- A = ATIVO, E = EXCLUÍDO, F = falecido, 0 = erro, P CATEGORIA P, I = INATIVO, B = BLOQUEADO"
     ],
-    "description": "TB_FUNCIONAL_CONTAGEH"
+    "description": "CONTAGEH_TB_FUNCIONAL"
 },
 
-// COD_FOLHA_DE_PAGAMENTO_CONTAGEH
-"COD_FOLHA_DE_PAGAMENTO_CONTAGEH": {
+// CONTAGEH_COD_FOLHA_DE_PAGAMENTO
+"CONTAGEH_COD_FOLHA_DE_PAGAMENTO": {
     "scope": "sql",
     "prefix": "ZCONTFOLHA",
     "body": [
@@ -2932,11 +2934,11 @@
         "  cod_folha      ",
         "FROM CONTAGEH.[dbo].[Cod_retorno_folha]"
     ],
-    "description": "COD_FOLHA_DE_PAGAMENTO_CONTAGEH"
+    "description": "CONTAGEH_COD_FOLHA_DE_PAGAMENTO"
 },
 
-// TB_AFASTAMENTO_CONTAGEH
-"TB_AFASTAMENTO_CONTAGEH": {
+// CONTAGEH_TB_AFASTAMENTO
+"CONTAGEH_TB_AFASTAMENTO": {
     "scope": "sql",
     "prefix": "ZCONTAFAST",
     "body": [
@@ -2957,11 +2959,11 @@
         "    DT_FIM               ",
         "FROM CONTAGEH.[dbo].[TB_AFASTAMENTO]"
     ],
-    "description": "TB_AFASTAMENTO_CONTAGEH"
+    "description": "CONTAGEH_TB_AFASTAMENTO"
 },
 
-// TB_FREQUENCIA_FALTA_CONTAGEH
-"TB_FREQUENCIA_FALTA_CONTAGEH": {
+// CONTAGEH_TB_FREQUENCIA_FALTA
+"CONTAGEH_TB_FREQUENCIA_FALTA": {
     "scope": "sql",
     "prefix": "ZCONTFREQFALTA",
     "body": [
@@ -2993,11 +2995,11 @@
         ") ",
         "ORDER BY NR_CPF, ANO_REF DESC, MES_REF DESC, CD_DIA DESC"
     ],
-    "description": "TB_FREQUENCIA_FALTA_CONTAGEH"
+    "description": "CONTAGEH_TB_FREQUENCIA_FALTA"
 },
 
-// TB_FUNCIONAL_CONTAGEH
-"TB_FUNCIONAL_CONTAGEH": {
+// CONTAGEH_TB_FUNCIONAL
+"CONTAGEH_TB_FUNCIONAL": {
     "scope": "sql",
     "prefix": "ZCONTFUNC",
     "body": [
@@ -3178,11 +3180,11 @@
         "    FL_EXCLUIR                  ",
         "FROM CONTAGEH.[dbo].[TB_FUNCIONAL]"
     ],
-    "description": "TB_FUNCIONAL_CONTAGEH"
+    "description": "CONTAGEH_TB_FUNCIONAL"
 },
 
-// TB_FUNCIONARIO_CONTAGEH
-"TB_FUNCIONARIO_CONTAGEH": {
+// CONTAGEH_TB_FUNCIONARIO
+"CONTAGEH_TB_FUNCIONARIO": {
     "scope": "sql",
     "prefix": "ZCONTFUNCIONARIO",
     "body": [
@@ -3222,7 +3224,321 @@
         "    DT_ALTER          ",
         "FROM CONTAGEH.[dbo].[TB_FUNCIONARIO]"
     ],
-    "description": "TB_FUNCIONARIO_CONTAGEH"
+    "description": "CONTAGEH_TB_FUNCIONARIO"
+},
+
+// CONTAGEH_ATRIB_EVENTO
+"CONTAGEH_ATRIB_EVENTO": {
+    "scope": "sql",
+    "prefix": "ZCONTEVENTO",
+    "body": [
+        "SELECT",
+        "    NR_CPF AS CPF,",
+        "    NR_DI AS DI,",
+        "    CONCAT(NR_CPF,' - ', NR_DI) AS CPF_DI,",
+        "    CD_TIP_EVE,",
+        "    CD_EVE,",
+        "    TP_MOT_TRM,",
+        "    CD_EVE_TRM,",
+        "    ID_SIT_VINC,",
+        "    DT_SIT_VINC,",
+        "    DT_INI_EXERC,",
+        "    DT_INI_VIG,",
+        "    DT_FIM_VIG,",
+        "    DT_INI_VIG_EVE,",
+        "    DT_FIM_VIG_EVE,",
+        "    TP_ATO_OFIC_TRM,",
+        "    DT_INIC_VIGEN_EVENT_TRM,",
+        "    DT_FIM_VIGEN_EVENT_TRM,",
+        "    DT_POSSE,",
+        "    DT_ULT_ALTER,",
+        "    CD_CARGO_FUNC_ATUAL,",
+        "    CD_CARGO_FUNC_EVE,",
+        "    ID_CARGO_FUNC,",
+        "    ID_CAT_FUNC,",
+        "    ID_ORI_CARGO_FUNC,",
+        "    CD_UNID_ADM_CLASS,",
+        "    CD_UNID_ADM_EVE,",
+        "    CD_JORN_ANT,",
+        "    CD_JORN_ATU,",
+        "    CD_UNID_ESCOL_CLASSIF_TIT,",
+        "    CD_UNID_ESCOL_EVE,",
+        "    CD_TIP_PROV,",
+        "    FL_PROLABOR,",
+        "    TP_ATO_OFIC,",
+        "    ID_ORG_ATO_OFIC,",
+        "    NR_ATO_OFIC,",
+        "    NR_ANO_ATO_OFIC,",
+        "    DT_PUBL_ATO_OFIC,",
+        "    ID_REF_FAIXA,",
+        "    ID_GRAU_NIV,",
+        "    QT_HORA_CARGA_SUPL,",
+        "    NR_RG_SUBST,",
+        "    CD_MOT_SUBST,",
+        "    ID_LOCAL_AFAST,",
+        "    NM_LOCAL_AFAST,",
+        "    CD_ACUM_CARGO_1,",
+        "    TP_ACUM_CARGO_1,",
+        "    NR_PAREC_COMIS_ACUM_CARGO_1,",
+        "    NR_ANO_PAREC_ACUM_CARGO_1,",
+        "    DT_PUBL_ACUM_CARGO_1,",
+        "    CD_REG_HABILIT,",
+        "    DT_REG_HABILIT,",
+        "    CD_ORG_EMIS_REG,",
+        "    TP_ATO_OFIC_CES_EXER,",
+        "    ID_ORG_ATO_OFIC_CES_EXER,",
+        "    NR_ATO_OFIC_CES_EXER,",
+        "    NR_ANO_ATO_OFIC_CES_EXER,",
+        "    DT_PUBL_ATO_OFIC_CES_EXER,",
+        "    CD_OPCAO_TRANS_UTIL,",
+        "    CD_TERMINAL,",
+        "    CD_OPER,",
+        "    DT_ALTER,",
+        "    DT_HORA_INIC_ALTER,",
+        "    DT_HORA_FIM_ALTER,",
+        "    FL_FOLHA_PAGTO_HIST,",
+        "    ID_NUM_PROC_SAUDE,",
+        "    NR_ANO_PROC_SAUDE,",
+        "    TP_TEMPO_SIT_ESPEC,",
+        "    DT_PUBL_2,",
+        "    NR_PROC,",
+        "    ID_ORG_EMIS_PROC,",
+        "    NR_ANO_PROC,",
+        "    ACAO_JUDICIAL,",
+        "    DT_ULT_ATUALIZ,",
+        "    ID_ORG_ATO_OFIC_TRM,",
+        "    NR_ATO_OFIC_TRM,",
+        "    NR_ANO_ATO_OFIC_TRM,",
+        "    DT_PUBL_ATO_OFIC_TRM,",
+        "    CD_UNID_ADM_EVE_TRM,",
+        "    CD_CARGO_FUNC_EVE_TRM,",
+        "    FL_PROC_QUEBRA,",
+        "    CD_CARGO_FUNCAO_ATUAL_TRM,",
+        "    CD_UNID_ADM_CLASSIF_TRM,",
+        "    CD_JORN_ANT_TRM,",
+        "    CD_JORN_ATUAL_TRM,",
+        "    CD_UNID_ESCOL_CLASSIF_TITUL_TRM,",
+        "    CD_UNID_ESCOL_EVENT_TRM,",
+        "    CD_TP_PROV_TRM,",
+        "    FL_PROLABOR_TRM,",
+        "    DT_POSSE_TRM,",
+        "    DT_INIC_EXERC_TRM,",
+        "    ID_SIT_VINC_TRM,",
+        "    DT_SIT_VINC_TRM,",
+        "    ID_REF_FAIXA_TRM,",
+        "    ID_GRAU_NIVEL_TRM,",
+        "    ID_CARGO_FUNCAO_TRM,",
+        "    ID_CATEG_FUNCIO_TRM,",
+        "    ID_ORIG_CARGO_FUNCAO_TRM,",
+        "    QTD_HR_CARGA_SUPL_TRM,",
+        "    NR_RG_SUBST_TRM,",
+        "    CD_CARGO_FUNCAO_TRM,",
+        "    TP_EVOL_EVENT,",
+        "    TP_DOC_EVENT,",
+        "    DT_PEDIDO_CERTIF_EVENT,",
+        "    NR_ATO_ACAO_JUDICIAL,",
+        "    NR_RG,",
+        "    FL_FOLHA_PAGTO,",
+        "    [SYS_C00079_14093022:06:13$]",
+        "FROM CONTAGEH.dbo.TB_ATRIB_EVENTO"
+    ],
+    "description": "CONTAGEH_ATRIB_EVENTO"
+},
+
+// CONTAGEH_TAB_EVENTO
+"CONTAGEH_TAB_EVENTO": {
+    "scope": "sql",
+    "prefix": "ZCONTEVENTOTAB",
+    "body": [
+        "SELECT",
+        "    CD_TIP_EVE,",
+        "    CD_EVE,",
+        "    NM_EVE,",
+        "    DT_INI_VIG,",
+        "    DT_FIM_VIG,",
+        "    FL_ATIVO,",
+        "    FL_PERM_COLET,",
+        "    DT_INATIV",
+        "FROM CONTAGEH.dbo.TB_EVENTO",
+        "ORDER BY CD_TIP_EVE, CD_EVE"
+    ],
+    "description": "CONTAGEH_TAB_EVENTO"
+},
+
+// CONTAGEH_TB_TIP_EVENTO
+"CONTAGEH_TB_TIP_EVENTO": {
+    "scope": "sql",
+    "prefix": "ZCONTEVENTOTBTIP",
+    "body": [
+        "SELECT",
+        "    CD_TIP_EVE,",
+        "    NM_TIP_EVE,",
+        "    DT_INATIV,",
+        "    FL_DESC_POR_UA",
+        "FROM CONTAGEH.dbo.TB_TIPO_EVENTO",
+        "ORDER BY CD_TIP_EVE"
+    ],
+    "description": "CONTAGEH_TB_TIP_EVENTO"
+},
+
+// CONTAGEH_00_EVENTO
+"CONTAGEH_00_EVENTO": {
+    "scope": "sql",
+    "prefix": "Z00CONTEVENTO",
+    "body": [
+        "/*",
+        "-------------------------------------------------------------- TEMPORÁRIAS --------------------------------------------------------------",
+        "",
+        "${1:05}26",
+        "[${1:05}2026]",
+        "",
+        "$2DROP TABLE IF EXISTS #ARQ",
+        "DROP TABLE IF EXISTS #ID",
+        "DROP TABLE IF EXISTS #PESSOAL",
+        "DROP TABLE IF EXISTS #TIP_EVE",
+        "DROP TABLE IF EXISTS #CD_EVE",
+        "",
+        "SELECT * INTO #ARQ FROM ARQDEUA${1:05}26",
+        "SELECT * INTO #ID FROM TB_ID_INTERNO_SERV",
+        "SELECT * INTO #PESSOAL FROM SAS.[${1:05}2026].TB_PESSOAL",
+        "SELECT * INTO #TIP_EVE FROM CONTAGEH.dbo.TB_TIPO_EVENTO",
+        "SELECT * INTO #CD_EVE FROM CONTAGEH.dbo.TB_EVENTO",
+        "",
+        "*/",
+        "",
+        "/*",
+        "",
+        "-------------------------------------------------------------- TOP 10 EVENTOS --------------------------------------------------------------",
+        "",
+        "SELECT TOP 10",
+        "    B.REGIAO         ,",
+        "    B.NOMEDE AS URE        ,",
+        "    A.CD_UNID_ADM_CLASS AS UA_C,",
+        "    A.CD_UNID_ADM_EVE,",
+        "    B.NOMEUA        ,",
+        "    A.NR_CPF AS CPF,",
+        "    A.NR_DI AS DI,",
+        "    CONCAT(A.NR_CPF, A.NR_DI) AS CPF_DI,",
+        "    D.ID             ,",
+        "    E.NM_PESSOA AS NOME_SERVIDOR          ,",
+        "    B.NOMEMUN  AS MUNICIPIO_C      ,",
+        "    A.CD_TIP_EVE,",
+        "    F.NM_TIP_EVE     ,",
+        "    A.CD_EVE,",
+        "    G.NM_EVE    ,",
+        "    A.TP_MOT_TRM,",
+        "    A.CD_EVE_TRM,",
+        "    H.NM_EVE     ,",
+        "    A.ID_SIT_VINC,",
+        "    A.DT_SIT_VINC,",
+        "    A.DT_INI_EXERC,",
+        "    A.DT_INI_VIG,",
+        "    A.DT_FIM_VIG,",
+        "    A.DT_INI_VIG_EVE,",
+        "    A.DT_FIM_VIG_EVE,",
+        "    A.TP_ATO_OFIC_TRM,",
+        "    A.DT_INIC_VIGEN_EVENT_TRM,",
+        "    A.DT_FIM_VIGEN_EVENT_TRM,",
+        "    A.DT_POSSE,",
+        "    A.DT_ULT_ALTER,",
+        "    A.CD_CARGO_FUNC_ATUAL,",
+        "    A.CD_CARGO_FUNC_EVE,",
+        "    A.ID_CARGO_FUNC,",
+        "    A.ID_CAT_FUNC,",
+        "    A.ID_ORI_CARGO_FUNC,",
+        "    A.CD_JORN_ANT,",
+        "    A.CD_JORN_ATU,",
+        "    A.CD_UNID_ESCOL_CLASSIF_TIT,",
+        "    A.CD_UNID_ESCOL_EVE,",
+        "    A.CD_TIP_PROV,",
+        "    A.FL_PROLABOR,",
+        "    A.TP_ATO_OFIC,",
+        "    A.ID_ORG_ATO_OFIC,",
+        "    A.NR_ATO_OFIC,",
+        "    A.NR_ANO_ATO_OFIC,",
+        "    A.DT_PUBL_ATO_OFIC,",
+        "    A.ID_REF_FAIXA,",
+        "    A.ID_GRAU_NIV,",
+        "    A.QT_HORA_CARGA_SUPL,",
+        "    A.NR_RG_SUBST,",
+        "    A.CD_MOT_SUBST,",
+        "    A.ID_LOCAL_AFAST,",
+        "    A.NM_LOCAL_AFAST,",
+        "    A.CD_ACUM_CARGO_1,",
+        "    A.TP_ACUM_CARGO_1,",
+        "    A.NR_PAREC_COMIS_ACUM_CARGO_1,",
+        "    A.NR_ANO_PAREC_ACUM_CARGO_1,",
+        "    A.DT_PUBL_ACUM_CARGO_1,",
+        "    A.CD_REG_HABILIT,",
+        "    A.DT_REG_HABILIT,",
+        "    A.CD_ORG_EMIS_REG,",
+        "    A.TP_ATO_OFIC_CES_EXER,",
+        "    A.ID_ORG_ATO_OFIC_CES_EXER,",
+        "    A.NR_ATO_OFIC_CES_EXER,",
+        "    A.NR_ANO_ATO_OFIC_CES_EXER,",
+        "    A.DT_PUBL_ATO_OFIC_CES_EXER,",
+        "    A.CD_OPCAO_TRANS_UTIL,",
+        "    A.CD_TERMINAL,",
+        "    A.CD_OPER,",
+        "    A.DT_ALTER,",
+        "    A.DT_HORA_INIC_ALTER,",
+        "    A.DT_HORA_FIM_ALTER,",
+        "    A.FL_FOLHA_PAGTO_HIST,",
+        "    A.ID_NUM_PROC_SAUDE,",
+        "    A.NR_ANO_PROC_SAUDE,",
+        "    A.TP_TEMPO_SIT_ESPEC,",
+        "    A.DT_PUBL_2,",
+        "    A.NR_PROC,",
+        "    A.ID_ORG_EMIS_PROC,",
+        "    A.NR_ANO_PROC,",
+        "    A.ACAO_JUDICIAL,",
+        "    A.DT_ULT_ATUALIZ,",
+        "    A.ID_ORG_ATO_OFIC_TRM,",
+        "    A.NR_ATO_OFIC_TRM,",
+        "    A.NR_ANO_ATO_OFIC_TRM,",
+        "    A.DT_PUBL_ATO_OFIC_TRM,",
+        "    A.CD_UNID_ADM_EVE_TRM,",
+        "    A.CD_CARGO_FUNC_EVE_TRM,",
+        "    A.FL_PROC_QUEBRA,",
+        "    A.CD_CARGO_FUNCAO_ATUAL_TRM,",
+        "    A.CD_UNID_ADM_CLASSIF_TRM,",
+        "    A.CD_JORN_ANT_TRM,",
+        "    A.CD_JORN_ATUAL_TRM,",
+        "    A.CD_UNID_ESCOL_CLASSIF_TITUL_TRM,",
+        "    A.CD_UNID_ESCOL_EVENT_TRM,",
+        "    A.CD_TP_PROV_TRM,",
+        "    A.FL_PROLABOR_TRM,",
+        "    A.DT_POSSE_TRM,",
+        "    A.DT_INIC_EXERC_TRM,",
+        "    A.ID_SIT_VINC_TRM,",
+        "    A.DT_SIT_VINC_TRM,",
+        "    A.ID_REF_FAIXA_TRM,",
+        "    A.ID_GRAU_NIVEL_TRM,",
+        "    A.ID_CARGO_FUNCAO_TRM,",
+        "    A.ID_CATEG_FUNCIO_TRM,",
+        "    A.ID_ORIG_CARGO_FUNCAO_TRM,",
+        "    A.QTD_HR_CARGA_SUPL_TRM,",
+        "    A.NR_RG_SUBST_TRM,",
+        "    A.CD_CARGO_FUNCAO_TRM,",
+        "    A.TP_EVOL_EVENT,",
+        "    A.TP_DOC_EVENT,",
+        "    A.DT_PEDIDO_CERTIF_EVENT,",
+        "    A.NR_ATO_ACAO_JUDICIAL,",
+        "    A.NR_RG,",
+        "    A.FL_FOLHA_PAGTO,",
+        "    A.[SYS_C00079_14093022:06:13$]",
+        "FROM CONTAGEH.dbo.TB_ATRIB_EVENTO A",
+        "LEFT JOIN #ARQ B ON A.CD_UNID_ADM_CLASS = B.UA",
+        "LEFT JOIN #ID D ON A.NR_CPF = D.CPF",
+        "LEFT JOIN #PESSOAL E ON A.NR_CPF = E.NR_CPF",
+        "LEFT JOIN #TIP_EVE F ON A.CD_TIP_EVE = F.CD_TIP_EVE",
+        "LEFT JOIN #CD_EVE G ON A.CD_EVE = G.CD_EVE",
+        "LEFT JOIN #CD_EVE H ON A.CD_EVE_TRM = H.CD_EVE",
+        "-- WHERE A.NR_CPF = '35146922896'",
+        "",
+        "*/"
+    ],
+    "description": "CONTAGEH_00_EVENTO"
 },
 
 // ---------------------------------- DATABRICKS ----------------------------------
