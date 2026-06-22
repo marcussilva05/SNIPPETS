@@ -1504,6 +1504,27 @@
     "description": "COLA_QUADRO"
 },
 
+// COLA_ESTADO_CIVIL
+"COLA_ESTADO_CIVIL": {
+    "scope": "sql",
+    "prefix": "ZCOLAESTCIV",
+    "body": [
+        "CASE",
+        "   WHEN ${1:COLUNA} = 'A' THEN 'A - SEPARADO JUDICIALMENTE'",
+        "   WHEN ${1:COLUNA} = 'C' THEN 'C - CASADO'",
+        "   WHEN ${1:COLUNA} = 'D' THEN 'D - DESQUITADO'",
+        "   WHEN ${1:COLUNA} = 'E' THEN 'E - UNIÃO ESTÁVEL'",
+        "   WHEN ${1:COLUNA} = 'H' THEN 'H - UNIÃO ESTÁVEL HOMOAFETIVA'",
+        "   WHEN ${1:COLUNA} = 'R' THEN 'R - DIVORCIADO'",
+        "   WHEN ${1:COLUNA} = 'S' THEN 'S - SOLTEIRO'",
+        "   WHEN ${1:COLUNA} = 'U' THEN 'U - ERRO'",
+        "   WHEN ${1:COLUNA} = 'V' THEN 'V - VIUVO'",
+        "   ELSE ${1:COLUNA}",
+        "END"
+    ],
+    "description": "COLA_ESTADO_CIVIL"
+},
+
   // SAS_PAPUA_022026
 "SAS_PAPUA_022026": {
     "scope": "sql",
