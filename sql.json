@@ -3403,41 +3403,44 @@
     "description": "CONTAGEH_TB_TIP_EVENTO"
 },
 
-// CONTAGEH_00_EVENTO
-"CONTAGEH_00_EVENTO": {
+// CONT_EVENTOS
+"CONT_EVENTOS": {
     "scope": "sql",
-    "prefix": "Z00CONTEVENTO",
+    "prefix": "Z00EVENTOS",
     "body": [
-        "/*",
+        "-- 0526",
+        "-- [052026]",
+        "",
+        "USE CEPEA_SAS",
+        "",
         "-------------------------------------------------------------- TEMPORÁRIAS --------------------------------------------------------------",
         "",
-        "${1:05}26",
-        "[${1:05}2026]",
-        "",
-        "$2DROP TABLE IF EXISTS #ARQ",
+        "DROP TABLE IF EXISTS #ARQ",
         "DROP TABLE IF EXISTS #ID",
         "DROP TABLE IF EXISTS #PESSOAL",
         "DROP TABLE IF EXISTS #TIP_EVE",
         "DROP TABLE IF EXISTS #CD_EVE",
         "",
-        "SELECT * INTO #ARQ FROM ARQDEUA${1:05}26",
+        "SELECT * INTO #ARQ FROM ARQDEUA0526",
         "SELECT * INTO #ID FROM TB_ID_INTERNO_SERV",
-        "SELECT * INTO #PESSOAL FROM SAS.[${1:05}2026].TB_PESSOAL",
+        "SELECT * INTO #PESSOAL FROM SAS.[052026].TB_PESSOAL",
         "SELECT * INTO #TIP_EVE FROM CONTAGEH.dbo.TB_TIPO_EVENTO",
         "SELECT * INTO #CD_EVE FROM CONTAGEH.dbo.TB_EVENTO",
         "",
-        "*/",
+        "-------------------------------------------------------------- TOP 1000 EVENTOS --------------------------------------------------------------",
         "",
-        "/*",
-        "",
-        "-------------------------------------------------------------- TOP 10 EVENTOS --------------------------------------------------------------",
-        "",
-        "SELECT TOP 10",
+        "SELECT TOP 1000",
         "    B.REGIAO         ,",
-        "    B.NOMEDE AS URE        ,",
+        "    CASE",
+        "       WHEN A.CD_UNID_ADM_CLASS = '000000' THEN ''",
+        "       ELSE B.NOMEDE",
+        "    END AS URE ,",
         "    A.CD_UNID_ADM_CLASS AS UA_C,",
         "    A.CD_UNID_ADM_EVE,",
-        "    B.NOMEUA        ,",
+        "    CASE",
+        "       WHEN A.CD_UNID_ADM_CLASS = '000000' THEN ''",
+        "       ELSE B.NOMEUA",
+        "    END AS NOMEUA ,",
         "    A.NR_CPF AS CPF,",
         "    A.NR_DI AS DI,",
         "    CONCAT(A.NR_CPF, A.NR_DI) AS CPF_DI,",
@@ -3558,9 +3561,9 @@
         "LEFT JOIN #CD_EVE H ON A.CD_EVE_TRM = H.CD_EVE",
         "-- WHERE A.NR_CPF = '35146922896'",
         "",
-        "*/"
+        "-- ~ 10 seg"
     ],
-    "description": "CONTAGEH_00_EVENTO"
+    "description": "CONT_EVENTOS"
 },
 
 // ---------------------------------- DATABRICKS ----------------------------------
