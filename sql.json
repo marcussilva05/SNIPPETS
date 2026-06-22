@@ -3566,118 +3566,6 @@
     "description": "CONT_EVENTOS"
 },
 
-// ---------------------------------- DATABRICKS ----------------------------------
-
-  // USE_CATALOG
-  "USE_CATALOG": {
-    "scope": "sql",
-    "prefix": "BRIUSE",
-    "body": [
-      "USE CATALOG ${1:producao}"
-      ],
-    "description": "USE_CATALOG"
-},
-
-// USE_ESQUEMA
-  "USE_ESQUEMA": {
-    "scope": "sql",
-    "prefix": "BRIUSESQUEMA",
-    "body": [
-      "USE SCHEMA ${1:nome_do_schema}"
-      ],
-    "description": "USE_ESQUEMA"
-},
-
-  // LISTE_CATALOGOS
-  "LISTE_CATALOGOS": {
-    "scope": "sql",
-    "prefix": "BRILISTCATALOG",
-    "body": [
-      "SHOW CATALOGS"
-      ],
-    "description": "LISTE_CATALOGOS"
-},
-
-// LISTE_ESQUEMA
-  "LISTE_ESQUEMA": {
-    "scope": "sql",
-    "prefix": "BRILISTESQUEMA",
-    "body": [
-      "SHOW SCHEMAS"
-      ],
-    "description": "LISTE_ESQUEMA"
-},
-
-// LISTE_TABELAS
-  "LISTE_TABELAS": {
-    "scope": "sql",
-    "prefix": "BRILISTTAB",
-    "body": [
-      "SHOW TABLES"
-      ],
-    "description": "LISTE_TABELAS"
-},
-
-// LISTE_COLUNAS
-"LISTE_COLUNAS": {
-  "scope": "sql",
-  "prefix": "BRILISTCOL",
-  "body": [
-    "SELECT *",
-    "DESCRIBE ${1:catalogo}.${2:esquema}.${3:tabela}",
-  ],
-  "description": "LISTE_COLUNAS"
-},
-
-// TIPO_DADOS_TABELA
-"TIPO_DADOS_TABELA": {
-  "scope": "sql",
-  "prefix": "BRILISTCOL",
-  "body": [
-    "SELECT *",
-    "DESCRIBE ${1:catalogo}.${2:esquema}.${3:tabela}",
-  ],
-  "description": "TIPO_DADOS_TABELA"
-},
-
-// TOP 10 DATABRICKS
-"TOP10_DATABRICKS": {
-  "scope": "sql",
-  "prefix": "BRITOP10",
-  "body": [
-    "SELECT *",
-    "FROM ${1:catalogo}.${2:esquema}.${3:tabela}",
-    "LIMIT 10"
-  ],
-  "description": "Retorna as 10 primeiras linhas de uma tabela no Databricks (catalogo.esquema.tabela)"
-},
-
-// MAPEAMENTO_DATABRICKS_CRIAR 
-"MAPEAMENTO_DATABRICKS_CRIAR": {
-  "scope": "sql",
-  "prefix": "BRIMAP_CRIAR",
-  "body": [
-    "SELECT ",
-    "    DATE_FORMAT(t.created, 'yyyy-MM-dd') AS DT_CRIACAO,",
-    "    DATE_FORMAT(t.last_altered, 'yyyy-MM-dd') AS DT_ULT_ALTERACAO,",
-    "    t.table_catalog AS CATALOGO,",
-    "    t.table_schema AS ESQUEMA,",
-    "    t.table_name AS TABELA,",
-    "    COUNT(c.column_name) AS COLUNAS,",
-    "    ARRAY_JOIN(COLLECT_LIST(c.column_name), ', ') AS NOME_DAS_COLUNAS,",
-    "    t.table_owner AS PROPRIETARIO,",
-    "    CONCAT('SELECT * FROM ', t.table_catalog, '.', t.table_schema, '.', t.table_name, ' LIMIT 10') AS ENDERECO",
-    "FROM system.information_schema.tables t",
-    "JOIN system.information_schema.columns c ",
-    "  ON t.table_catalog = c.table_catalog ",
-    " AND t.table_schema = c.table_schema ",
-    " AND t.table_name = c.table_name",
-    "GROUP BY t.created, t.last_altered, t.table_catalog, t.table_schema, t.table_name, t.table_owner",
-    "ORDER BY t.created DESC, t.last_altered DESC, CATALOGO, ESQUEMA, TABELA"
-  ],
-  "description": "MAPEAMENTO_DATABRICKS_CRIAR"
-},
-
 // MAPEAMENTO_DATABRICKS_CONSULTAR
 "MAPEAMENTO_DATABRICKS_CONSULTAR": {
     "scope": "sql",
@@ -4253,10 +4141,111 @@
     "description": "Z00CTG"
 },
 
-// TB_SALDO_AULAS_META
-"TB_SALDO_AULAS_META": {
+// ---------------------------------- DATABRICKS ----------------------------------
+
+  // USE_CATALOG
+  "USE_CATALOG": {
+    "scope": "sql",
+    "prefix": "BRIUSE",
+    "body": [
+      "USE CATALOG ${1:producao}"
+      ],
+    "description": "USE_CATALOG"
+},
+
+// USE_ESQUEMA
+  "USE_ESQUEMA": {
+    "scope": "sql",
+    "prefix": "BRIUSESQUEMA",
+    "body": [
+      "USE SCHEMA ${1:nome_do_schema}"
+      ],
+    "description": "USE_ESQUEMA"
+},
+
+  // LISTE_CATALOGOS
+  "LISTE_CATALOGOS": {
+    "scope": "sql",
+    "prefix": "BRILISTCATALOG",
+    "body": [
+      "SHOW CATALOGS"
+      ],
+    "description": "LISTE_CATALOGOS"
+},
+
+// LISTE_ESQUEMA
+  "LISTE_ESQUEMA": {
+    "scope": "sql",
+    "prefix": "BRILISTESQUEMA",
+    "body": [
+      "SHOW SCHEMAS"
+      ],
+    "description": "LISTE_ESQUEMA"
+},
+
+// LISTE_TABELAS
+  "LISTE_TABELAS": {
+    "scope": "sql",
+    "prefix": "BRILISTTAB",
+    "body": [
+      "SHOW TABLES"
+      ],
+    "description": "LISTE_TABELAS"
+},
+
+// LISTE_COLUNAS
+"LISTE_COLUNAS": {
   "scope": "sql",
-  "prefix": "BRITBSALDO",
+  "prefix": "BRILISTCOL",
+  "body": [
+    "DESCRIBE ${1:catalogo}.${2:esquema}.${3:tabela}"
+  ],
+  "description": "LISTE_COLUNAS"
+},
+
+// TOP 10 DATABRICKS
+"TOP10_DATABRICKS": {
+  "scope": "sql",
+  "prefix": "BRITOP10",
+  "body": [
+    "SELECT *",
+    "FROM ${1:catalogo}.${2:esquema}.${3:tabela}",
+    "LIMIT 10"
+  ],
+  "description": "Retorna as 10 primeiras linhas de uma tabela no Databricks (catalogo.esquema.tabela)"
+},
+
+// MAPEAMENTO_DATABRICKS_CRIAR 
+"MAPEAMENTO_DATABRICKS_CRIAR": {
+  "scope": "sql",
+  "prefix": "BRIMAP_CRIAR",
+  "body": [
+    "SELECT ",
+    "    DATE_FORMAT(t.created, 'yyyy-MM-dd') AS DT_CRIACAO,",
+    "    DATE_FORMAT(t.last_altered, 'yyyy-MM-dd') AS DT_ULT_ALTERACAO,",
+    "    t.table_catalog AS CATALOGO,",
+    "    t.table_schema AS ESQUEMA,",
+    "    t.table_name AS TABELA,",
+    "    COUNT(c.column_name) AS COLUNAS,",
+    "    ARRAY_JOIN(COLLECT_LIST(c.column_name), ', ') AS NOME_DAS_COLUNAS,",
+    "    t.table_owner AS PROPRIETARIO,",
+    "    CONCAT('SELECT * FROM ', t.table_catalog, '.', t.table_schema, '.', t.table_name, ' LIMIT 10') AS ENDERECO",
+    "FROM system.information_schema.tables t",
+    "JOIN system.information_schema.columns c ",
+    "  ON t.table_catalog = c.table_catalog ",
+    " AND t.table_schema = c.table_schema ",
+    " AND t.table_name = c.table_name",
+    "GROUP BY t.created, t.last_altered, t.table_catalog, t.table_schema, t.table_name, t.table_owner",
+    "ORDER BY t.created DESC, t.last_altered DESC, CATALOGO, ESQUEMA, TABELA"
+  ],
+  "description": "MAPEAMENTO_DATABRICKS_CRIAR"
+},
+
+
+// DATABRICKS_TB_SALDO_AULAS_META
+"DATABRICKS_TB_SALDO_AULAS_META": {
+  "scope": "sql",
+  "prefix": "BRITABSALDO",
   "body": [
     "SELECT",
     "ANO,",
@@ -4316,60 +4305,157 @@
     "SEQUENCE,",
     "_rescued_data,",
     "load_datetime",
-    "FROM producao.silver.tb_saldo_aulas_meta"
+    "FROM producao.silver.tb_saldo_aulas_meta",
+    "ORDER BY ID_PROFESSOR"
   ],
-  "description": "TB_SALDO_AULAS_META"
+  "description": "DATABRICKS_TB_SALDO_AULAS_META"
 },
 
-// SIC_2026060314500161
-"SIC_2026060314500161": {
-    "scope": "sql",
-    "prefix": "ZSIC",
-     "body": [
-        "/*",
-        "",
-        "COD - EVENTO",
-        "395 - EXONERAÇÃO - EFP",
-        "396 - DEMISSÃO - EFP",
-        "400 - DEMISSãO INCENTIVADA - PDI",
-        "",
-        "ANO 20${1:21}",
-        "",
-        "*/",
-        "",
-         "USE CEPEA_SAS",
-        "",
-        "SELECT DISTINCT",
-        "     COUNT(*) AS POSSE_20${1:21}",
-        "FROM SAS.[052026].TB_FUNCIONAL",
-        "-- WHERE CD_SIT_REG = 'A' -- A = ATIVO, E = EXCLUÍDO , F = falecido, 0 = erro, P CATEGORIA P, I = INATIVO, B = BLOQUEADO",
-        "WHERE DT_POSSE_TIT BETWEEN '20${1:21}-01-01' AND '20${1:21}-12-31'",
-        "",
-        "SELECT DISTINCT",
-        "      CASE",
-        "         WHEN CD_MOT_INTERRUP_CESS_TIT = '395' THEN '395 - EXONERAÇÃO EFP'",
-        "         WHEN CD_MOT_INTERRUP_CESS_TIT = '396' THEN '396 - DEMISSÃO - EFP'",
-        "         WHEN CD_MOT_INTERRUP_CESS_TIT = '400' THEN '400 - DEMISSãO INCENTIVADA - PDI'",
-        "         ELSE CD_MOT_INTERRUP_CESS_TIT",
-        "      END AS INTERRUPCAO ,",
-        "      COUNT(CD_MOT_INTERRUP_CESS_TIT) AS TOTAL,",
-        "      SUM(COUNT(*)) OVER() AS TOTAL_GERAL",
-        "FROM SAS.[052026].TB_FUNCIONAL",
-        "-- WHERE CD_SIT_REG = 'A' -- A = ATIVO, E = EXCLUÍDO , F = falecido, 0 = erro, P CATEGORIA P, I = INATIVO, B = BLOQUEADO",
-        "WHERE (",
-        "     DT_INIC_INTERRUP_CESS_TIT BETWEEN '20${1:21}-01-01' AND '20${1:21}-12-31'",
-        "     OR DT_INIC_AFAST_TIT BETWEEN '20${1:21}-01-01' AND '20${1:21}-12-31'",
-        "     OR DT_INIC_LIC_TIT BETWEEN '20${1:21}-01-01' AND '20${1:21}-12-31'",
-        ")",
-        "AND (",
-        "     CD_MOT_INTERRUP_CESS_TIT IN ('395', '396', '400')",
-        "     OR CD_MOT_AFAST_TIT IN ('395', '396', '400')",
-        "     OR CD_MOT_LIC_TIT IN ('395', '396', '400')",
-        ")",
-        "GROUP BY CD_MOT_INTERRUP_CESS_TIT",
-        "ORDER BY TOTAL DESC"
-    ],
-    "description": "SIC_2026060314500161"
+// DATABRICKS_TB_INSCRICAO_DB_INSCRICAO
+"DATABRICKS_TB_INSCRICAO_DB_INSCRICAO": {
+  "scope": "sql",
+  "prefix": "BRITABINSCRICAO",
+  "body": [
+    "SELECT  ",
+    "        ID_PROFESSOR,",
+    "        NR_CPF,",
+    "        NR_DI,",
+    "        ANO,",
+    "        MES,",
+    "        DIA,",
+    "        DT_IMPORT,",
+    "        CD_JORNADA_OPCAO,",
+    "        QTD_AULAS_OPCAO,",
+    "        SEQUENCE_RAW,",
+    "        ID_INSCRICAO,",
+    "        ID_PARAMETRO,",
+    "        NR_ANO_LETIVO,",
+    "        FL_POSSUI_DEPENDENTES,",
+    "        QTD_DEPENDENTES,",
+    "        FL_DEFICIENTE,",
+    "        SIGLA_TIPO_DEFICIENCIA,",
+    "        ID_RACA_COR,",
+    "        FL_ACUMULA_CARGO,",
+    "        CD_CARGO_ACUMULO,",
+    "        CD_REDE_ACUMULO,",
+    "        CD_UF_ACUMULO,",
+    "        CD_MUNICIPIO_ACUMULO,",
+    "        FL_ARTIGO_22,",
+    "        CD_DIRETORIA_ARTIGO_22,",
+    "        FL_TRANSF_DIRETORIA,",
+    "        CD_DIRETORIA_TRANSF,",
+    "        FL_PEI,",
+    "        FL_PERMANECER_ESCOLA_PEI,",
+    "        FL_PROJETOS,",
+    "        CD_DIRETORIA_PEI,",
+    "        FL_AJUSTE_MANUAL,",
+    "        DT_INCL,",
+    "        ID_USER_INCL,",
+    "        DT_ALTER,",
+    "        ID_USER_ALTER,",
+    "        DT_EXCL,",
+    "        ID_USER_EXCL,",
+    "        DS_EXCL_MOTIVO,",
+    "        NM_ARQUIVO_DIPLOMA_DOUTOR,",
+    "        NM_ORIGINAL_ARQUIVO_DIPLOMA_DOUTOR,",
+    "        NM_ARQUIVO_DIPLOMA_MESTRE,",
+    "        NM_ORIGINAL_ARQUIVO_DIPLOMA_MESTRE,",
+    "        NM_ARQUIVO_CERTIFICADO,",
+    "        NM_ORIGINAL_ARQUIVO_CERTIFICADO,",
+    "        CD_DIRETORIA_ATUACAO_PROFISSIONAL,",
+    "        FL_DIPLOMA_DOUTOR_VALIDO,",
+    "        FL_DIPLOMA_MESTRE_VALIDO,",
+    "        FL_CERTIFICADO_VALIDO,",
+    "        ID_USER_VALIDACAO_CERTIFICADO,",
+    "        DT_VALIDACAO_CERTIFICADO,",
+    "        SEQUENCE,",
+    "        _rescued_data,",
+    "        load_datetime",
+    "FROM producao.bronze.tb_inscricao_db_inscricao ",
+    "ORDER BY NR_CPF, ANO DESC, MES DESC, DIA DESC"
+  ],
+  "description": "DATABRICKS_TB_INSCRICAO_DB_INSCRICAO"
+},
+
+// DATABRICKS_TB_PROFESSOR_DB_INSCRICAO
+"DATABRICKS_TB_PROFESSOR_DB_INSCRICAO": {
+  "scope": "sql",
+  "prefix": "BRITABPROFESSOR",
+  "body": [
+    "SELECT  ",
+    "    CD_DIRETORIA AS CD_URE,",
+    "    CD_UA_CLASSIFICACAO AS UA_C,",
+    "    NR_CPF,",
+    "    NR_DI,",
+    "    ID_PROFESSOR,",
+    "    NM_PESSOA,",
+    "    CD_CARGO,",
+    "    CD_CATEGORIA,",
+    "    ANO,",
+    "    MES,",
+    "    DIA,",
+    "    DT_IMPORT,",
+    "    SEQUENCE_RAW,",
+    "    ID_PARAMETRO,",
+    "    NR_ANO_LETIVO,",
+    "    NR_RG,",
+    "    CD_VERIF_RG,",
+    "    CD_DISCIPLINA,",
+    "    CD_JORNADA_ATUAL,",
+    "    QTD_AULAS_ATUAL,",
+    "    NM_EMAIL,",
+    "    NM_EMAIL2,",
+    "    CD_DDD,",
+    "    NR_TEL,",
+    "    CD_DDD_TEL2,",
+    "    NR_TEL2,",
+    "    CD_DDD_CEL,",
+    "    NR_TEL_CEL,",
+    "    CD_DDD_CEL2,",
+    "    NR_TEL_CEL2,",
+    "    DT_NASC,",
+    "    FL_PEI,",
+    "    QTD_DIAS_UA,",
+    "    QTD_DIAS_CARGO,",
+    "    QTD_DIAS_MAGISTERIO,",
+    "    QTD_CONCURSOS,",
+    "    QTD_DIAS_ASSIDUIDADE,",
+    "    FL_MESTRADO,",
+    "    FL_DOUTORADO,",
+    "    FL_MULTIPLICADOR,",
+    "    FL_CURSISTA,",
+    "    FL_POS_SESI,",
+    "    FL_ESCOLA_GESTAO,",
+    "    FL_CURSO_EFAPE,",
+    "    FL_APROVADO_CONCURSO,",
+    "    FL_AJUSTE_MANUAL,",
+    "    FL_CONCURSO_VUNESP,",
+    "    DT_INCL,",
+    "    ID_USER_INCL,",
+    "    DT_ALTER,",
+    "    ID_USER_ALTER,",
+    "    DT_EXCL,",
+    "    ID_USER_EXCL,",
+    "    dt_exercicio,",
+    "    FL_EMERGENCIAL,",
+    "    FL_BLOQUEIO_ENSINO_PROFISSIONALIZANTE,",
+    "    QTD_CONCURSOS_ANTIGO,",
+    "    NR_PONTUACAO_DESEMPENHO,",
+    "    NR_PONTUACAO_UE,",
+    "    NR_PONTUACAO_DE,",
+    "    NR_PONTUACAO_FINAL_UE,",
+    "    NR_PONTUACAO_FINAL_DE,",
+    "    NR_CLASSIFICACAO_PCD,",
+    "    ID_EIXO_TECNICO,",
+    "    NR_CLASSIFICACAO,",
+    "    DT_CREATE_LOGIN,",
+    "    SEQUENCE,",
+    "    _rescued_data,",
+    "    load_datetime",
+    "FROM producao.bronze.tb_professor_db_inscricao ",
+    "ORDER BY CD_DIRETORIA, CD_UA_CLASSIFICACAO"
+  ],
+  "description": "DATABRICKS_TB_PROFESSOR_DB_INSCRICAO"
 }
 
 }
