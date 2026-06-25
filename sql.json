@@ -1208,12 +1208,12 @@
     "scope": "sql",
     "prefix": "ZUNIONALL",
     "body": [
-	  "${7:DROP TABLE IF EXISTS ${1:#BASE__UNIDA_ALL}}",
+	  "${7:DROP TABLE IF EXISTS ${1:#UNION_ALL}}",
       "SELECT",
 	  "${2:COLUNA1}",
 	  "${3:COLUNA2}",
 	  "${4:COLUNA2}",
-	  "INTO ${1:#BASE__UNIDA_ALL}",
+	  "INTO ${1:#UNION_ALL}",
 	  "FROM ${5:#BASE1}",
 	  "UNION ALL",
 	  "SELECT",
@@ -1344,6 +1344,16 @@
     ],
     "description": "TIRAR_TRAOOS_E_PONTOS_CPF"
   },
+
+// CPF_ACRESCENTAR_ZEROS_A_ESQUERDA
+"CPF_ACRESCENTAR_ZEROS_A_ESQUERDA": {
+    "scope": "sql",
+    "prefix": "ZCPF_ZEROESQ",
+    "body": [
+        "RIGHT('00000000000' + CAST(${1:COLUNA} AS VARCHAR(11)), 11) AS ${1:COLUNA},"
+    ],
+    "description": "CPF_ACRESCENTAR_ZEROS_A_ESQUERDA"
+},
 
   // SOMA_COUNT
   "SOMA_COUNT": {
